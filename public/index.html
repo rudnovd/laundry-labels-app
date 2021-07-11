@@ -1,17 +1,60 @@
 <!DOCTYPE html>
 <html lang="">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong
+        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please
+        enable it to continue.</strong
+      >
     </noscript>
-    <div id="app"></div>
+    <div id="app">
+      <section class="loading-app">
+        <div class="spinner"></div>
+        <div>Loading app...</div>
+      </section>
+    </div>
     <!-- built files will be auto injected -->
   </body>
+
+  <style>
+    html,
+    body,
+    #app,
+    .loading-app {
+      height: 100%;
+    }
+
+    .loading-app {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      border: 3px solid;
+      width: 3rem;
+      height: 3rem;
+      border-color: rgb(0, 0, 0);
+      border-top-color: rgba(0, 0, 0, 0.3);
+      animation: spin 2s linear infinite;
+      border-radius: 50%;
+      opacity: 0.2;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </html>

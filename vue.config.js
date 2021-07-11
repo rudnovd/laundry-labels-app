@@ -2,12 +2,12 @@ module.exports = {
   css: {
     sourceMap: process.env.NODE_ENV === 'development',
     loaderOptions: {
-      // sass: {
-      //   additionalData: `
-      //     @use "sass:color";
-      //     @import "~@/styles/variables";
-      //   `,
-      // },
+      // @use "sass:color";
+      sass: {
+        additionalData: `
+          @import "~@/styles/quasar.variables.scss";
+        `,
+      },
     },
   },
   configureWebpack: {

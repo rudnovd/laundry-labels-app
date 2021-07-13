@@ -1,25 +1,23 @@
 <template>
-  <section class="create-item-page q-px-sm q-pt-sm">
-    <q-form class="create-item-form" @submit="onSubmit" @reset="onReset">
-      <template v-if="step === 1">
-        <q-select
-          v-model="item.type"
-          filled
-          :options="options"
-          label="Type *"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-        />
+  <section class="create-item-page q-pa-sm">
+    <q-form class="create-item-form" @submit="onSubmit">
+      <q-select
+        v-model="userItemBlank.type"
+        filled
+        :disable="isLaudnryLabelsOptionsLoading || isPostRequestLoading"
+        :loading="isLaudnryLabelsOptionsLoading"
+        :options="laundryLabelsOptions.types"
+        option-value="code"
+        option-label="value"
+        label="Type *"
+        lazy-rules
+        reactive-rules
+        :rules="[(val) => val !== null || 'Please select something']"
+      />
 
-        <q-input
-          v-model="item.name"
-          filled
-          label="Name"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-        />
+      <q-input v-model="userItemBlank.name" filled label="Name" :disable="isPostRequestLoading" />
 
-        <section class="color-picker-container">
+      <!-- <section class="color-picker-container">
           <q-color
             v-model="item.color"
             no-header
@@ -31,130 +29,92 @@
           />
 
           <div class="selected-color" :style="{ backgroundColor: item.color }" />
-        </section>
-      </template>
+        </section> -->
 
-      <template v-if="step === 2">
-        <section class="washing-icons-container">
-          <div
-            v-for="icon in icons"
-            :key="icon.laundryIcon.code"
-            v-ripple
-            class="icon-chip"
-            :class="{ selected: isIconSelected(icon) }"
-            @click="selectIcon(icon)"
-          >
-            <q-icon :name="icon.laundryIcon.path" />
-            <span>{{ icon.name }}</span>
+      <section class="washing-icons-container">
+        <div v-for="group in laundryLabelsOptions.icons" :key="group" class="icons-group">
+          <!-- <span>{{ group.name }}</span> -->
+
+          <div class="icons-chips">
+            <div
+              v-for="icon in group.icons"
+              :key="icon.code"
+              v-ripple
+              class="icon-chip"
+              :class="{ selected: isIconSelected(icon) }"
+              @click="selectIcon(icon)"
+            >
+              <q-icon :name="icon.icon" />
+              <span>{{ icon.text }}</span>
+            </div>
           </div>
-        </section>
-      </template>
+        </div>
+      </section>
 
       <q-btn
-        color="primary"
+        color="positive"
         class="full-width"
-        :icon-right="step === 1 ? 'arrow_right_alt' : ''"
-        @click="step === 1 ? step++ : createItem"
-      >
-        {{ step === 1 ? 'Next step' : 'Add' }}
-      </q-btn>
+        label="Create"
+        type="submit"
+        :disable="isPostRequestLoading"
+        :loading="isPostRequestLoading"
+      />
     </q-form>
   </section>
 </template>
 
 <script lang="ts">
 import { laundryIcon } from '@/interfaces/laundryIcon'
-import { defineComponent, reactive, ref } from '@vue/runtime-core'
+import { userItemBlank } from '@/interfaces/userItem'
+import { computed, defineComponent, reactive, ref } from '@vue/runtime-core'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'CreateItem',
   setup() {
-    const step = ref(1)
+    const router = useRouter()
+    const store = useStore()
 
-    const item = reactive({
+    const laundryLabelsOptions = computed(() => store.state.laundryLabelsOptions)
+    const isLaudnryLabelsOptionsLoading = ref(true)
+    const isPostRequestLoading = ref(false)
+    const userItemBlank = reactive({
       name: null,
       type: null,
-      icons: [] as Array<string>,
-    })
+      laundryIcons: [],
+      images: null,
+      created: null,
+    } as userItemBlank)
 
-    const options = [
-      {
-        label: 'T-shirts',
-        value: 'T_SHIRTS',
-      },
-      {
-        label: 'Shorts',
-        value: 'SHORTS',
-      },
-      {
-        label: 'Coat',
-        value: 'COAT',
-      },
-      {
-        label: 'Suit',
-        value: 'SUIT',
-      },
-      {
-        label: 'Sweater',
-        value: 'SWEATER',
-      },
-      {
-        label: 'Jeans',
-        value: 'JEANS',
-      },
-    ]
+    Promise.all([store.dispatch('getLaundryLabelsIcons'), store.dispatch('getItemsTypes')]).finally(
+      () => (isLaudnryLabelsOptionsLoading.value = false)
+    )
 
-    const standartColors = ['#019A9D', '#D9B801', '#E8045A', '#B2028A', '#2A0449', '#019A9D']
-
-    const icons: Array<laundryIcon> = [
-      {
-        code: 'BLEACHING',
-        icon: 'app:laundry-icon-bleaching',
-        group: {
-          code: 'BLEACHING',
-          value: 'Bleaching',
-        },
-        text: 'Bleaching allowed',
-      },
-      // {
-      //   laundryIcon: {
-      //     code: 'IRONING',
-      //     path: 'app:laundry-icon-iron',
-      //   },
-      //   name: 'Ironing',
-      //   group: {
-      //     code: 'Ironing',
-      //   },
-      // },
-      // {
-      //   laundryIcon: {
-      //     code: 'WASHING_90_DEG',
-      //     path: 'app:laundry-icon-washing-90deg',
-      //   },
-      //   name: 'Washing 90 degrees',
-      //   group: {
-      //     code: 'Washing',
-      //   },
-      // },
-    ]
-
-    const selectIcon = (icon: string) => {
-      item.icons.indexOf(icon) !== -1 ? item.icons.splice(item.icons.indexOf(icon), 1) : item.icons.push(icon)
+    const selectIcon = (icon: laundryIcon) => {
+      userItemBlank.laundryIcons.indexOf(icon) !== -1
+        ? userItemBlank.laundryIcons.splice(userItemBlank.laundryIcons.indexOf(icon), 1)
+        : userItemBlank.laundryIcons.push(icon)
     }
+    const isIconSelected = (icon: laundryIcon) => userItemBlank.laundryIcons.indexOf(icon) !== -1
 
-    const isIconSelected = (icon: string) => {
-      return item.icons.indexOf(icon) !== -1
+    const onSubmit = () => {
+      isPostRequestLoading.value = true
+      store
+        .dispatch('createUserItem', { userItemBlank })
+        .then(() => router.push('/'))
+        .finally(() => (isPostRequestLoading.value = false))
     }
 
     return {
-      step,
-      item,
-      options,
-      standartColors,
-      icons,
+      userItemBlank,
+      laundryLabelsOptions,
+      isLaudnryLabelsOptionsLoading,
+      isPostRequestLoading,
 
       selectIcon,
       isIconSelected,
+      onSubmit,
     }
   },
 })
@@ -177,6 +137,22 @@ export default defineComponent({
 }
 
 .washing-icons-container {
+  display: grid;
+  gap: 1rem;
+}
+
+.icons-group {
+  display: grid;
+  gap: 0.25rem;
+
+  span:first-child {
+    font-size: 1.125rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+.icons-chips {
   display: grid;
   // grid-template-columns: repeat(auto-fill, minmax(50%, 1fr));
   grid-template-columns: 1fr 1fr;

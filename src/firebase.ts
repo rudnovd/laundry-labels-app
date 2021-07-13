@@ -14,3 +14,10 @@ initializeApp({
 
 export const db = getFirestore()
 export const storage = getStorage()
+
+export enum dbCollections {
+  items_types = 'items_types',
+  languages = 'languages',
+  laundry_icons_groups = 'laundry_icons_groups',
+  users_items = 'users_items',
+}

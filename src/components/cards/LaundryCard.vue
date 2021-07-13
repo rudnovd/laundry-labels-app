@@ -1,6 +1,7 @@
 <template>
   <div v-ripple class="laundry-card" @click="router.push(`/item/${userItem.id}`)">
     <q-img
+      :class="{ 'no-image': !userItem.images.length }"
       :src="userItem.images[0]"
       loading="lazy"
       decoding="async"
@@ -126,5 +127,9 @@ export default defineComponent({
   a {
     width: 64px;
   }
+}
+
+.no-image {
+  background: $grey-4;
 }
 </style>

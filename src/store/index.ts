@@ -10,11 +10,15 @@ import {
   getDoc,
   QuerySnapshot,
   DocumentSnapshot,
+  deleteDoc,
+  addDoc,
+  FirestoreError,
+  serverTimestamp,
 } from 'firebase/firestore'
 import { getDownloadURL, ref } from 'firebase/storage'
-import { userItem } from '@/interfaces/userItem'
+import { userItem, userItemBlank } from '@/interfaces/userItem'
 import { createStore } from 'vuex'
-import { db, storage } from '@/firebase'
+import { db, dbCollections, storage } from '@/firebase'
 import { Notify } from 'quasar'
 import { User } from 'firebase/auth'
 import { laundryIcon } from '@/interfaces/laundryIcon'
@@ -50,13 +54,15 @@ async function getFormattedUserItems(documents: QuerySnapshot<DocumentData> | Ar
         })
       }
 
-      const itemTypeDocument = await getDoc(doc(db, 'items_types', type.id, 'description', 'en'))
+      const itemTypeDocument = await getDoc(doc(db, dbCollections.items_types, type.id, 'description', 'en'))
       const { value: itemTypeValue } = itemTypeDocument.data() || { itemTypeValue: null }
 
       const imagesValues = []
-      for (const image of images) {
-        const imageUrl = await getDownloadURL(ref(storage, image))
-        imagesValues.push(imageUrl)
+      if (images) {
+        for (const image of images) {
+          const imageUrl = await getDownloadURL(ref(storage, image))
+          imagesValues.push(imageUrl)
+        }
       }
 
       const userItem: userItem = {
@@ -71,24 +77,30 @@ async function getFormattedUserItems(documents: QuerySnapshot<DocumentData> | Ar
       userItems.push(userItem)
     }
 
-    console.log(userItems)
-
     return userItems
   } catch (error) {
     throw new Error(error)
   }
 }
 
+function storeError(error: FirestoreError) {
+  console.error(error)
+  Notify.create({
+    type: 'negative',
+    message: error.message,
+  })
+}
+
 const store = createStore({
   actions: {
-    async getItems({ rootState, commit }, payload: { page: number }) {
+    async getItems({ state, commit }, payload: { page: number }) {
       try {
-        if (!rootState.user) throw new Error('auth reqired')
+        if (!state.user) return storeError({ code: 'unauthenticated', message: 'auth required', name: 'auth-required' })
 
         const offset = (payload?.page * 10) | 10
         const dbQuery = query(
-          collection(db, 'users_items'),
-          where('uid', '==', rootState.user.uid),
+          collection(db, dbCollections.users_items),
+          where('uid', '==', state.user.uid),
           where('isDeleted', '==', false),
           limit(offset)
         )
@@ -100,8 +112,8 @@ const store = createStore({
           const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1]
 
           const dbQueryAfter = query(
-            collection(db, 'users_items'),
-            where('uid', '==', rootState.user.uid),
+            collection(db, dbCollections.users_items),
+            where('uid', '==', state.user.uid),
             startAfter(lastDocument),
             limit(10)
           )
@@ -113,30 +125,125 @@ const store = createStore({
         }
 
         commit('SET_USER_ITEMS', data)
+        return state.items
       } catch (error) {
-        console.error(error)
-        Notify.create({
-          type: 'negative',
-          message: error.message,
-        })
+        storeError(error)
       }
     },
-    async getUserItemById({ commit }, payload: { id: string }) {
+    async getUserItemById({ state, commit }, payload: { id: string }) {
       try {
-        const documentReference = doc(db, 'users_items', payload.id)
+        const documentReference = doc(db, dbCollections.users_items, payload.id)
         const document = await getDoc(documentReference)
 
         const data = await getFormattedUserItems([document])
 
-        console.log('userItem', data)
-
         commit('SET_USER_ITEMS', data)
+        return state.items
       } catch (error) {
-        console.error(error)
-        Notify.create({
-          type: 'negative',
-          message: error.message,
+        storeError(error)
+      }
+    },
+    async createUserItem({ state, commit }, payload: { userItemBlank: userItemBlank }) {
+      try {
+        if (!payload.userItemBlank.type) return null
+
+        const laundryIcons = payload.userItemBlank.laundryIcons.map((laundryIcon) => {
+          return doc(db, dbCollections.laundry_icons_groups, laundryIcon.group.code, 'icons', laundryIcon.code)
         })
+
+        const firebaseUserItemBlank = {
+          ...payload.userItemBlank,
+          type: doc(db, dbCollections.items_types, payload.userItemBlank.type.code),
+          laundryIcons,
+          uid: state.user?.uid,
+          created: serverTimestamp(),
+          isDeleted: false,
+        }
+
+        const newItem = await addDoc(collection(db, dbCollections.users_items), firebaseUserItemBlank)
+        const data = await getFormattedUserItems([await getDoc(newItem)])
+
+        commit('ADD_USER_ITEM', ...data)
+        return state.items
+      } catch (error) {
+        storeError(error)
+      }
+    },
+    async deleteUserItem({ state, commit }, payload: { id: string }) {
+      try {
+        const documentReference = doc(db, dbCollections.users_items, payload.id)
+        await deleteDoc(documentReference)
+
+        commit('DELETE_USER_ITEM', payload.id)
+        return state.items
+      } catch (error) {
+        storeError(error)
+      }
+    },
+
+    async getLaundryLabelsIcons({ state, commit }) {
+      try {
+        const iconsGroupsDocuments = await getDocs(collection(db, 'laundry_icons_groups'))
+        // TODO: fix type
+        const icons: { [key: string]: any } = {}
+
+        for (const iconGroupDocument of iconsGroupsDocuments.docs) {
+          const iconsDocuments = await getDocs(collection(db, 'laundry_icons_groups', iconGroupDocument.id, 'icons'))
+
+          const iconGroupDocumentName = await getDoc(
+            doc(db, 'laundry_icons_groups', iconGroupDocument.id, 'name', 'en')
+          )
+          const { value: groupValue } = iconGroupDocumentName.data() || { value: null }
+
+          icons[iconGroupDocument.id] = {
+            icons: [] as Array<laundryIcon>,
+            name: groupValue,
+          }
+
+          for (const iconDocument of iconsDocuments.docs) {
+            const { icon } = iconDocument.data() || { icon: null }
+
+            const descriptionDocument = await getDoc(doc(db, iconDocument.ref.path, 'description', 'en'))
+            const { value: textValue } = descriptionDocument.data() || { value: null }
+
+            icons[iconGroupDocument.id].icons.push({
+              code: iconDocument.id,
+              icon,
+              group: {
+                code: iconGroupDocument.id,
+                value: groupValue,
+              },
+              text: textValue,
+            })
+          }
+        }
+
+        commit('SET_LAUNDRY_LABELS_OPTIONS', { icons })
+        return state.laundryLabelsOptions
+      } catch (error) {
+        storeError(error)
+      }
+    },
+    async getItemsTypes({ state, commit }) {
+      try {
+        const types = []
+        const itemsTypesDocuments = await getDocs(collection(db, 'items_types'))
+        for (const itemTypeDocument of itemsTypesDocuments.docs) {
+          const itemTypeDescriptionDocument = await getDoc(
+            doc(db, 'items_types', itemTypeDocument.id, 'description', 'en')
+          )
+          const { value: typeValue } = itemTypeDescriptionDocument.data() || { value: null }
+
+          types.push({
+            code: itemTypeDocument.id,
+            value: typeValue,
+          })
+        }
+
+        commit('SET_LAUNDRY_LABELS_OPTIONS', { types })
+        return state.laundryLabelsOptions
+      } catch (error) {
+        storeError(error)
       }
     },
   },
@@ -147,10 +254,33 @@ const store = createStore({
     SET_USER_ITEMS(state, items: userItem[]) {
       state.items = items
     },
+
+    ADD_USER_ITEM(state, item: userItem) {
+      state.items.push(item)
+    },
+    DELETE_USER_ITEM(state, id: string) {
+      state.items = state.items.filter((item) => item.id !== id)
+    },
+
+    SET_LAUNDRY_LABELS_OPTIONS(
+      state,
+      payload: { types?: Array<Record<string, string>>; icons?: Array<laundryIcon>; colors?: [] }
+    ) {
+      state.laundryLabelsOptions = {
+        ...state.laundryLabelsOptions,
+        ...payload,
+      }
+    },
   },
   state: {
     user: null as User | null,
     items: [] as Array<userItem>,
+
+    laundryLabelsOptions: {
+      types: [] as Array<Record<string, string>>,
+      icons: [] as Array<laundryIcon>,
+      colors: [],
+    },
   },
 
   strict: process.env.NODE_ENV === 'development',

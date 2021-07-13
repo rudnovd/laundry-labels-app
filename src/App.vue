@@ -2,6 +2,14 @@
   <q-layout v-if="$q.platform.is.mobile" container>
     <q-header class="bg-light-green-5 text-white">
       <q-toolbar>
+        <q-btn
+          v-if="route.path !== '/' && route.path !== '/login'"
+          icon="arrow_back"
+          flat
+          no-wrap
+          padding="0"
+          @click="router.back()"
+        />
         <q-toolbar-title> Laundry app </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -32,6 +40,7 @@
 <script lang="ts">
 import { useQuasar } from 'quasar'
 import { defineComponent, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 const laundryIcons: { [key: string]: string } = {
@@ -44,6 +53,8 @@ export default defineComponent({
   name: 'App',
   setup() {
     const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
 
     const $q = useQuasar()
 
@@ -53,6 +64,8 @@ export default defineComponent({
     }
 
     return {
+      route,
+      router,
       tab: ref('Home'),
       user: store.state.user,
     }

@@ -1,5 +1,5 @@
 <template>
-  <section class="profile-page">
+  <section class="profile-page q-pa-sm flex justify-center">
     <q-btn v-if="auth.currentUser" to="/logout" color="primary" label="Logout" icon="logout" />
   </section>
 </template>

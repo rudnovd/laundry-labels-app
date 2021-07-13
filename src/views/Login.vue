@@ -1,5 +1,5 @@
 <template>
-  <section class="login-page">
+  <section class="login-page q-pa-sm">
     <q-form
       class="login-form"
       autocorrect="off"

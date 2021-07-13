@@ -22,7 +22,7 @@ export default defineComponent({
 
     signOut(auth)
       .then(() => {
-        router.push('/')
+        router.push('/login')
       })
       .catch(() => {
         $q.notify({

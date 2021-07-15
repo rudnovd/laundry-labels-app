@@ -1,4 +1,5 @@
 import store from '@/store'
+import { getAuth } from 'firebase/auth'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 
@@ -13,6 +14,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Welcome',
     component: () => import(/* webpackChunkName: "welcome" */ '@/views/Welcome.vue'),
   },
+  {
     path: '/login',
     name: 'Login',
     component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
@@ -34,7 +36,12 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/create',
-    name: 'Create',
+    name: 'Create new item',
+    component: () => import(/* webpackChunkName: "createitem" */ '@/views/CreateItem.vue'),
+  },
+  {
+    path: '/edit/:id',
+    name: 'Edit item',
     component: () => import(/* webpackChunkName: "createitem" */ '@/views/CreateItem.vue'),
   },
   {

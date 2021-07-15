@@ -65,15 +65,16 @@
 
 <script lang="ts">
 import { laundryIcon } from '@/interfaces/laundryIcon'
-import { userItemBlank } from '@/interfaces/userItem'
-import { computed, defineComponent, reactive, ref } from '@vue/runtime-core'
-import { useRouter } from 'vue-router'
+import { userItem, userItemBlank } from '@/interfaces/userItem'
+import { computed, defineComponent, reactive, ref, watch } from '@vue/runtime-core'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'CreateItem',
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const store = useStore()
 
     const laundryLabelsOptions = computed(() => store.state.laundryLabelsOptions)
@@ -84,26 +85,62 @@ export default defineComponent({
       type: null,
       laundryIcons: [],
       images: null,
-      created: null,
     } as userItemBlank)
 
     Promise.all([store.dispatch('getLaundryLabelsIcons'), store.dispatch('getItemsTypes')]).finally(
       () => (isLaudnryLabelsOptionsLoading.value = false)
     )
 
-    const selectIcon = (icon: laundryIcon) => {
-      userItemBlank.laundryIcons.indexOf(icon) !== -1
-        ? userItemBlank.laundryIcons.splice(userItemBlank.laundryIcons.indexOf(icon), 1)
-        : userItemBlank.laundryIcons.push(icon)
+    const userItems = computed(() => store.state.items)
+    if (route.params.id) {
+      if (!userItems.value.find((userItem: userItem) => userItem.id === route.params.id)) {
+        isPostRequestLoading.value = true
+        store.dispatch('getUserItemById', { id: route.params.id }).finally(() => (isPostRequestLoading.value = false))
+      } else {
+        const currentUserItem = userItems.value.find((userItem: userItem) => userItem.id === route.params.id)
+        if (!currentUserItem) return
+
+        console.log(currentUserItem)
+        userItemBlank.name = currentUserItem.name
+        userItemBlank.type = currentUserItem.type
+        userItemBlank.laundryIcons = currentUserItem.laundryIcons
+        userItemBlank.images = currentUserItem.images
+      }
     }
-    const isIconSelected = (icon: laundryIcon) => userItemBlank.laundryIcons.indexOf(icon) !== -1
+
+    watch(userItems, (newUserItemsValue) => {
+      if (!route.params.id) return
+
+      const currentUserItem = newUserItemsValue.find((userItem: userItem) => userItem.id === route.params.id)
+      if (!currentUserItem) return
+
+      userItemBlank.name = currentUserItem.name
+      userItemBlank.type = currentUserItem.type
+      userItemBlank.laundryIcons = currentUserItem.laundryIcons
+      userItemBlank.images = currentUserItem.images
+    })
+
+    const selectIcon = (icon: laundryIcon) => {
+      const iconIndex = userItemBlank.laundryIcons.findIndex((laundryIcon) => laundryIcon.code === icon.code)
+
+      iconIndex !== -1 ? userItemBlank.laundryIcons.splice(iconIndex, 1) : userItemBlank.laundryIcons.push(icon)
+    }
+
+    const isIconSelected = (icon: laundryIcon) => {
+      return userItemBlank.laundryIcons.find((laundryIcon) => laundryIcon.code === icon.code)
+    }
 
     const onSubmit = () => {
       isPostRequestLoading.value = true
-      store
-        .dispatch('createUserItem', { userItemBlank })
-        .then(() => router.push('/'))
-        .finally(() => (isPostRequestLoading.value = false))
+
+      if (route.params.id) {
+        store.dispatch('editUserItem', { userItemBlank }).then(() => router.push('/'))
+      } else {
+        store
+          .dispatch('createUserItem', { userItemBlank })
+          .then(() => router.push('/'))
+          .finally(() => (isPostRequestLoading.value = false))
+      }
     }
 
     return {

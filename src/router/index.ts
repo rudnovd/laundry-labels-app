@@ -49,12 +49,12 @@ const router = createRouter({
   routes,
 })
 
-const pagesWithoutAuth = ['/login', '/registration']
+const pagesWithoutAuth = ['/welcome', '/login', '/registration', '/logout']
 
 router.beforeEach((to, _, next) => {
   if (pagesWithoutAuth.indexOf(to.path) !== -1) next()
-  else if (store.state.user) next()
-  else next({ path: '/login' })
+  else if (getAuth().currentUser) next()
+  else next({ path: '/welcome' })
 })
 
 router.afterEach((to) => {

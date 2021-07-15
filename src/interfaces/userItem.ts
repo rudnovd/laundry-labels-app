@@ -3,7 +3,10 @@ import { laundryIcon } from './laundryIcon'
 export interface userItem {
   id: string
   name?: string
-  type: string
+  type: {
+    code: string
+    value: string
+  }
   laundryIcons: laundryIcon[]
   images?: string[]
   // color?: {

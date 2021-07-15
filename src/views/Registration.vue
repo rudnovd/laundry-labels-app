@@ -10,8 +10,8 @@
     >
       <q-input
         v-model="email"
-        :loading="loading"
-        :disable="loading"
+        :loading="isRegistrationLoading"
+        :disable="isRegistrationLoading"
         type="email"
         label="Email"
         maxlength="128"
@@ -22,8 +22,8 @@
       />
       <q-input
         v-model="password"
-        :loading="loading"
-        :disable="loading"
+        :loading="isRegistrationLoading"
+        :disable="isRegistrationLoading"
         type="password"
         label="Password"
         maxlength="64"
@@ -31,34 +31,46 @@
         filled
         dense
         lazy-rules
-        :rules="[(val) => val.length >= 6 || 'Please use minimum 6 characters']"
+        :rules="[(val) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
       />
 
-      <q-btn label="Registration" type="submit" color="primary" :disable="loading" />
+      <q-btn
+        label="Registration"
+        type="submit"
+        color="primary"
+        :disable="isRegistrationLoading"
+        :loading="isRegistrationLoading"
+      />
     </q-form>
   </section>
 </template>
 
 <script lang="ts">
-import router from '@/router'
 import { defineComponent, ref } from '@vue/runtime-core'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, linkWithCredential, EmailAuthProvider } from 'firebase/auth'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'Registration',
   setup() {
     const $q = useQuasar()
+    const router = useRouter()
+    const auth = getAuth()
 
     const email = ref('')
     const password = ref('')
-    const loading = ref(false)
+    const isRegistrationLoading = ref(false)
+
+    if (auth.currentUser && !auth.currentUser.isAnonymous) router.push('/')
 
     const onSubmit = async () => {
-      const auth = getAuth()
-
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
+        if (auth.currentUser && auth.currentUser.isAnonymous) {
+          await linkWithCredential(auth.currentUser, EmailAuthProvider.credential(email.value, password.value))
+        } else {
+          await createUserWithEmailAndPassword(auth, email.value, password.value)
+        }
 
         $q.notify({
           type: 'positive',
@@ -71,13 +83,15 @@ export default defineComponent({
           type: 'negative',
           message: error.message,
         })
+      } finally {
+        isRegistrationLoading.value = false
       }
     }
 
     return {
       email,
       password,
-      loading,
+      isRegistrationLoading,
       onSubmit,
     }
   },

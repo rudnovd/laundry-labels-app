@@ -14,13 +14,15 @@ import {
   addDoc,
   FirestoreError,
   serverTimestamp,
+  updateDoc,
+  orderBy,
 } from 'firebase/firestore'
 import { getDownloadURL, ref } from 'firebase/storage'
 import { userItem, userItemBlank } from '@/interfaces/userItem'
 import { createStore } from 'vuex'
 import { db, dbCollections, storage } from '@/firebase'
 import { Notify } from 'quasar'
-import { User } from 'firebase/auth'
+import { getAuth } from 'firebase/auth'
 import { laundryIcon } from '@/interfaces/laundryIcon'
 
 async function getFormattedUserItems(documents: QuerySnapshot<DocumentData> | Array<DocumentSnapshot<DocumentData>>) {
@@ -70,7 +72,10 @@ async function getFormattedUserItems(documents: QuerySnapshot<DocumentData> | Ar
         name,
         images: imagesValues,
         created,
-        type: itemTypeValue,
+        type: {
+          code: type.id,
+          value: itemTypeValue,
+        },
         laundryIcons: laundryIconsValues,
       }
 
@@ -94,14 +99,16 @@ function storeError(error: FirestoreError) {
 const store = createStore({
   actions: {
     async getItems({ state, commit }, payload: { page: number }): Promise<userItem[]> {
+      const auth = getAuth()
       try {
-        if (!state.user) return storeError({ code: 'unauthenticated', message: 'auth required', name: 'auth-required' })
+        if (!auth.currentUser) throw { code: 'unauthenticated', message: 'auth required', name: 'auth-required' }
 
         const offset = (payload?.page * 10) | 10
         const dbQuery = query(
           collection(db, dbCollections.users_items),
-          where('uid', '==', state.user.uid),
+          where('uid', '==', auth.currentUser.uid),
           where('isDeleted', '==', false),
+          orderBy('created', 'desc'),
           limit(offset)
         )
         let data = []
@@ -113,7 +120,9 @@ const store = createStore({
 
           const dbQueryAfter = query(
             collection(db, dbCollections.users_items),
-            where('uid', '==', state.user.uid),
+            where('uid', '==', auth.currentUser.uid),
+            where('isDeleted', '==', false),
+            orderBy('created', 'desc'),
             startAfter(lastDocument),
             limit(10)
           )
@@ -125,24 +134,28 @@ const store = createStore({
         }
 
         commit('SET_USER_ITEMS', data)
-        return state.items
       } catch (error) {
         storeError(error)
       }
+
       return state.items
     },
-    async getUserItemById({ state, commit }, payload: { id: string }) {
+    async getUserItemById({ state, commit }, payload: { id: string }): Promise<userItem[]> {
       try {
         const documentReference = doc(db, dbCollections.users_items, payload.id)
         const document = await getDoc(documentReference)
 
+        const { isDeleted } = document.data() || { isDeleted: false }
+        if (isDeleted) return []
+
         const data = await getFormattedUserItems([document])
 
         commit('SET_USER_ITEMS', data)
-        return state.items
       } catch (error) {
         storeError(error)
       }
+
+      return state.items
     },
     async createUserItem({ state, commit }, payload: { userItemBlank: userItemBlank }): Promise<userItem[]> {
       try {
@@ -168,21 +181,52 @@ const store = createStore({
       } catch (error) {
         storeError(error)
       }
-        return state.items
+
+      return state.items
+    },
+    async editUserItem(
+      { state, commit },
+      payload: { userItem: userItem; userItemBlank: userItemBlank }
+    ): Promise<userItem[]> {
+      try {
+        if (!payload.userItemBlank.type) throw { message: 'type required' }
+
+        const laundryIcons = payload.userItemBlank.laundryIcons.map((laundryIcon) => {
+          return doc(db, dbCollections.laundry_icons_groups, laundryIcon.group.code, 'icons', laundryIcon.code)
+        })
+
+        const firebaseUserItem = {
+          name: payload.userItemBlank.name,
+          type: doc(db, dbCollections.items_types, payload.userItemBlank.type.code),
+          laundryIcons,
+          images: payload.userItemBlank.images,
+          uid: getAuth().currentUser?.uid,
+          edited: serverTimestamp(),
+        }
+
+        await updateDoc(doc(db, dbCollections.users_items, payload.userItem.id), firebaseUserItem)
+
+        const document = await getDoc(doc(db, dbCollections.users_items, payload.userItem.id))
+        const data = await getFormattedUserItems([document])
+
+        commit('EDIT_USER_ITEM', { id: payload.userItem.id, item: data })
       } catch (error) {
         storeError(error)
       }
+
+      return state.items
     },
-    async deleteUserItem({ state, commit }, payload: { id: string }) {
+    async deleteUserItem({ state, commit }, payload: { id: string }): Promise<userItem[]> {
       try {
         const documentReference = doc(db, dbCollections.users_items, payload.id)
         await deleteDoc(documentReference)
 
         commit('DELETE_USER_ITEM', payload.id)
-        return state.items
       } catch (error) {
         storeError(error)
       }
+
+      return state.items
     },
 
     async getLaundryLabelsIcons({ state, commit }) {
@@ -223,10 +267,11 @@ const store = createStore({
         }
 
         commit('SET_LAUNDRY_LABELS_OPTIONS', { icons })
-        return state.laundryLabelsOptions
       } catch (error) {
         storeError(error)
       }
+
+      return state.laundryLabelsOptions
     },
     async getItemsTypes({ state, commit }) {
       try {
@@ -283,7 +328,6 @@ const store = createStore({
     laundryLabelsOptions: {
       types: [] as Array<Record<string, string>>,
       icons: [] as Array<laundryIcon>,
-      colors: [],
     },
   },
 

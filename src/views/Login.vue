@@ -44,13 +44,11 @@ import router from '@/router'
 import { defineComponent, ref } from '@vue/runtime-core'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { useQuasar } from 'quasar'
-import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'Login',
   setup() {
     const $q = useQuasar()
-    const store = useStore()
 
     const email = ref('')
     const password = ref('')
@@ -60,9 +58,9 @@ export default defineComponent({
       const auth = getAuth()
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+        await signInWithEmailAndPassword(auth, email.value, password.value)
 
-        store.commit('SET_USER', userCredential.user)
+        // store.commit('SET_USER', userCredential.user)
 
         $q.notify({
           type: 'positive',

@@ -93,7 +93,7 @@ function storeError(error: FirestoreError) {
 
 const store = createStore({
   actions: {
-    async getItems({ state, commit }, payload: { page: number }) {
+    async getItems({ state, commit }, payload: { page: number }): Promise<userItem[]> {
       try {
         if (!state.user) return storeError({ code: 'unauthenticated', message: 'auth required', name: 'auth-required' })
 
@@ -129,6 +129,7 @@ const store = createStore({
       } catch (error) {
         storeError(error)
       }
+      return state.items
     },
     async getUserItemById({ state, commit }, payload: { id: string }) {
       try {
@@ -143,9 +144,9 @@ const store = createStore({
         storeError(error)
       }
     },
-    async createUserItem({ state, commit }, payload: { userItemBlank: userItemBlank }) {
+    async createUserItem({ state, commit }, payload: { userItemBlank: userItemBlank }): Promise<userItem[]> {
       try {
-        if (!payload.userItemBlank.type) return null
+        if (!payload.userItemBlank.type) throw { message: 'type required' }
 
         const laundryIcons = payload.userItemBlank.laundryIcons.map((laundryIcon) => {
           return doc(db, dbCollections.laundry_icons_groups, laundryIcon.group.code, 'icons', laundryIcon.code)
@@ -155,7 +156,7 @@ const store = createStore({
           ...payload.userItemBlank,
           type: doc(db, dbCollections.items_types, payload.userItemBlank.type.code),
           laundryIcons,
-          uid: state.user?.uid,
+          uid: getAuth().currentUser?.uid,
           created: serverTimestamp(),
           isDeleted: false,
         }
@@ -164,6 +165,9 @@ const store = createStore({
         const data = await getFormattedUserItems([await getDoc(newItem)])
 
         commit('ADD_USER_ITEM', ...data)
+      } catch (error) {
+        storeError(error)
+      }
         return state.items
       } catch (error) {
         storeError(error)
@@ -248,9 +252,9 @@ const store = createStore({
     },
   },
   mutations: {
-    SET_USER(state, user: User) {
-      state.user = user
-    },
+    // SET_USER(state, user: User) {
+    //   state.user = user
+    // },
     SET_USER_ITEMS(state, items: userItem[]) {
       state.items = items
     },
@@ -273,7 +277,7 @@ const store = createStore({
     },
   },
   state: {
-    user: null as User | null,
+    // user: null as User | null,
     items: [] as Array<userItem>,
 
     laundryLabelsOptions: {

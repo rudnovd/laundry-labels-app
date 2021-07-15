@@ -11,7 +11,7 @@
         loading="lazy"
         decoding="async"
         height="100%"
-        :alt="currentItem.name ? currentItem.name : currentItem.type"
+        :alt="currentItem.name ? currentItem.name : currentItem.type.value"
       />
 
       <section class="q-px-sm">
@@ -21,7 +21,7 @@
           </div>
 
           <div class="flex justify-between">
-            <span>{{ currentItem.type }}</span>
+            <span>{{ currentItem.type.value }}</span>
             <span v-if="currentItem.color" class="item-color" :style="{ background: currentItem.color.value }" />
           </div>
         </section>
@@ -34,7 +34,7 @@
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="primary" label="Edit item" icon="edit" />
+          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem.id}`)" />
           <q-btn color="negative" label="Delete item" icon="delete" @click="showDeleteDialog = true" />
         </section>
       </section>
@@ -92,6 +92,7 @@ export default defineComponent({
     }
 
     return {
+      router,
       showDeleteDialog: ref(false),
       currentItemIsLoading,
       currentItem,

@@ -6,7 +6,7 @@
       loading="lazy"
       decoding="async"
       height="100%"
-      :alt="userItem.name ? userItem.name : userItem.type"
+      :alt="userItem.name ? userItem.name : userItem.type.value"
     />
 
     <section class="laundry-card-body">
@@ -20,7 +20,7 @@
 
       <div class="laundry-card-body-footer">
         <div>
-          <span class="item-type">{{ userItem.type }}</span>
+          <span class="item-type">{{ userItem.type.value }}</span>
           <span v-if="userItem.color" class="item-color" :style="{ background: userItem.color.value }" />
         </div>
 

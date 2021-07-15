@@ -1,7 +1,7 @@
 <template>
   <section class="logout-page">
-    <q-circular-progress v-if="loading" size="50px" color="orange" class="q-ma-md" />
-    <q-btn v-if="!loading" color="primary" label="Reload" icon="refresh" @click="router.go(0)" />
+    <q-circular-progress v-if="isLogoutLoading" size="50px" color="orange" class="q-ma-md" />
+    <q-btn v-if="!isLogoutLoading" color="primary" label="Reload" icon="refresh" @click="router.go(0)" />
   </section>
 </template>
 
@@ -18,11 +18,11 @@ export default defineComponent({
     const router = useRouter()
     const auth = getAuth()
 
-    const loading = ref(true)
+    const isLogoutLoading = ref(true)
 
     signOut(auth)
       .then(() => {
-        router.push('/login')
+        router.push('/welcome')
       })
       .catch(() => {
         $q.notify({
@@ -30,8 +30,12 @@ export default defineComponent({
         })
       })
       .finally(() => {
-        loading.value = false
+        isLogoutLoading.value = false
       })
+
+    return {
+      isLogoutLoading,
+    }
   },
 })
 </script>

@@ -62,12 +62,13 @@ export default defineComponent({
   grid-template-columns: 3fr 4fr;
   grid-template-rows: 150px;
   user-select: none;
+  max-width: 500px;
 }
 
 .laundry-card-body {
   padding: 8px;
   display: grid;
-  grid-template-rows: 1rem auto;
+  grid-template-rows: 1.2rem auto;
   gap: 12px;
 
   span:first-child {

@@ -17,13 +17,14 @@ import {
   updateDoc,
   orderBy,
 } from 'firebase/firestore'
-import { getDownloadURL, ref } from 'firebase/storage'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { userItem, userItemBlank } from '@/interfaces/userItem'
 import { createStore } from 'vuex'
 import { db, dbCollections, storage } from '@/firebase'
 import { Notify } from 'quasar'
 import { getAuth } from 'firebase/auth'
 import { laundryIcon } from '@/interfaces/laundryIcon'
+import { nanoid } from 'nanoid'
 
 async function getFormattedUserItems(documents: QuerySnapshot<DocumentData> | Array<DocumentSnapshot<DocumentData>>) {
   try {
@@ -159,7 +160,10 @@ const store = createStore({
     },
     async createUserItem({ state, commit }, payload: { userItemBlank: userItemBlank }): Promise<userItem[]> {
       try {
+        const currentUser = getAuth().currentUser?.uid
+
         if (!payload.userItemBlank.type) throw { message: 'type required' }
+        if (!currentUser) throw { message: 'auth required' }
 
         const laundryIcons = payload.userItemBlank.laundryIcons.map((laundryIcon) => {
           return doc(db, dbCollections.laundry_icons_groups, laundryIcon.group.code, 'icons', laundryIcon.code)
@@ -167,11 +171,20 @@ const store = createStore({
 
         const firebaseUserItemBlank = {
           ...payload.userItemBlank,
+          images: [] as Array<string>,
           type: doc(db, dbCollections.items_types, payload.userItemBlank.type.code),
           laundryIcons,
-          uid: getAuth().currentUser?.uid,
+          uid: currentUser,
           created: serverTimestamp(),
           isDeleted: false,
+        }
+
+        if (payload.userItemBlank.images) {
+          const uploadedImage = await uploadBytes(
+            ref(storage, `users_items/user/${currentUser}/${nanoid(5)}`),
+            payload.userItemBlank.images[0]
+          )
+          firebaseUserItemBlank.images.push(uploadedImage.ref.toString())
         }
 
         const newItem = await addDoc(collection(db, dbCollections.users_items), firebaseUserItemBlank)
@@ -199,8 +212,6 @@ const store = createStore({
           name: payload.userItemBlank.name,
           type: doc(db, dbCollections.items_types, payload.userItemBlank.type.code),
           laundryIcons,
-          images: payload.userItemBlank.images,
-          uid: getAuth().currentUser?.uid,
           edited: serverTimestamp(),
         }
 
@@ -209,7 +220,7 @@ const store = createStore({
         const document = await getDoc(doc(db, dbCollections.users_items, payload.userItem.id))
         const data = await getFormattedUserItems([document])
 
-        commit('EDIT_USER_ITEM', { id: payload.userItem.id, item: data })
+        commit('EDIT_USER_ITEM', data[0])
       } catch (error) {
         storeError(error)
       }
@@ -306,6 +317,13 @@ const store = createStore({
 
     ADD_USER_ITEM(state, item: userItem) {
       state.items.push(item)
+    },
+    EDIT_USER_ITEM(state, item: userItem) {
+      const itemIndex = state.items.findIndex((userItem) => userItem.id === item.id)
+
+      if (itemIndex !== -1) {
+        state.items.splice(itemIndex, 1, item)
+      }
     },
     DELETE_USER_ITEM(state, id: string) {
       state.items = state.items.filter((item) => item.id !== id)

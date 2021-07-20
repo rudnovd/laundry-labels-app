@@ -17,6 +17,30 @@
 
       <q-input v-model="userItemBlank.name" filled label="Name" :disable="isPostRequestLoading" />
 
+      <q-img v-if="route.params.id && userItemBlank.images" :src="userItemBlank.images[0]" />
+
+      <q-uploader
+        v-if="!route.params.id"
+        class="upload-image"
+        max-total-size="20971520"
+        accept="image/*"
+        :disable="isPostRequestLoading"
+        :max-files="1"
+        @added="onAddImage"
+        @removeFile="userItemBlank.images = null"
+      >
+        <template #header="scope">
+          <div class="row no-wrap items-center q-pa-sm q-gutter-xs">
+            <div class="col">
+              <div class="q-uploader__title">Upload image</div>
+            </div>
+            <q-btn v-if="scope.canAddFiles" type="a" icon="add_box" round dense flat>
+              <q-uploader-add-trigger />
+            </q-btn>
+          </div>
+        </template>
+      </q-uploader>
+
       <!-- <section class="color-picker-container">
           <q-color
             v-model="item.color"
@@ -36,17 +60,18 @@
           <!-- <span>{{ group.name }}</span> -->
 
           <div class="icons-chips">
-            <div
+            <button
               v-for="icon in group.icons"
               :key="icon.code"
               v-ripple
+              type="button"
               class="icon-chip"
               :class="{ selected: isIconSelected(icon) }"
               @click="selectIcon(icon)"
             >
               <q-icon :name="icon.icon" />
               <span>{{ icon.text }}</span>
-            </div>
+            </button>
           </div>
         </div>
       </section>
@@ -54,7 +79,7 @@
       <q-btn
         color="positive"
         class="full-width"
-        label="Create"
+        :label="route.params.id ? 'Save' : 'Create'"
         type="submit"
         :disable="isPostRequestLoading"
         :loading="isPostRequestLoading"
@@ -67,6 +92,7 @@
 import { laundryIcon } from '@/interfaces/laundryIcon'
 import { userItem, userItemBlank } from '@/interfaces/userItem'
 import { computed, defineComponent, reactive, ref, watch } from '@vue/runtime-core'
+import Compressor from 'compressorjs'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -78,7 +104,7 @@ export default defineComponent({
     const store = useStore()
 
     const laundryLabelsOptions = computed(() => store.state.laundryLabelsOptions)
-    const isLaudnryLabelsOptionsLoading = ref(true)
+    const isLaudnryLabelsOptionsLoading = ref(false)
     const isPostRequestLoading = ref(false)
     const userItemBlank = reactive({
       name: null,
@@ -87,9 +113,14 @@ export default defineComponent({
       images: null,
     } as userItemBlank)
 
-    Promise.all([store.dispatch('getLaundryLabelsIcons'), store.dispatch('getItemsTypes')]).finally(
-      () => (isLaudnryLabelsOptionsLoading.value = false)
-    )
+    if (!laundryLabelsOptions.value.types.length) {
+      isLaudnryLabelsOptionsLoading.value = true
+      store.dispatch('getItemsTypes').finally(() => (isLaudnryLabelsOptionsLoading.value = false))
+    }
+
+    if (!laundryLabelsOptions.value.icons.length) {
+      store.dispatch('getLaundryLabelsIcons')
+    }
 
     const userItems = computed(() => store.state.items)
     if (route.params.id) {
@@ -100,11 +131,9 @@ export default defineComponent({
         const currentUserItem = userItems.value.find((userItem: userItem) => userItem.id === route.params.id)
         if (!currentUserItem) return
 
-        console.log(currentUserItem)
-        userItemBlank.name = currentUserItem.name
-        userItemBlank.type = currentUserItem.type
-        userItemBlank.laundryIcons = currentUserItem.laundryIcons
-        userItemBlank.images = currentUserItem.images
+        // TODO: fix me!
+        Object.assign(userItemBlank, { ...currentUserItem })
+        userItemBlank.laundryIcons = [...currentUserItem.laundryIcons]
       }
     }
 
@@ -114,15 +143,13 @@ export default defineComponent({
       const currentUserItem = newUserItemsValue.find((userItem: userItem) => userItem.id === route.params.id)
       if (!currentUserItem) return
 
-      userItemBlank.name = currentUserItem.name
-      userItemBlank.type = currentUserItem.type
-      userItemBlank.laundryIcons = currentUserItem.laundryIcons
-      userItemBlank.images = currentUserItem.images
+      // TODO: fix me!
+      Object.assign(userItemBlank, { ...currentUserItem })
+      userItemBlank.laundryIcons = [...currentUserItem.laundryIcons]
     })
 
     const selectIcon = (icon: laundryIcon) => {
       const iconIndex = userItemBlank.laundryIcons.findIndex((laundryIcon) => laundryIcon.code === icon.code)
-
       iconIndex !== -1 ? userItemBlank.laundryIcons.splice(iconIndex, 1) : userItemBlank.laundryIcons.push(icon)
     }
 
@@ -130,11 +157,25 @@ export default defineComponent({
       return userItemBlank.laundryIcons.find((laundryIcon) => laundryIcon.code === icon.code)
     }
 
+    const onAddImage = (imgs: File[]) => {
+      new Compressor(imgs[0], {
+        quality: 0.4,
+
+        success(file) {
+          userItemBlank.images = [file]
+        },
+        error(err) {
+          console.log(err.message)
+        },
+      })
+    }
+
     const onSubmit = () => {
       isPostRequestLoading.value = true
 
       if (route.params.id) {
-        store.dispatch('editUserItem', { userItemBlank }).then(() => router.push('/'))
+        const currentUserItem = userItems.value.find((userItem: userItem) => userItem.id === route.params.id)
+        store.dispatch('editUserItem', { userItem: currentUserItem, userItemBlank }).then(() => router.push('/'))
       } else {
         store
           .dispatch('createUserItem', { userItemBlank })
@@ -144,6 +185,8 @@ export default defineComponent({
     }
 
     return {
+      route,
+
       userItemBlank,
       laundryLabelsOptions,
       isLaudnryLabelsOptionsLoading,
@@ -152,6 +195,7 @@ export default defineComponent({
       selectIcon,
       isIconSelected,
       onSubmit,
+      onAddImage,
     }
   },
 })
@@ -208,6 +252,7 @@ export default defineComponent({
   align-items: center;
   border: 1px solid $grey-4;
   border-radius: 8px;
+  background: white;
 
   & img {
     font-size: 4rem;
@@ -229,5 +274,9 @@ export default defineComponent({
 
 .icon-chip-text {
   font-size: 0.5rem;
+}
+
+.upload-image {
+  width: 100%;
 }
 </style>

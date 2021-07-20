@@ -2,17 +2,20 @@
   <q-layout v-if="$q.platform.is.mobile" container>
     <q-header class="bg-light-green-5 text-white">
       <q-toolbar>
-        <q-btn v-if="showBackButton" icon="arrow_back" flat no-wrap padding="0" @click="router.back()" />
-        <q-toolbar-title> Laundry app </q-toolbar-title>
+        <q-btn v-show="showBackButton" icon="arrow_back" flat no-wrap padding="0" @click="router.back()" />
+        <q-toolbar-title class="flex items-center justify-between">
+          <q-btn flat icon="sell" label="Laundry Labels" to="/" :ripple="false" padding="0" />
+          <q-btn flat icon="person" to="/profile" :ripple="false" padding="0" />
+        </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
-    <q-footer v-if="user" bordered class="bg-light-green-5 text-white" elevated>
+    <!-- <q-footer v-if="user" bordered class="bg-light-green-5 text-white" elevated>
       <q-tabs v-model="tab" inline-label>
         <q-route-tab name="Laundry" icon="home" label="Home" to="/" />
         <q-route-tab name="Profile" icon="person" label="Profile" to="/profile" />
       </q-tabs>
-    </q-footer>
+    </q-footer> -->
 
     <main>
       <q-page-container class="full-height">
@@ -31,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { getAuth } from '@firebase/auth'
+// import { getAuth } from '@firebase/auth'
 import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -49,9 +52,9 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
 
-    const user = computed(() => getAuth().currentUser)
+    // const user = computed(() => getAuth().currentUser)
 
-    const showBackButton = computed(() => ['/', '/welcome', '/profile'].indexOf(route.path) === -1)
+    const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
     $q.iconMapFn = (iconName) => {
       const icon = laundryIcons[iconName]
@@ -60,8 +63,8 @@ export default defineComponent({
 
     return {
       router,
-      tab: ref('Home'),
-      user,
+      // tab: ref('Home'),
+      // user,
       showBackButton,
     }
   },

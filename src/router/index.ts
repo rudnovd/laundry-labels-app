@@ -1,4 +1,3 @@
-import store from '@/store'
 import { getAuth } from 'firebase/auth'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
@@ -49,6 +48,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Item',
     component: () => import(/* webpackChunkName: "item" */ '@/views/Item.vue'),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'Page not found',
+    component: () => import(/* webpackChunkName: "error" */ '@/views/Error.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -67,5 +71,10 @@ router.beforeEach((to, _, next) => {
 router.afterEach((to) => {
   if (to.name) document.title = to.name.toString()
 })
+
+router.resolve({
+  name: 'Page not found',
+  params: { pathMatch: ['not', 'found'] },
+}).href // '/not/found'
 
 export default router

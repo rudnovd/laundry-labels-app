@@ -42,6 +42,7 @@ export default defineComponent({
   grid-template-columns: 3fr 4fr;
   grid-template-rows: 150px;
   user-select: none;
+  max-width: 500px;
 }
 
 .laundry-card-body {

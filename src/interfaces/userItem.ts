@@ -21,5 +21,5 @@ export interface userItemBlank {
   name?: string | null
   type: { code: string; value: string } | null
   laundryIcons: laundryIcon[]
-  images?: string[] | null
+  images?: File[] | Blob[] | null
 }

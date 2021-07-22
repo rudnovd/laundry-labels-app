@@ -22,6 +22,8 @@
         <router-view />
       </q-page-container>
     </main>
+
+    <button v-if="showInstallButton" class="install-button" type="button" @click="installApp">Install App</button>
   </q-layout>
 
   <q-layout v-if="$q.platform.is.desktop">
@@ -45,12 +47,17 @@ const laundryIcons: { [key: string]: string } = {
   'app:laundry-icon-washing-90deg': `img:/icons/laundry/wh-washing-90deg.svg`,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let installEvent: any
+
 export default defineComponent({
   name: 'App',
   setup() {
     const $q = useQuasar()
     const router = useRouter()
     const route = useRoute()
+
+    const showInstallButton = ref(false)
 
     // const user = computed(() => getAuth().currentUser)
 
@@ -61,11 +68,29 @@ export default defineComponent({
       if (icon !== void 0) return { icon }
     }
 
+    window.addEventListener('beforeinstallprompt', (e) => {
+      /* eslint-disable no-console */
+      console.log('beforeinstallprompt called')
+      e.preventDefault()
+      installEvent = e
+      showInstallButton.value = true
+    })
+
+    const installApp = () => {
+      showInstallButton.value = false
+      installEvent.prompt()
+      installEvent.userChoice.then(() => {
+        installEvent = null
+      })
+    }
+
     return {
       router,
       // tab: ref('Home'),
       // user,
       showBackButton,
+      showInstallButton,
+      installApp,
     }
   },
 })
@@ -73,4 +98,12 @@ export default defineComponent({
 
 <style>
 @import '~@/styles/main.scss';
+</style>
+
+<style lang="scss" scoped>
+.install-button {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+}
 </style>

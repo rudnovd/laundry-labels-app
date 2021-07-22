@@ -34,6 +34,7 @@ module.exports = {
         name: 'rudnovd',
         url: 'https://github.com/rudnovd',
       },
+      start_url: '/',
       manifest_version: 2,
       version: '0.0',
       background_color: '#9ccc65',
@@ -43,9 +44,9 @@ module.exports = {
       ],
     },
 
-    // workboxPluginMode: 'InjectManifest',
-    // workboxOptions: {
-    //   swSrc: 'src/service-worker.js',
-    // },
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: './src/service-worker.js',
+    },
   },
 }

@@ -6,6 +6,7 @@ import store from './store'
 import { Quasar } from 'quasar'
 import quasarUserOptions from './quasar-user-options'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import '@/registerServiceWorker'
 
 const auth = getAuth()
 let appRendered = false

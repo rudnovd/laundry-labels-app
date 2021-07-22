@@ -244,6 +244,7 @@ const store = createStore({
       try {
         const iconsGroupsDocuments = await getDocs(collection(db, 'laundry_icons_groups'))
         // TODO: fix type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const icons: { [key: string]: any } = {}
 
         for (const iconGroupDocument of iconsGroupsDocuments.docs) {
@@ -352,6 +353,7 @@ const store = createStore({
   strict: process.env.NODE_ENV === 'development',
 })
 
+/* eslint-disable no-console */
 if (process.env.NODE_ENV === 'development') {
   store.subscribe((mutation) => {
     console.log(

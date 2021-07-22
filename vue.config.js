@@ -20,4 +20,32 @@ module.exports = {
     },
   },
   transpileDependencies: ['quasar'],
+  pwa: {
+    name: 'Laundry Labels App',
+    themeColor: '#9ccc65',
+    msTileColor: '#9ccc65',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black',
+
+    manifestOptions: {
+      display: 'standalone',
+      author: 'https://github.com/rudnovd',
+      developer: {
+        name: 'rudnovd',
+        url: 'https://github.com/rudnovd',
+      },
+      manifest_version: 2,
+      version: '0.0',
+      background_color: '#9ccc65',
+      icons: [
+        { src: 'favicon-192.png', type: 'image/png', sizes: '192x192' },
+        { src: 'favicon-512.png', type: 'image/png', sizes: '512x512' },
+      ],
+    },
+
+    // workboxPluginMode: 'InjectManifest',
+    // workboxOptions: {
+    //   swSrc: 'src/service-worker.js',
+    // },
+  },
 }

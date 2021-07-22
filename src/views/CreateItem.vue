@@ -158,16 +158,15 @@ export default defineComponent({
     }
 
     const onAddImage = (imgs: File[]) => {
-      new Compressor(imgs[0], {
-        quality: 0.4,
-
-        success(file) {
-          userItemBlank.images = [file]
-        },
-        error(err) {
-          console.log(err.message)
-        },
+      const compressorResult = new Promise((resolve: (value: Blob) => void, reject) => {
+        new Compressor(imgs[0], {
+          quality: 0.4,
+          success: resolve,
+          error: reject,
+        })
       })
+
+      compressorResult.then((file) => (userItemBlank.images = [file])).catch((err) => console.error(err))
     }
 
     const onSubmit = () => {

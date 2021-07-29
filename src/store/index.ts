@@ -16,6 +16,7 @@ import {
   serverTimestamp,
   updateDoc,
   orderBy,
+  Query,
 } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { userItem, userItemBlank } from '@/interfaces/userItem'
@@ -24,7 +25,8 @@ import { db, dbCollections, storage } from '@/firebase'
 import { Notify } from 'quasar'
 import { getAuth } from 'firebase/auth'
 import { laundryIcon } from '@/interfaces/laundryIcon'
-import { nanoid } from 'nanoid'
+import { uid } from 'quasar'
+import createPersistedState from 'vuex-persistedstate'
 
 async function getFormattedUserItems(documents: QuerySnapshot<DocumentData> | Array<DocumentSnapshot<DocumentData>>) {
   try {
@@ -99,33 +101,56 @@ function storeError(error: FirestoreError) {
 
 const store = createStore({
   actions: {
-    async getItems({ state, commit }, payload: { page: number }): Promise<userItem[]> {
+    async getItems({ state, commit }, payload: { page: number; type: string }): Promise<userItem[]> {
       const auth = getAuth()
       try {
         if (!auth.currentUser) throw { code: 'unauthenticated', message: 'auth required', name: 'auth-required' }
 
-        const offset = (payload?.page * 10) | 10
-        const dbQuery = query(
+        const showCount = 2
+        const offset = (payload?.page * showCount - showCount) | 0
+        let dbQuery: Query<DocumentData>
+
+        if (payload.type) {
+          dbQuery = query(
           collection(db, dbCollections.users_items),
           where('uid', '==', auth.currentUser.uid),
           where('isDeleted', '==', false),
+            where('type', '==', doc(db, dbCollections.items_types, payload.type)),
           orderBy('created', 'desc'),
-          limit(offset)
+            limit(showCount)
         )
+        } else {
+          dbQuery = query(
+            collection(db, dbCollections.users_items),
+            where('uid', '==', auth.currentUser.uid),
+            where('isDeleted', '==', false),
+            where('type', '!=', null),
+            orderBy('type'),
+            orderBy('created', 'desc'),
+            limit(showCount)
+          )
+        }
+
         let data = []
 
         const querySnapshot = await getDocs(dbQuery)
 
-        if (offset > 10) {
+        if (offset > showCount) {
           const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1]
 
           const dbQueryAfter = query(
             collection(db, dbCollections.users_items),
             where('uid', '==', auth.currentUser.uid),
             where('isDeleted', '==', false),
+            where(
+              'type',
+              payload.type ? '==' : '!=',
+              payload.type ? doc(db, dbCollections.items_types, payload.type) : null
+            ),
+            orderBy('type'),
             orderBy('created', 'desc'),
             startAfter(lastDocument),
-            limit(10)
+            limit(showCount)
           )
 
           const documents = await getDocs(dbQueryAfter)
@@ -134,7 +159,7 @@ const store = createStore({
           data = await getFormattedUserItems(querySnapshot)
         }
 
-        commit('SET_USER_ITEMS', data)
+        payload.page === 1 ? commit('SET_USER_ITEMS', data) : commit('ADD_USER_ITEMS', data)
       } catch (error) {
         storeError(error)
       }
@@ -181,7 +206,7 @@ const store = createStore({
 
         if (payload.userItemBlank.images) {
           const uploadedImage = await uploadBytes(
-            ref(storage, `users_items/user/${currentUser}/${nanoid(5)}`),
+            ref(storage, `users_items/user/${currentUser}/${uid()}`),
             payload.userItemBlank.images[0]
           )
           firebaseUserItemBlank.images.push(uploadedImage.ref.toString())
@@ -319,6 +344,9 @@ const store = createStore({
     ADD_USER_ITEM(state, item: userItem) {
       state.items.push(item)
     },
+    ADD_USER_ITEMS(state, items: userItem[]) {
+      state.items = [...state.items, ...items]
+    },
     EDIT_USER_ITEM(state, item: userItem) {
       const itemIndex = state.items.findIndex((userItem) => userItem.id === item.id)
 
@@ -351,6 +379,7 @@ const store = createStore({
   },
 
   strict: process.env.NODE_ENV === 'development',
+  plugins: [createPersistedState()],
 })
 
 /* eslint-disable no-console */

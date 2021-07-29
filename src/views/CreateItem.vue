@@ -64,6 +64,7 @@
               v-for="icon in group.icons"
               :key="icon.code"
               v-ripple
+              :disabled="isPostRequestLoading"
               type="button"
               class="icon-chip"
               :class="{ selected: isIconSelected(icon) }"

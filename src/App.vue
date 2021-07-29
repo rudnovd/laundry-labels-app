@@ -1,5 +1,10 @@
 <template>
-  <q-layout v-if="$q.platform.is.mobile" container>
+  <div v-if="firebaseAuthIsLoading" class="loading-app">
+    <q-circular-progress indeterminate size="50px" color="grey-4" />
+    <div>Loading app...</div>
+  </div>
+
+  <q-layout v-if="!firebaseAuthIsLoading" container>
     <q-header class="bg-light-green-5 text-white">
       <q-toolbar>
         <q-btn v-show="showBackButton" icon="arrow_back" flat no-wrap padding="0" @click="router.back()" />
@@ -25,18 +30,10 @@
 
     <button v-if="showInstallButton" class="install-button" type="button" @click="installApp">Install App</button>
   </q-layout>
-
-  <q-layout v-if="$q.platform.is.desktop">
-    <main>
-      <q-page-container>
-        <router-view />
-      </q-page-container>
-    </main>
-  </q-layout>
 </template>
 
 <script lang="ts">
-// import { getAuth } from '@firebase/auth'
+import { getAuth, onAuthStateChanged } from '@firebase/auth'
 import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -58,8 +55,10 @@ export default defineComponent({
     const route = useRoute()
 
     const showInstallButton = ref(false)
+    const firebaseAuthIsLoading = ref(true)
 
-    // const user = computed(() => getAuth().currentUser)
+    const auth = getAuth()
+    onAuthStateChanged(auth, () => (firebaseAuthIsLoading.value = false))
 
     const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
@@ -91,6 +90,7 @@ export default defineComponent({
       showBackButton,
       showInstallButton,
       installApp,
+      firebaseAuthIsLoading,
     }
   },
 })
@@ -105,5 +105,13 @@ export default defineComponent({
   position: fixed;
   right: 24px;
   bottom: 24px;
+}
+
+.loading-app {
+  display: grid;
+  gap: 1rem;
+  height: 100vh;
+  place-content: center;
+  place-items: center;
 }
 </style>

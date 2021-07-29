@@ -2,7 +2,7 @@
   <section class="home-page q-pa-sm">
     <div class="flex justify-between items-center q-mb-md">
       <q-select
-        v-model="currentCategory.value"
+        v-model="currentCategory"
         class="category-select"
         :disable="isCategoriesLoading || isUserItemsLoading"
         :loading="isCategoriesLoading || isUserItemsLoading"
@@ -10,24 +10,32 @@
         option-value="code"
         option-label="value"
         dense
+        @update:model-value="onChangeCategory"
       />
 
       <q-btn color="primary" icon="add" to="/create"> Add item </q-btn>
     </div>
 
-    <section class="laundry-cards">
-      <template v-if="isUserItemsLoading">
+    <section>
+      <div v-if="isUserItemsLoading" class="laundry-cards">
         <LaundryCardSkeleton v-for="skeleton in 4" :key="`skeleton-${skeleton}`" />
-      </template>
-      <template v-else>
-        <LaundryCard v-for="userItem in userItems" :key="userItem.id" :user-item="userItem" />
-      </template>
+      </div>
+      <q-infinite-scroll @load="onLoadMoreItems">
+        <div class="laundry-cards q-mb-md">
+          <LaundryCard v-for="userItem in userItems" :key="userItem.id" :user-item="userItem" />
+        </div>
+        <template #loading>
+          <div class="laundry-cards">
+            <LaundryCardSkeleton v-for="skeleton in 4" :key="`skeleton-${skeleton}`" />
+          </div>
+        </template>
+      </q-infinite-scroll>
     </section>
   </section>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, reactive, ref } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import LaundryCard from '@/components/cards/LaundryCard.vue'
@@ -42,9 +50,11 @@ export default defineComponent({
     const store = useStore()
 
     const userItems = computed(() => store.state.items)
+    const laundryLabelsOptions = computed(() => store.state.laundryLabelsOptions)
+
     const laundryLabelsTypes = computed(() => [
       { code: null, value: 'All categories' },
-      ...store.state.laundryLabelsOptions.types,
+      ...laundryLabelsOptions.value.types,
     ])
 
     const isUserItemsLoading = ref(false)
@@ -54,17 +64,21 @@ export default defineComponent({
       value: 'All categories',
     })
 
-    onBeforeMount(() => {
+    onMounted(() => {
       if (laundryLabelsTypes.value.length === 1) {
         isCategoriesLoading.value = true
         store.dispatch('getItemsTypes').finally(() => (isCategoriesLoading.value = false))
       }
-
-      if (!userItems.value.length) {
-        isUserItemsLoading.value = true
-        store.dispatch('getItems').finally(() => (isUserItemsLoading.value = false))
-      }
     })
+
+    const onChangeCategory = (value: { code: string; value: string }) => {
+      isUserItemsLoading.value = true
+      store.dispatch('getItems', { page: 1, type: value.code }).finally(() => (isUserItemsLoading.value = false))
+    }
+
+    const onLoadMoreItems = (page: number, done: () => void) => {
+      store.dispatch('getItems', { page, type: currentCategory.code ? currentCategory.code : null }).then(() => done())
+    }
 
     return {
       userItems,
@@ -73,6 +87,9 @@ export default defineComponent({
 
       isUserItemsLoading,
       currentCategory,
+
+      onChangeCategory,
+      onLoadMoreItems,
     }
   },
 })

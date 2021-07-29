@@ -8,6 +8,8 @@
     />
 
     <q-btn v-if="user" color="primary" label="Logout" icon="logout" @click="showLogoutDialog = true" />
+
+    App version: {{ version }}
   </section>
 
   <!-- <q-dialog v-if="user.isAnonymous" v-model="showCreateProfileDialog">
@@ -54,6 +56,7 @@ export default defineComponent({
 
       // showCreateProfileDialog: ref(false),
       showLogoutDialog: ref(false),
+      version: process.env.VUE_APP_VERSION,
     }
   },
 })

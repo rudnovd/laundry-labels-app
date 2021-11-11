@@ -1,7 +1,7 @@
 <template>
-  <section class="login-page q-pa-sm">
+  <section class="registration-page q-pa-sm">
     <q-form
-      class="login-form"
+      class="registration-form"
       autocorrect="off"
       autocapitalize="off"
       autocomplete="off"
@@ -10,8 +10,6 @@
     >
       <q-input
         v-model="email"
-        :loading="loading"
-        :disable="loading"
         type="email"
         label="Email"
         maxlength="128"
@@ -22,8 +20,6 @@
       />
       <q-input
         v-model="password"
-        :loading="loading"
-        :disable="loading"
         type="password"
         label="Password"
         maxlength="64"
@@ -31,55 +27,47 @@
         filled
         dense
         lazy-rules
-        :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+        :rules="[(val) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
       />
 
-      <q-btn label="Login" type="submit" color="primary" :disable="loading" />
+      <q-btn label="Registration" type="submit" color="primary" />
     </q-form>
   </section>
 </template>
 
 <script lang="ts">
-import router from '@/router'
 import { defineComponent, ref } from '@vue/runtime-core'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { useQuasar } from 'quasar'
+import { throttle, useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default defineComponent({
-  name: 'Login',
+  name: 'RegistrationPage',
   setup() {
     const $q = useQuasar()
+    const store = useStore()
+    const router = useRouter()
 
     const email = ref('')
     const password = ref('')
-    const loading = ref(false)
 
-    const onSubmit = async () => {
-      const auth = getAuth()
-
-      try {
-        await signInWithEmailAndPassword(auth, email.value, password.value)
-
-        // store.commit('SET_USER', userCredential.user)
-
-        $q.notify({
-          type: 'positive',
-          message: 'Sign in successfully',
+    const onSubmit = throttle(() => {
+      $q.loading.show()
+      store
+        .dispatch('registration', { email: email.value, password: password.value })
+        .then(() => {
+          $q.notify({
+            type: 'positive',
+            message: 'Registation successfully',
+          })
+          router.push('/')
         })
-
-        router.push('/')
-      } catch (error) {
-        $q.notify({
-          type: 'negative',
-          message: error.message,
-        })
-      }
-    }
+        .finally(() => $q.loading.hide())
+    }, 5000)
 
     return {
       email,
       password,
-      loading,
       onSubmit,
     }
   },
@@ -87,13 +75,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.login-page {
+.registration-page {
   display: grid;
   place-items: center;
   height: 100%;
 }
 
-.login-form {
+.registration-form {
   display: grid;
   grid-template-columns: 100%;
   gap: 1rem;

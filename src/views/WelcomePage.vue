@@ -3,43 +3,22 @@
     <section class="buttons-section">
       <q-btn color="primary" label="Login" icon="login" to="/login" />
       <q-btn color="primary" label="Registration" icon="person" to="/registration" />
-      <q-btn color="primary" label="Try without registration" icon="person_off" @click="tryWithoutRegistration" />
     </section>
   </section>
 </template>
 
 <script lang="ts">
-import { getAuth, signInAnonymously } from '@firebase/auth'
 import { defineComponent } from '@vue/runtime-core'
-import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default defineComponent({
-  name: 'Welcome',
+  name: 'WelcomePage',
   setup() {
-    const $q = useQuasar()
     const router = useRouter()
+    const store = useStore()
 
-    const auth = getAuth()
-
-    if (auth.currentUser) router.push('/')
-
-    const tryWithoutRegistration = () => {
-      signInAnonymously(auth)
-        .then(() => {
-          router.push('/')
-        })
-        .catch((error) => {
-          $q.notify({
-            type: 'negative',
-            message: error.message,
-          })
-        })
-    }
-
-    return {
-      tryWithoutRegistration,
-    }
+    if (store.state.user._id) router.push('/')
   },
 })
 </script>

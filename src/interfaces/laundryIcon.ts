@@ -1,9 +1,7 @@
 export interface laundryIcon {
-  code: string
+  _id: string
   icon: string
-  group: {
-    code: string
-    value: string
-  }
-  text: string
+  path: string
+  group: string
+  description: string
 }

@@ -10,3 +10,27 @@ $info: #31ccec;
 $warning: #f2c037;
 
 @import '~quasar-variables-styl';
+
+@mixin media-small {
+  @media (min-width: $breakpoint-sm-min) {
+    @content;
+  }
+}
+
+@mixin media-medium {
+  @media (min-width: $breakpoint-md-min) {
+    @content;
+  }
+}
+
+@mixin media-large {
+  @media (min-width: $breakpoint-lg-min) {
+    @content;
+  }
+}
+
+@mixin media-maximum {
+  @media (min-width: $breakpoint-xl-min) {
+    @content;
+  }
+}

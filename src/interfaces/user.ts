@@ -1,8 +1,7 @@
-// export interface User {
-//   id: string
-//   name: string
-//   email: string
-//   disabled: boolean
-//   created: Date
-//   edited: Date
-// }
+export interface User {
+  _id: string
+  isDisabled: boolean
+  email: string
+  createdAt: Date
+  updatedAt: Date
+}

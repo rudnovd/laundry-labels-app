@@ -1,41 +1,30 @@
 <template>
   <section class="item-page q-pb-md">
-    <template v-if="currentItemIsLoading">
-      <q-circular-progress indeterminate size="50px" color="lime" class="q-ma-md" />
-    </template>
-
-    <template v-if="!currentItemIsLoading && currentItem">
+    <template v-if="currentItem">
       <q-img
+        class="item-image q-mb-md"
         :class="{ 'no-image': !currentItem.images.length }"
         :src="currentItem.images[0]"
         loading="lazy"
         decoding="async"
         height="100%"
-        :alt="currentItem.name ? currentItem.name : currentItem.type.value"
       />
 
       <section class="q-px-sm">
-        <section class="item-info">
-          <div>
-            {{ currentItem.name }}
-          </div>
-
-          <div class="flex justify-between">
-            <span>{{ currentItem.type.value }}</span>
-            <span v-if="currentItem.color" class="item-color" :style="{ background: currentItem.color.value }" />
+        <section class="item-icons q-mb-xl">
+          <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
+            <q-icon :name="`img:${laundryIconsMap[icon].path}`" />
+            <span>{{ laundryIconsMap[icon].description }}</span>
           </div>
         </section>
 
-        <section class="item-icons q-mb-xl">
-          <div v-for="icon in currentItem.laundryIcons" :key="icon.code" class="icon-chip">
-            <q-icon :name="icon.icon" />
-            <span>{{ icon.text }}</span>
-          </div>
+        <section v-if="currentItem.tags.length" class="item-tags q-mb-md">
+          <q-chip v-for="tag in currentItem.tags" :key="tag">{{ tag }}</q-chip>
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem.id}`)" />
           <q-btn color="negative" label="Delete item" icon="delete" @click="showDeleteDialog = true" />
+          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem._id}`)" />
         </section>
       </section>
 
@@ -56,46 +45,42 @@
 </template>
 
 <script lang="ts">
-import { userItem } from '@/interfaces/userItem'
+import type { Item } from '@/interfaces/item'
 import { computed, defineComponent, ref } from '@vue/runtime-core'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { laundryIconsMap } from '@/assets/laundryIcons'
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
-  name: 'Item',
+  name: 'ItemPage',
   setup() {
+    const $q = useQuasar()
     const store = useStore()
     const router = useRouter()
     const route = useRoute()
 
     const items = computed(() => store.state.items)
-    const currentItem = computed(() => items.value.find((item: userItem) => item.id === route.params.id))
-    const currentItemIsLoading = ref(false)
-    const userDeleteIsLoading = ref(false)
+    const currentItem = computed(() => items.value.find((item: Item) => item._id === route.params.id))
 
     const deleteItem = () => {
-      userDeleteIsLoading.value = true
+      $q.loading.show()
       store
-        .dispatch('deleteUserItem', { id: route.params.id })
+        .dispatch('deleteItem', { _id: route.params.id })
         .then(() => router.push('/'))
-        .finally(() => (userDeleteIsLoading.value = false))
+        .finally(() => $q.loading.hide())
     }
 
     if (!currentItem.value) {
-      currentItemIsLoading.value = true
-      store
-        .dispatch('getUserItemById', { id: route.params.id })
-        .then((items_: userItem[]) => {
-          if (!items_.find((item) => item.id === route.params.id)) router.push('/')
-        })
-        .finally(() => (currentItemIsLoading.value = false))
+      $q.loading.show()
+      store.dispatch('getItem', { _id: route.params.id }).finally(() => $q.loading.hide())
     }
 
     return {
       router,
       showDeleteDialog: ref(false),
-      currentItemIsLoading,
       currentItem,
+      laundryIconsMap,
 
       deleteItem,
     }
@@ -104,6 +89,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.item-page {
+  margin: auto;
+  max-width: 1280px;
+}
+
+.item-image {
+  max-height: 300px;
+  max-width: 600px;
+}
+
 .item-info {
   display: grid;
   gap: 0.5rem;
@@ -124,6 +119,10 @@ export default defineComponent({
 .item-icons {
   display: grid;
   gap: 1rem;
+
+  @include media-small {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
 }
 
 .icon-chip {

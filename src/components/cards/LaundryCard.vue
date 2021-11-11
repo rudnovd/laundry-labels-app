@@ -1,51 +1,48 @@
 <template>
-  <div v-ripple class="laundry-card" @click="router.push(`/item/${userItem.id}`)">
+  <div v-ripple class="laundry-card" @click="router.push(`/item/${item._id}`)">
     <q-img
-      :class="{ 'no-image': !userItem.images.length }"
-      :src="userItem.images[0]"
+      :class="{ 'no-image': !item.images.length }"
+      :src="item.images && item.images[0]"
       loading="lazy"
       decoding="async"
       height="100%"
-      :alt="userItem.name ? userItem.name : userItem.type.value"
+      :alt="item.name"
     />
 
     <section class="laundry-card-body">
-      <span>{{ userItem.name }}</span>
-
       <ul>
-        <li v-for="icon in userItem.laundryIcons.slice(0, 6)" :key="icon.code">
-          <q-icon tag="li" :name="icon.icon" />
+        <li v-for="icon in iconsValues.slice(0, 6)" :key="icon">
+          <q-icon tag="li" :name="`img:${icon.path}`" />
         </li>
       </ul>
 
-      <div class="laundry-card-body-footer">
-        <div>
-          <span class="item-type">{{ userItem.type.value }}</span>
-          <span v-if="userItem.color" class="item-color" :style="{ background: userItem.color.value }" />
-        </div>
-
-        <q-btn flat color="primary" label="Details" :to="`/item/${userItem.id}`" size="md" no-wrap padding="0" />
+      <div v-if="item.tags.length" class="laundry-card-body-footer">
+        <q-chip v-for="tag in item.tags" :key="tag">{{ tag }}</q-chip>
       </div>
     </section>
   </div>
 </template>
 
 <script lang="ts">
-import { userItem } from '@/interfaces/userItem'
+import { laundryIcons } from '@/assets/laundryIcons'
+import type { Item } from '@/interfaces/item'
 import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'LaundryCard',
   props: {
-    userItem: {
-      type: Object as () => userItem,
+    item: {
+      type: Object as () => Item,
       required: true,
     },
   },
-  setup() {
+  setup(props) {
+    const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon._id) !== -1)
+
     return {
       router: useRouter(),
+      iconsValues,
     }
   },
 })
@@ -68,7 +65,6 @@ export default defineComponent({
 .laundry-card-body {
   padding: 8px;
   display: grid;
-  grid-template-rows: 1.2rem auto;
   gap: 12px;
 
   span:first-child {
@@ -87,6 +83,9 @@ export default defineComponent({
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 32px 32px;
+    grid-auto-rows: 0;
+    overflow-y: hidden;
+    max-height: calc(64px + 0.5rem);
     gap: 0.5rem;
   }
 
@@ -106,28 +105,7 @@ export default defineComponent({
 
 .laundry-card-body-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  div:first-child {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .item-type {
-    max-width: 9ch;
-  }
-
-  .item-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-  }
-
-  a {
-    width: 64px;
-  }
+  overflow-x: auto;
 }
 
 .no-image {

@@ -13,6 +13,19 @@ module.exports = {
       },
     },
   },
+  devServer: {
+    proxy: {
+      '^/api': {
+        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
+      },
+      '^/upload': {
+        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
+      },
+      '^/auth': {
+        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
+      },
+    },
+  },
   configureWebpack: {
     devtool: 'source-map',
   },

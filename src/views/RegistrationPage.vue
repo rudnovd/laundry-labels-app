@@ -30,7 +30,8 @@
         :rules="[(val) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
       />
 
-      <q-btn label="Registration" type="submit" color="primary" />
+      <q-btn label="Registration" type="sumbmit" color="primary" />
+      <VueHcaptcha ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
     </q-form>
   </section>
 </template>
@@ -40,9 +41,13 @@ import { defineComponent, ref } from '@vue/runtime-core'
 import { throttle, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 
 export default defineComponent({
   name: 'RegistrationPage',
+  components: {
+    VueHcaptcha,
+  },
   setup() {
     const $q = useQuasar()
     const store = useStore()
@@ -50,25 +55,50 @@ export default defineComponent({
 
     const email = ref('')
     const password = ref('')
+    const captchaForm = ref<VueHcaptcha>()
+    const captchaIsVerified = ref(false)
+    const captchaVerificationToken = ref('')
+
+    const onVerifyCaptcha = (token: string) => {
+      captchaIsVerified.value = true
+      captchaVerificationToken.value = token
+    }
 
     const onSubmit = throttle(() => {
+      if (!captchaIsVerified.value) {
+        return $q.notify({
+          type: 'negative',
+          message: 'Captcha required',
+          timeout: 5000,
+        })
+      }
+
       $q.loading.show()
       store
-        .dispatch('registration', { email: email.value, password: password.value })
+        .dispatch('registration', {
+          email: email.value,
+          password: password.value,
+          token: captchaVerificationToken.value,
+        })
         .then(() => {
           $q.notify({
             type: 'positive',
-            message: 'Registation successfully',
+            message: 'Sign up successfully',
           })
           router.push('/')
         })
+        .catch(() => captchaForm.value?.reset())
         .finally(() => $q.loading.hide())
     }, 5000)
 
     return {
+      sitekey: process.env.VUE_APP_CAPTCHA_KEY,
+      captchaForm,
       email,
       password,
+
       onSubmit,
+      onVerifyCaptcha,
     }
   },
 })

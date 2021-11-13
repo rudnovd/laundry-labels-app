@@ -27,32 +27,42 @@ function throwStoreError(error: any) {
 
 const store = createStore({
   actions: {
-    async login({ state, commit }, payload: { email: string; password: string }): Promise<User> {
+    async login({ state, commit }, payload: { email: string; password: string; token: string }): Promise<User> {
       try {
         const response = await request.post(
           '/auth/login',
-          { email: payload.email, password: payload.password },
+          { email: payload.email, password: payload.password, token: payload.token },
           { withCredentials: true }
         )
-        if (response.data.accessToken) LocalStorage.set('accessToken', response.data.accessToken)
-        LocalStorage.set('hasRefreshToken', true)
-
-        commit('SET_USER', response.data.user)
+        if (response.data.accessToken) {
+          LocalStorage.set('accessToken', response.data.accessToken)
+          LocalStorage.set('hasRefreshToken', true)
+          commit('SET_USER', response.data.user)
+        } else {
+          throw throwStoreError({ response })
+        }
       } catch (error) {
         throwStoreError(error)
       }
 
       return state.user
     },
-    async registration({ state, commit }, payload: { email: string; password: string }): Promise<User> {
+    async registration({ state, commit }, payload: { email: string; password: string; token: string }): Promise<User> {
       try {
-        const response = await request.post('/auth/registration', { email: payload.email, password: payload.password })
-        if (response.data.accessToken) LocalStorage.set('accessToken', response.data.accessToken)
-        LocalStorage.set('hasRefreshToken', true)
-
-        commit('SET_USER', response.data.user)
+        const response = await request.post('/auth/registration', {
+          email: payload.email,
+          password: payload.password,
+          token: payload.token,
+        })
+        if (response.data.accessToken) {
+          LocalStorage.set('accessToken', response.data.accessToken)
+          LocalStorage.set('hasRefreshToken', true)
+          commit('SET_USER', response.data.user)
+        } else {
+          throw throwStoreError({ response })
+        }
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.user
@@ -62,10 +72,9 @@ const store = createStore({
         await request.post('/auth/logout', {}, { withCredentials: true })
         LocalStorage.remove('accessToken')
         LocalStorage.remove('hasRefreshToken')
-
         commit('SET_USER', {})
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.user
@@ -73,14 +82,15 @@ const store = createStore({
     async getAuthFromRefreshToken({ state, commit }): Promise<{ user: User; accessToken: string }> {
       try {
         const response = await request.post('/auth/refreshtoken', {}, { withCredentials: true })
-        if (response.data.accessToken) LocalStorage.set('accessToken', response.data.accessToken)
-        LocalStorage.set('hasRefreshToken', true)
+        if (response.data.accessToken) {
+          LocalStorage.set('accessToken', response.data.accessToken)
+          LocalStorage.set('hasRefreshToken', true)
 
-        commit('SET_USER', response.data.user)
+          commit('SET_USER', response.data.user)
+        }
         return { user: response.data.user, accessToken: response.data.accessToken }
       } catch (error) {
         LocalStorage.remove('hasRefreshToken')
-        console.error(error)
       }
 
       return { user: state.user, accessToken: '' }
@@ -92,7 +102,7 @@ const store = createStore({
 
         commit('SET_ITEMS', response.data)
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.items
@@ -103,7 +113,7 @@ const store = createStore({
 
         commit('SET_ITEMS', [...state.items, response.data])
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.items
@@ -114,7 +124,7 @@ const store = createStore({
 
         commit('SET_ITEMS', [...state.items, response.data])
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.items
@@ -131,7 +141,7 @@ const store = createStore({
 
         commit('SET_ITEMS', currentItems)
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.items
@@ -145,7 +155,7 @@ const store = createStore({
           state.items.filter((item: Item) => item._id !== payload._id)
         )
       } catch (error) {
-        throwStoreError(error)
+        throw throwStoreError(error)
       }
 
       return state.items
@@ -153,6 +163,7 @@ const store = createStore({
   },
   mutations: {
     SET_USER(state, user: User) {
+      console.log('SET_USER', user)
       state.user = user
     },
     SET_ITEMS(state, items: Array<Item>) {
@@ -165,6 +176,11 @@ const store = createStore({
   },
 
   strict: process.env.NODE_ENV === 'development',
+})
+
+store.subscribeAction((action) => console.log(action))
+store.subscribe((mutation) => {
+  console.log(mutation)
 })
 
 export default store

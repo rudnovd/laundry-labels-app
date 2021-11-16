@@ -5,7 +5,7 @@
         <q-btn v-show="showBackButton" icon="arrow_back" flat no-wrap padding="0" @click="router.back()" />
         <q-toolbar-title class="flex items-center justify-between">
           <q-btn flat icon="sell" label="Laundry Labels" to="/" :ripple="false" padding="0" />
-          <q-btn flat icon="person" to="/profile" :ripple="false" padding="0" />
+          <q-btn v-if="user._id" flat icon="person" to="/profile" :ripple="false" padding="0" />
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -24,6 +24,7 @@
 import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { laundryIcons } from './assets/laundryIcons'
 
 let icons: { [key: string]: string } = {}
@@ -39,9 +40,10 @@ export default defineComponent({
     const $q = useQuasar()
     const router = useRouter()
     const route = useRoute()
+    const store = useStore()
 
+    const user = computed(() => store.state.user)
     const showInstallButton = ref(false)
-
     const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
     $q.iconMapFn = (iconName) => {
@@ -67,6 +69,8 @@ export default defineComponent({
 
     return {
       router,
+
+      user,
       showBackButton,
       showInstallButton,
       installApp,

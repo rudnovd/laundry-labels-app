@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@vue/runtime-core'
+import { computed, defineComponent, ref, watch } from '@vue/runtime-core'
 import { throttle, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
@@ -52,6 +52,9 @@ export default defineComponent({
     const $q = useQuasar()
     const store = useStore()
     const router = useRouter()
+
+    const user = computed(() => store.state.user)
+    watch(user, () => user.value._id && router.push('/'))
 
     const email = ref('')
     const password = ref('')
@@ -114,8 +117,8 @@ export default defineComponent({
 .registration-form {
   display: grid;
   grid-template-columns: 100%;
-  gap: 1rem;
+  gap: 0.5rem;
   grid-auto-flow: row;
-  max-width: 300px;
+  width: 300px;
 }
 </style>

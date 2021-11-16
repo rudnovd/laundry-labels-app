@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import router from '@/router'
-import { defineComponent, ref } from '@vue/runtime-core'
+import { computed, defineComponent, ref, watch } from '@vue/runtime-core'
 import { useQuasar, throttle } from 'quasar'
 import { useStore } from 'vuex'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
@@ -51,6 +51,9 @@ export default defineComponent({
   setup() {
     const $q = useQuasar()
     const store = useStore()
+
+    const user = computed(() => store.state.user)
+    watch(user, () => user.value._id && router.push('/'))
 
     const email = ref('')
     const password = ref('')
@@ -109,8 +112,8 @@ export default defineComponent({
 .login-form {
   display: grid;
   grid-template-columns: 100%;
-  gap: 1rem;
+  gap: 0.5rem;
   grid-auto-flow: row;
-  max-width: 300px;
+  width: 300px;
 }
 </style>

@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/runtime-core'
+import { computed, defineComponent, watch } from '@vue/runtime-core'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -18,20 +18,17 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
 
-    if (store.state.user._id) router.push('/')
+    const user = computed(() => store.state.user)
+    watch(user, () => user.value._id && router.push('/'))
   },
 })
 </script>
 
 <style lang="scss" scoped>
-.welcome-page {
-  display: grid;
-}
-
 .buttons-section {
   display: grid;
   justify-content: center;
-  gap: 2rem;
+  gap: 1rem;
 
   button,
   a {

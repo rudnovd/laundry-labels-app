@@ -18,10 +18,6 @@ const publicRoutes: Array<RouteRecordRaw> = [
     path: '/registration',
     name: 'Registartion',
     component: () => import(/* webpackChunkName: "registration" */ '@/views/RegistrationPage.vue'),
-    beforeEnter: (to, from, next) => {
-      if (store.state.user._id) next({ path: '/' })
-      else next()
-    },
   },
 ]
 

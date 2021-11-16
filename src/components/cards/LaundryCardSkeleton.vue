@@ -12,11 +12,6 @@
       </ul>
 
       <div class="laundry-card-body-footer">
-        <div>
-          <q-skeleton type="text" width="32px" />
-          <q-skeleton width="16px" height="16px" type="rect" />
-        </div>
-
         <q-skeleton type="QBtn" height="16px" />
       </div>
     </section>

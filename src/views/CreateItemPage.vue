@@ -1,5 +1,5 @@
 <template>
-  <section class="create-item-page q-py-md">
+  <section class="create-item-page" :class="{ 'q-pb-md': route.params.id, 'q-py-md': !route.params.id }">
     <q-form class="create-item-form" @submit="onSubmit">
       <q-img
         v-if="route.params.id"
@@ -10,23 +10,39 @@
       <section class="q-px-sm">
         <q-uploader
           v-if="!route.params.id"
-          class="upload-image"
-          :max-total-size="393216"
+          ref="uploadImageForm"
+          class="upload-image q-mb-sm"
+          :max-total-size="10485760"
           accept="image/jpg, image/jpeg, image/png"
           :max-files="1"
           @added="onAddImage"
           @rejected="onAddFileReject"
-          @remove-file="newItem.images = []"
         >
-          <template #header="scope">
+          <template #header>
             <div class="row no-wrap items-center q-pa-sm q-gutter-xs">
               <div class="col">
                 <div class="q-uploader__title">Upload image</div>
               </div>
-              <q-btn v-if="scope.canAddFiles" type="a" icon="add_box" round dense flat>
+              <q-btn v-if="!newItem.images.length" type="a" icon="add_box" round dense flat>
                 <q-uploader-add-trigger />
               </q-btn>
+              <q-btn v-if="newItem.images.length" icon="delete" round dense flat @click="onRemoveFile" />
             </div>
+          </template>
+
+          <template #list="scope">
+            <q-list separator>
+              <q-item v-for="file in scope.files" :key="file.name">
+                <q-item-section>
+                  <q-item-label v-if="uploadImageIsLoading" caption>
+                    <q-spinner color="primary" size="3em" />
+                  </q-item-label>
+                  <q-item-label v-if="!uploadImageIsLoading && newItem.images.length" caption>
+                    <q-img :src="newItem.images[0]" height="200px" alt="Uploaded image" />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
           </template>
         </q-uploader>
 
@@ -77,13 +93,13 @@
 
 <script lang="ts">
 import type { Item, ItemBlank } from '@/interfaces/item'
-import { computed, defineComponent, reactive, ref, watch } from '@vue/runtime-core'
+import { computed, defineComponent, reactive, ref } from '@vue/runtime-core'
 import Compressor from 'compressorjs'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { laundryIcons } from '@/assets/laundryIcons'
 import type { laundryIcon } from '@/interfaces/laundryIcon'
-import { useQuasar } from 'quasar'
+import { QUploader, useQuasar } from 'quasar'
 import request from '@/services/request'
 
 export default defineComponent({
@@ -96,12 +112,13 @@ export default defineComponent({
 
     const userItems = computed(() => store.state.items)
 
-    const isUserItemLoading = ref(false)
     const newItem = reactive({
       icons: [],
       images: [],
       tags: [],
     } as ItemBlank)
+    const uploadImageForm = ref<any>(QUploader)
+    const uploadImageIsLoading = ref(false)
 
     const iconsByGroups = computed(() => {
       const map: {
@@ -118,28 +135,25 @@ export default defineComponent({
 
     if (route.params.id) {
       if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
-        isUserItemLoading.value = true
-        store.dispatch('getItem', { _id: route.params.id }).finally(() => (isUserItemLoading.value = false))
+        $q.loading.show()
+        store
+          .dispatch('getItem', { _id: route.params.id })
+          .then((response) => {
+            newItem.icons = response.item.icons || []
+            newItem.images = response.item.images || []
+            newItem.tags = response.item.tags || []
+          })
+          .finally(() => $q.loading.hide())
       } else {
-        const currentUserItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
+        const currentUserItem: Item | undefined = userItems.value.find(
+          (userItem: Item) => userItem._id === route.params.id
+        )
         if (!currentUserItem) return
-
-        // TODO: fix me!
-        Object.assign(newItem, { ...currentUserItem })
-        newItem.icons = [...currentUserItem.icons]
+        newItem.icons = currentUserItem.icons || []
+        newItem.images = currentUserItem.images || []
+        newItem.tags = currentUserItem.tags || []
       }
     }
-
-    watch(userItems, (newUserItemsValue) => {
-      if (!route.params.id) return
-
-      const currentUserItem = newUserItemsValue.find((userItem: Item) => userItem._id === route.params.id)
-      if (!currentUserItem) return
-
-      // TODO: fix me!
-      Object.assign(newItem, { ...currentUserItem })
-      newItem.icons = [...currentUserItem.icons]
-    })
 
     const selectIcon = (selectedIcon: laundryIcon) => {
       const iconIndex = newItem.icons.findIndex((icon) => icon === selectedIcon._id)
@@ -151,6 +165,7 @@ export default defineComponent({
     }
 
     const onAddImage = async (imgs: File[]) => {
+      uploadImageIsLoading.value = true
       const compressorResult = new Promise((resolve: (value: Blob) => void, reject) => {
         new Compressor(imgs[0], {
           quality: 0.4,
@@ -174,12 +189,19 @@ export default defineComponent({
         newItem.images = imagesUrls.data.images
       } catch (error) {
         console.error(error)
+      } finally {
+        uploadImageIsLoading.value = false
       }
+    }
+
+    const onRemoveFile = () => {
+      newItem.images = []
+      uploadImageForm.value.reset()
     }
 
     const onAddFileReject = (errors: Array<{ failedPropValidation: string; file: File }>) => {
       if (errors.find((error) => error.failedPropValidation === 'max-total-size')) {
-        $q.notify({ type: 'negative', message: 'Max file size is 3 mb' })
+        $q.notify({ type: 'negative', message: 'Max file size is 10 mb' })
       } else if (errors.find((error) => error.failedPropValidation === 'accept')) {
         $q.notify({ type: 'negative', message: 'Wrong file type' })
       }
@@ -205,12 +227,15 @@ export default defineComponent({
       route,
 
       iconsByGroups,
+      uploadImageForm,
       newItem,
+      uploadImageIsLoading,
 
       selectIcon,
       isIconSelected,
       onSubmit,
       onAddImage,
+      onRemoveFile,
       onAddFileReject,
     }
   },

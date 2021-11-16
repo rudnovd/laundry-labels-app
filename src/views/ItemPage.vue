@@ -19,34 +19,22 @@
         </section>
 
         <section v-if="currentItem.tags.length" class="item-tags q-mb-md">
+          <div>Tags:</div>
           <q-chip v-for="tag in currentItem.tags" :key="tag">{{ tag }}</q-chip>
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="negative" label="Delete item" icon="delete" @click="showDeleteDialog = true" />
+          <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
           <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem._id}`)" />
         </section>
       </section>
-
-      <q-dialog v-model="showDeleteDialog">
-        <q-card>
-          <q-card-section>
-            <span>Delete {{ currentItem.name || 'item' }} ?</span>
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn v-close-popup flat label="Cancel" color="primary" />
-            <q-btn v-close-popup flat label="Delete" color="negative" @click="deleteItem" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
     </template>
   </section>
 </template>
 
 <script lang="ts">
 import type { Item } from '@/interfaces/item'
-import { computed, defineComponent, ref } from '@vue/runtime-core'
+import { computed, defineComponent } from '@vue/runtime-core'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { laundryIconsMap } from '@/assets/laundryIcons'
@@ -63,26 +51,31 @@ export default defineComponent({
     const items = computed(() => store.state.items)
     const currentItem = computed(() => items.value.find((item: Item) => item._id === route.params.id))
 
-    const deleteItem = () => {
-      $q.loading.show()
-      store
-        .dispatch('deleteItem', { _id: route.params.id })
-        .then(() => router.push('/'))
-        .finally(() => $q.loading.hide())
-    }
-
     if (!currentItem.value) {
       $q.loading.show()
       store.dispatch('getItem', { _id: route.params.id }).finally(() => $q.loading.hide())
     }
 
+    const callDeleteDialog = () => {
+      $q.dialog({
+        message: `Delete item?`,
+        cancel: true,
+      }).onOk(() => {
+        $q.loading.show()
+        store
+          .dispatch('deleteItem', { _id: route.params.id })
+          .then(() => router.push('/'))
+          .finally(() => $q.loading.hide())
+      })
+    }
+
     return {
       router,
-      showDeleteDialog: ref(false),
+
       currentItem,
       laundryIconsMap,
 
-      deleteItem,
+      callDeleteDialog,
     }
   },
 })

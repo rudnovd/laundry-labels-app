@@ -107,7 +107,7 @@ const store = createStore({
 
       return state.items
     },
-    async getItem({ state, commit }, payload: { _id: string }): Promise<Array<Item>> {
+    async getItem({ state, commit }, payload: { _id: string }): Promise<{ item: Item; items: Array<Item> }> {
       try {
         const response = await request.get(`/api/item/${payload._id}`)
 
@@ -116,7 +116,7 @@ const store = createStore({
         throw throwStoreError(error)
       }
 
-      return state.items
+      return { item: state.items[state.items.length - 1], items: state.items }
     },
     async postItem({ state, commit }, payload: { item: Item }): Promise<Array<Item>> {
       try {
@@ -133,13 +133,7 @@ const store = createStore({
       try {
         const response = await request.put(`/api/item/${payload.item._id}`, payload.item)
 
-        const currentItems = state.items
-        const forUpdateItemIndex = currentItems.findIndex((item) => item._id === payload.item._id)
-        if (!forUpdateItemIndex) throw new Error('Item for update not found in store')
-
-        currentItems.splice(forUpdateItemIndex, 1, response.data)
-
-        commit('SET_ITEMS', currentItems)
+        commit('UPDATE_ITEMS', response.data)
       } catch (error) {
         throw throwStoreError(error)
       }
@@ -169,6 +163,10 @@ const store = createStore({
     SET_ITEMS(state, items: Array<Item>) {
       state.items = items
     },
+    UPDATE_ITEMS(state, item: Item) {
+      const forUpdateItemIndex = state.items.findIndex((stateItems) => stateItems._id === item._id)
+      if (forUpdateItemIndex) state.items.splice(forUpdateItemIndex, 1, item)
+    },
   },
   state: {
     user: {} as User,
@@ -176,11 +174,6 @@ const store = createStore({
   },
 
   strict: process.env.NODE_ENV === 'development',
-})
-
-store.subscribeAction((action) => console.log(action))
-store.subscribe((mutation) => {
-  console.log(mutation)
 })
 
 export default store

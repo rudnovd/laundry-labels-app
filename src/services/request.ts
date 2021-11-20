@@ -61,6 +61,7 @@ request.interceptors.response.use(
       store.commit('SET_USER', {})
       router.push('/welcome')
     } else if (response.data.error) {
+      // eslint-disable-next-line
       console.log(response.data.error)
     }
 

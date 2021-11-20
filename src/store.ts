@@ -157,7 +157,6 @@ const store = createStore({
   },
   mutations: {
     SET_USER(state, user: User) {
-      console.log('SET_USER', user)
       state.user = user
     },
     SET_ITEMS(state, items: Array<Item>) {

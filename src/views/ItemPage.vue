@@ -11,7 +11,7 @@
       />
 
       <section class="q-px-sm">
-        <section class="item-icons q-mb-xl">
+        <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
             <q-icon :name="`img:${laundryIconsMap[icon].path}`" />
             <span>{{ laundryIconsMap[icon].description }}</span>

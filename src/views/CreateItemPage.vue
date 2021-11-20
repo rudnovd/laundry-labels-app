@@ -11,7 +11,7 @@
         <q-uploader
           v-if="!route.params.id"
           ref="uploadImageForm"
-          class="upload-image q-mb-sm"
+          class="upload-image q-mb-md"
           :max-total-size="10485760"
           accept="image/jpg, image/jpeg, image/png"
           :max-files="1"
@@ -46,6 +46,24 @@
           </template>
         </q-uploader>
 
+        <q-select
+          v-model="newItem.tags"
+          class="q-mb-md"
+          outlined
+          clearable
+          label="tags"
+          use-input
+          multiple
+          hide-dropdown-icon
+          new-value-mode="add-unique"
+          :placeholder="!newItem.tags.length ? 'Input or select tags from list' : ''"
+          :max-values="10"
+          :options="['black', 'white', 'jeans']"
+          use-chips
+          menu-self="center end"
+          autocomplete="off"
+        />
+
         <section class="washing-icons-container q-mb-md">
           <div v-for="(icons, group) in iconsByGroups" :key="group" class="icons-group">
             <span>{{ group }}</span>
@@ -66,24 +84,6 @@
             </div>
           </div>
         </section>
-
-        <q-select
-          v-model="newItem.tags"
-          class="q-mb-md"
-          outlined
-          clearable
-          label="tags"
-          use-input
-          multiple
-          hide-dropdown-icon
-          new-value-mode="add-unique"
-          :placeholder="!newItem.tags.length ? 'Input tag and press Enter' : ''"
-          :max-values="10"
-          :options="['black', 'white', 'jeans']"
-          use-chips
-          menu-self="center end"
-          autocomplete="off"
-        />
 
         <q-btn color="positive" class="full-width" type="submit" :label="route.params.id ? 'Save' : 'Create'" />
       </section>
@@ -273,6 +273,7 @@ export default defineComponent({
   gap: 0.25rem;
 
   span:first-child {
+    text-transform: capitalize;
     font-size: 1.125rem;
     font-weight: 500;
     text-align: center;
@@ -281,16 +282,13 @@ export default defineComponent({
 
 .icons-chips {
   display: grid;
-  // grid-template-columns: repeat(auto-fill, minmax(50%, 1fr));
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: 5.625rem;
-  gap: 1rem;
+  gap: 0.5rem;
 
   @include media-small {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-  // grid-template-rows: repeat(auto, 64px);
-  // grid-auto-flow: row;
 }
 
 .icon-chip {

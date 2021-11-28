@@ -1,8 +1,13 @@
-import type { Item } from '@/interfaces/item'
+import type { Item, ItemBlank } from '@/interfaces/item'
 import type { User } from '@/interfaces/user'
 import request from '@/services/request'
+import { defineStore } from 'pinia'
 import { LocalStorage, Notify } from 'quasar'
-import { createStore } from 'vuex'
+
+interface State {
+  user: User | Record<string, unknown>
+  items: Array<Item>
+}
 
 export class RequestError extends Error {
   constructor(name: string, message: string) {
@@ -25,9 +30,13 @@ function throwStoreError(error: any) {
   })
 }
 
-const store = createStore({
+export const useStore = defineStore('data', {
+  state: (): State => ({
+    user: {},
+    items: [],
+  }),
   actions: {
-    async login({ state, commit }, payload: { email: string; password: string; token: string }): Promise<User> {
+    async login(payload: { email: string; password: string; token: string }) {
       try {
         const response = await request.post(
           '/auth/login',
@@ -37,7 +46,7 @@ const store = createStore({
         if (response.data.accessToken) {
           LocalStorage.set('accessToken', response.data.accessToken)
           LocalStorage.set('hasRefreshToken', true)
-          commit('SET_USER', response.data.user)
+          this.user = response.data.user
         } else {
           throw throwStoreError({ response })
         }
@@ -45,9 +54,9 @@ const store = createStore({
         throwStoreError(error)
       }
 
-      return state.user
+      return this.user
     },
-    async registration({ state, commit }, payload: { email: string; password: string; token: string }): Promise<User> {
+    async registration(payload: { email: string; password: string; token: string }) {
       try {
         const response = await request.post('/auth/registration', {
           email: payload.email,
@@ -57,7 +66,7 @@ const store = createStore({
         if (response.data.accessToken) {
           LocalStorage.set('accessToken', response.data.accessToken)
           LocalStorage.set('hasRefreshToken', true)
-          commit('SET_USER', response.data.user)
+          this.user = response.data.user
         } else {
           throw throwStoreError({ response })
         }
@@ -65,114 +74,86 @@ const store = createStore({
         throw throwStoreError(error)
       }
 
-      return state.user
+      return this.user
     },
-    async logout({ state, commit }): Promise<User> {
+    async logout() {
       try {
         await request.post('/auth/logout', {}, { withCredentials: true })
         LocalStorage.remove('accessToken')
         LocalStorage.remove('hasRefreshToken')
-        commit('SET_USER', {})
+        this.user = {}
       } catch (error) {
         throw throwStoreError(error)
       }
 
-      return state.user
+      return this.user
     },
-    async getAuthFromRefreshToken({ state, commit }): Promise<{ user: User; accessToken: string }> {
+    async getAuthFromRefreshToken() {
       try {
         const response = await request.post('/auth/refreshtoken', {}, { withCredentials: true })
         if (response.data.accessToken) {
           LocalStorage.set('accessToken', response.data.accessToken)
           LocalStorage.set('hasRefreshToken', true)
-
-          commit('SET_USER', response.data.user)
+          this.user = response.data.user
         }
+
         return { user: response.data.user, accessToken: response.data.accessToken }
       } catch (error) {
         LocalStorage.remove('hasRefreshToken')
       }
 
-      return { user: state.user, accessToken: '' }
+      return { user: this.user, accessToken: '' }
     },
-
-    async getItems({ state, commit }): Promise<Array<Item>> {
+    async getItems() {
       try {
         const response = await request.get('/api/items')
-
-        commit('SET_ITEMS', response.data)
+        this.items = response.data
       } catch (error) {
         throw throwStoreError(error)
       }
 
-      return state.items
+      return this.items
     },
-    async getItem({ state, commit }, payload: { _id: string }): Promise<{ item: Item; items: Array<Item> }> {
+    async getItem(payload: { _id: string }) {
       try {
         const response = await request.get(`/api/item/${payload._id}`)
-
-        commit('SET_ITEMS', [...state.items, response.data])
+        this.items = [...this.items, response.data]
       } catch (error) {
         throw throwStoreError(error)
       }
 
-      return { item: state.items[state.items.length - 1], items: state.items }
+      return { item: this.items[this.items.length - 1], items: this.items }
     },
-    async postItem({ state, commit }, payload: { item: Item }): Promise<Array<Item>> {
+    async postItem(payload: { item: ItemBlank }) {
       try {
         const response = await request.post('/api/items', payload.item)
-
-        commit('SET_ITEMS', [...state.items, response.data])
+        this.items = [...this.items, response.data]
       } catch (error) {
         throw throwStoreError(error)
       }
 
-      return state.items
+      return this.items
     },
-    async editItem({ state, commit }, payload: { item: Item }): Promise<Array<Item>> {
+    async editItem(payload: { item: Omit<Item, 'createdAt' | 'updatedAt'> }) {
       try {
         const response = await request.put(`/api/item/${payload.item._id}`, payload.item)
-
-        commit('UPDATE_ITEMS', response.data)
+        const forUpdateItemIndex = this.items.findIndex((stateItems) => stateItems._id === response.data._id)
+        if (forUpdateItemIndex) this.items = this.items.splice(forUpdateItemIndex, 1, response.data._id)
       } catch (error) {
         throw throwStoreError(error)
       }
 
-      return state.items
+      return this.items
     },
-    async deleteItem({ state, commit }, payload: { _id: string }): Promise<Array<Item>> {
+    async deleteItem(payload: { _id: string }) {
       try {
         await request.delete(`/api/item/${payload._id}`)
-
-        commit(
-          'SET_ITEMS',
-          state.items.filter((item: Item) => item._id !== payload._id)
-        )
+        this.items = this.items.filter((item: Item) => item._id !== payload._id)
       } catch (error) {
         throw throwStoreError(error)
       }
 
-      return state.items
+      return this.items
     },
   },
-  mutations: {
-    SET_USER(state, user: User) {
-      state.user = user
-    },
-    SET_ITEMS(state, items: Array<Item>) {
-      state.items = items
-    },
-    UPDATE_ITEMS(state, item: Item) {
-      const forUpdateItemIndex = state.items.findIndex((stateItems) => stateItems._id === item._id)
-      if (forUpdateItemIndex) state.items.splice(forUpdateItemIndex, 1, item)
-    },
-  },
-  state: {
-    user: {} as User,
-    items: [] as Array<Item>,
-  },
-
-  strict: process.env.NODE_ENV === 'development',
 })
-
-export default store

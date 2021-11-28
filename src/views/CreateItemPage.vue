@@ -96,11 +96,11 @@ import type { Item, ItemBlank } from '@/interfaces/item'
 import { computed, defineComponent, reactive, ref } from '@vue/runtime-core'
 import Compressor from 'compressorjs'
 import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import { laundryIcons } from '@/assets/laundryIcons'
 import type { laundryIcon } from '@/interfaces/laundryIcon'
 import { QUploader, useQuasar } from 'quasar'
 import request from '@/services/request'
+import { useStore } from '@/store'
 
 export default defineComponent({
   name: 'CreateItemPage',
@@ -110,7 +110,7 @@ export default defineComponent({
     const route = useRoute()
     const store = useStore()
 
-    const userItems = computed(() => store.state.items)
+    const userItems = computed(() => store.items)
 
     const newItem = reactive({
       icons: [],
@@ -137,7 +137,7 @@ export default defineComponent({
       if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
         $q.loading.show()
         store
-          .dispatch('getItem', { _id: route.params.id })
+          .getItem({ _id: route.params.id as string })
           .then((response) => {
             newItem.icons = response.item.icons || []
             newItem.images = response.item.images || []
@@ -212,12 +212,12 @@ export default defineComponent({
 
       if (route.params.id) {
         store
-          .dispatch('editItem', { item: { ...newItem, _id: route.params.id } })
+          .editItem({ item: { ...newItem, _id: route.params.id as string } })
           .then(() => router.push('/'))
           .finally(() => $q.loading.hide())
       } else {
         store
-          .dispatch('postItem', { item: newItem })
+          .postItem({ item: newItem })
           .then(() => router.push('/'))
           .finally(() => $q.loading.hide())
       }

@@ -24,8 +24,8 @@
 import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-import { laundryIcons } from './assets/laundryIcons'
+import { laundryIcons } from '@/assets/laundryIcons'
+import { useStore } from '@/store'
 
 let icons: { [key: string]: string } = {}
 
@@ -42,7 +42,7 @@ export default defineComponent({
     const route = useRoute()
     const store = useStore()
 
-    const user = computed(() => store.state.user)
+    const user = computed(() => store.user)
     const showInstallButton = ref(false)
     const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 

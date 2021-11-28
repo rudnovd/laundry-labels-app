@@ -31,7 +31,7 @@
       />
 
       <q-btn label="Login" type="submit" color="primary" />
-      <VueHcaptcha ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
     </q-form>
   </section>
 </template>
@@ -40,8 +40,8 @@
 import router from '@/router'
 import { computed, defineComponent, ref, watch } from '@vue/runtime-core'
 import { useQuasar, throttle } from 'quasar'
-import { useStore } from 'vuex'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import { useStore } from '@/store'
 
 export default defineComponent({
   name: 'LoginPage',
@@ -52,8 +52,8 @@ export default defineComponent({
     const $q = useQuasar()
     const store = useStore()
 
-    const user = computed(() => store.state.user)
-    watch(user, () => user.value._id && router.push('/'))
+    const user = computed(() => store.user)
+    watch(user, () => user.value && user.value._id && router.push('/'))
 
     const email = ref('')
     const password = ref('')
@@ -67,7 +67,7 @@ export default defineComponent({
     }
 
     const onSubmit = throttle(() => {
-      if (!captchaIsVerified.value) {
+      if (process.env.NODE_ENV !== 'development' && !captchaIsVerified.value) {
         return $q.notify({
           type: 'negative',
           message: 'Captcha required',
@@ -77,7 +77,7 @@ export default defineComponent({
 
       $q.loading.show()
       store
-        .dispatch('login', { email: email.value, password: password.value, token: captchaVerificationToken.value })
+        .login({ email: email.value, password: password.value, token: captchaVerificationToken.value })
         .then(() => {
           $q.notify({
             type: 'positive',
@@ -91,6 +91,7 @@ export default defineComponent({
 
     return {
       sitekey: process.env.VUE_APP_CAPTCHA_KEY,
+      showCaptcha: process.env.NODE_ENV !== 'development',
       captchaForm,
       email,
       password,

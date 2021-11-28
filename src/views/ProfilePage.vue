@@ -6,10 +6,10 @@
 </template>
 
 <script lang="ts">
+import { useStore } from '@/store'
 import { defineComponent, computed } from '@vue/runtime-core'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'ProfilePage',
@@ -18,7 +18,7 @@ export default defineComponent({
     const store = useStore()
     const router = useRouter()
 
-    const user = computed(() => store.state.user)
+    const user = computed(() => store.user)
 
     const callLogoutDialog = () => {
       $q.dialog({
@@ -28,7 +28,7 @@ export default defineComponent({
       }).onOk(() => {
         $q.loading.show()
         store
-          .dispatch('logout')
+          .logout()
           .then(() => {
             $q.notify({
               type: 'positive',

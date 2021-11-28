@@ -1,5 +1,5 @@
 import router from '@/router'
-import store from '@/store'
+import { useStore } from '@/store'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import jwt_decode, { JwtPayload } from 'jwt-decode'
@@ -9,16 +9,17 @@ let isRefreshTokenRequestStarted = false
 const publicRoutes = [{ path: /^\/auth\/.*/ }, { path: /^\/upload\/items\/.*/, methods: ['GET'] }]
 
 async function getAccessToken(): Promise<string> {
+  const store = useStore()
   let accessToken = LocalStorage.getItem('accessToken')?.toString()
   if (!accessToken) {
-    accessToken = (await store.dispatch('getAuthFromRefreshToken')).accessToken
+    accessToken = (await store.getAuthFromRefreshToken()).accessToken
   } else {
     const now = dayjs().unix()
     const jwtPayload = jwt_decode(accessToken) as JwtPayload
 
     if (!isRefreshTokenRequestStarted && jwtPayload.exp && jwtPayload.exp < now + 15) {
       isRefreshTokenRequestStarted = true
-      accessToken = (await store.dispatch('getAuthFromRefreshToken')).accessToken
+      accessToken = (await store.getAuthFromRefreshToken()).accessToken
     }
   }
 
@@ -58,7 +59,8 @@ request.interceptors.request.use(async (config) => {
 request.interceptors.response.use(
   (response) => {
     if (response.status === 401) {
-      store.commit('SET_USER', {})
+      const store = useStore()
+      store.user = {}
       router.push('/welcome')
     } else if (response.data.error) {
       // eslint-disable-next-line

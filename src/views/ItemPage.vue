@@ -36,9 +36,9 @@
 import type { Item } from '@/interfaces/item'
 import { computed, defineComponent } from '@vue/runtime-core'
 import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import { laundryIconsMap } from '@/assets/laundryIcons'
 import { useQuasar } from 'quasar'
+import { useStore } from '@/store'
 
 export default defineComponent({
   name: 'ItemPage',
@@ -48,12 +48,12 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
 
-    const items = computed(() => store.state.items)
+    const items = computed(() => store.items)
     const currentItem = computed(() => items.value.find((item: Item) => item._id === route.params.id))
 
     if (!currentItem.value) {
       $q.loading.show()
-      store.dispatch('getItem', { _id: route.params.id }).finally(() => $q.loading.hide())
+      store.getItem({ _id: route.params.id as string }).finally(() => $q.loading.hide())
     }
 
     const callDeleteDialog = () => {
@@ -63,7 +63,7 @@ export default defineComponent({
       }).onOk(() => {
         $q.loading.show()
         store
-          .dispatch('deleteItem', { _id: route.params.id })
+          .deleteItem({ _id: route.params.id as string })
           .then(() => router.push('/'))
           .finally(() => $q.loading.hide())
       })

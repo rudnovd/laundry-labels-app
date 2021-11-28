@@ -1,4 +1,4 @@
-import store from '@/store'
+import { useStore } from '@/store'
 import { LocalStorage } from 'quasar'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from './views/HomePage.vue'
@@ -59,16 +59,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _, next) => {
+  const store = useStore()
+
   if (publicRoutes.findIndex((route) => route.path === to.path) !== -1) {
-    if (!store.state.user._id && LocalStorage.getItem('hasRefreshToken') === true) {
-      store.dispatch('getAuthFromRefreshToken')
+    if (!store.user._id && LocalStorage.getItem('hasRefreshToken') === true) {
+      store.getAuthFromRefreshToken()
     }
     next()
-  } else if (!store.state.user._id && LocalStorage.getItem('hasRefreshToken') === true) {
-    store
-      .dispatch('getAuthFromRefreshToken')
-      .then((response) => (response.user._id ? next() : next({ path: '/welcome' })))
-  } else if (!store.state.user._id && !LocalStorage.getItem('hasRefreshToken')) {
+  } else if (!store.user._id && LocalStorage.getItem('hasRefreshToken') === true) {
+    store.getAuthFromRefreshToken().then((response) => (response.user._id ? next() : next({ path: '/welcome' })))
+  } else if (!store.user._id && !LocalStorage.getItem('hasRefreshToken')) {
     next({ path: '/welcome' })
   } else {
     next()

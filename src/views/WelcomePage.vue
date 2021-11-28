@@ -8,9 +8,9 @@
 </template>
 
 <script lang="ts">
+import { useStore } from '@/store'
 import { computed, defineComponent, watch } from '@vue/runtime-core'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'WelcomePage',
@@ -18,8 +18,8 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
 
-    const user = computed(() => store.state.user)
-    watch(user, () => user.value._id && router.push('/'))
+    const user = computed(() => store.user)
+    watch(user, () => user.value && user.value._id && router.push('/'))
   },
 })
 </script>

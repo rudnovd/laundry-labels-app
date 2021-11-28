@@ -23,9 +23,9 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { useStore } from 'vuex'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import LaundryCard from '@/components/cards/LaundryCard.vue'
+import { useStore } from '@/store'
 
 export default defineComponent({
   name: 'HomePage',
@@ -36,10 +36,10 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
-    const items = computed(() => store.state.items)
+    const items = computed(() => store.items)
     const isItemsLoading = ref(false)
 
-    store.dispatch('getItems').finally(() => (isItemsLoading.value = false))
+    store.getItems().finally(() => (isItemsLoading.value = false))
 
     return {
       items,

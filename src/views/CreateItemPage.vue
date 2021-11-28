@@ -58,7 +58,19 @@
           new-value-mode="add-unique"
           :placeholder="!newItem.tags.length ? 'Input or select tags from list' : ''"
           :max-values="10"
-          :options="['black', 'white', 'jeans']"
+          :options="[
+            'black',
+            'white',
+            'red',
+            'yellow',
+            'green',
+            'jeans',
+            't-shirt',
+            'dress',
+            'sweater',
+            'shorts',
+            'skirts',
+          ]"
           use-chips
           menu-self="center end"
           autocomplete="off"

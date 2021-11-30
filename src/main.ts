@@ -7,5 +7,3 @@ import quasarUserOptions from './quasar-user-options'
 import router from './router'
 
 createApp(App).use(Quasar, quasarUserOptions).use(createPinia()).use(router).mount('#app')
-
-console.log(process.env)

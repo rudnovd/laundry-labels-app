@@ -106,6 +106,8 @@ export default defineComponent({
 .laundry-card-body-footer {
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
+  height: 48px;
 }
 
 .no-image {

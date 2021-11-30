@@ -3,6 +3,7 @@
     <q-form class="create-item-form" @submit="onSubmit">
       <q-img
         v-if="route.params.id"
+        :height="isDesktop ? '300px' : 'auto'"
         :src="newItem.images.length && newItem.images[0]"
         :class="{ 'no-image': !newItem.length }"
       />
@@ -72,7 +73,6 @@
             'skirts',
           ]"
           use-chips
-          menu-self="center end"
           autocomplete="off"
         />
 
@@ -242,6 +242,7 @@ export default defineComponent({
       uploadImageForm,
       newItem,
       uploadImageIsLoading,
+      isDesktop: $q.platform.is.desktop,
 
       selectIcon,
       isIconSelected,

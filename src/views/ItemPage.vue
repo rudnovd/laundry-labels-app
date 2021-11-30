@@ -90,6 +90,10 @@ export default defineComponent({
 .item-image {
   max-height: 300px;
   max-width: 600px;
+
+  @include media-medium {
+    max-width: 100%;
+  }
 }
 
 .item-info {

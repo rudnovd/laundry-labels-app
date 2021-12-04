@@ -16,13 +16,22 @@ module.exports = {
   devServer: {
     proxy: {
       '^/api': {
-        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
+        target:
+          process.env.NODE_ENV === 'development'
+            ? `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`
+            : process.env.VUE_APP_API_URL,
       },
       '^/upload': {
-        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
+        target:
+          process.env.NODE_ENV === 'development'
+            ? `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`
+            : process.env.VUE_APP_API_URL,
       },
       '^/auth': {
-        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}/api`,
+        target:
+          process.env.NODE_ENV === 'development'
+            ? `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`
+            : process.env.VUE_APP_API_URL,
       },
     },
   },

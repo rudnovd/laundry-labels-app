@@ -22,7 +22,7 @@ module.exports = {
         target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
       },
       '^/auth': {
-        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}`,
+        target: `${process.env.VUE_APP_API_URL}:${process.env.VUE_APP_API_PORT}/api`,
       },
     },
   },

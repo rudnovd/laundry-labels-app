@@ -27,7 +27,7 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy = "default-src 'self' https://cloudflareinsights.com https://hcaptcha.com https://newassets.hcaptcha.com; object-src 'none'; child-src 'self' https://cloudflareinsights.com https://hcaptcha.com https://newassets.hcaptcha.com; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content"
+    Content-Security-Policy = "default-src 'self' https://static.cloudflareinsights.com https://cloudflareinsights.com https://hcaptcha.com https://newassets.hcaptcha.com; object-src 'none'; child-src 'self' https://cloudflareinsights.com https://hcaptcha.com https://newassets.hcaptcha.com; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content"
     X-Permitted-Cross-Domain-Policies = "none"
     Referrer-Policy = "no-referrer"
     #Cross-Origin-Embedder-Policy = "credentialless"

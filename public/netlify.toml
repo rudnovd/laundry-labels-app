@@ -27,13 +27,43 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy = "default-src 'self' https://static.cloudflareinsights.com https://cloudflareinsights.com https://hcaptcha.com https://newassets.hcaptcha.com; object-src 'none'; child-src 'self' https://cloudflareinsights.com https://hcaptcha.com https://newassets.hcaptcha.com; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content"
+    Content-Security-Policy = '''
+      default-src 'self' https://*.ingest.sentry.io https://*.cloudflareinsights.com https://*.hcaptcha.com;
+      object-src 'none';
+      child-src 'self' https://*.hcaptcha.com;
+      frame-ancestors 'none';
+      upgrade-insecure-requests;
+      block-all-mixed-content
+    '''
     X-Permitted-Cross-Domain-Policies = "none"
     Referrer-Policy = "no-referrer"
     #Cross-Origin-Embedder-Policy = "credentialless"
     #Cross-Origin-Opener-Policy = "same-origin"
     #Cross-Origin-Resource-Policy = "cross-origin"
-    Permissions-Policy = "accelerometer=(), ambient-light-sensor=(), autoplay=(self), battery=(self), camera=(self), cross-origin-isolated=(self), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(self), execution-while-out-of-viewport=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(self), payment=(), picture-in-picture=(), usb=()"
+    Permissions-Policy = '''
+      accelerometer=(),
+      ambient-light-sensor=(),
+      autoplay=(self),
+      battery=(self),
+      camera=(self),
+      cross-origin-isolated=(self),
+      display-capture=(),
+      document-domain=(),
+      encrypted-media=(),
+      execution-while-not-rendered=(self),
+      execution-while-out-of-viewport=(self),
+      fullscreen=(self),
+      geolocation=(self),
+      gyroscope=(self),
+      keyboard-map=(),
+      magnetometer=(),
+      microphone=(),
+      midi=(),
+      navigation-override=(self),
+      payment=(),
+      picture-in-picture=(),
+      usb=()
+    '''
 
 [[headers]]
   for = "/auth/logout"

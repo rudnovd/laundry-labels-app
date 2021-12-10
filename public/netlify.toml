@@ -28,9 +28,9 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Content-Security-Policy = '''
-      default-src 'self' https://*.ingest.sentry.io https://*.cloudflareinsights.com https://*.hcaptcha.com;
+      default-src 'self' https://ingest.sentry.io https://*.ingest.sentry.io https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com;
       object-src 'none';
-      child-src 'self' https://*.hcaptcha.com;
+      child-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
       frame-ancestors 'none';
       upgrade-insecure-requests;
       block-all-mixed-content

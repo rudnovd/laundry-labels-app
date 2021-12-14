@@ -71,3 +71,7 @@
   [headers.values]
     Clear-Site-Data = "'cookies'"
 
+[[headers]]
+  for = "https://cloudflareinsights.com/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://laundrylabels.app"

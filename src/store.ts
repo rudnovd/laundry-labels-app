@@ -28,6 +28,7 @@ function throwStoreError(error: any) {
     message: requestError.message,
     timeout: 5000,
   })
+  throw requestError
 }
 
 export const useStore = defineStore('data', {

@@ -69,3 +69,4 @@
   for = "/auth/logout"
   [headers.values]
     Clear-Site-Data = "'cookies'"
+

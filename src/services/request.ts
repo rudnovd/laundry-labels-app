@@ -29,9 +29,6 @@ async function getAccessToken(): Promise<string> {
 
 const request = axios.create({
   validateStatus: (status) => status < 500,
-  headers: {
-    Authorization: `Bearer ${LocalStorage.getItem('accessToken')}`,
-  },
 })
 
 request.interceptors.request.use(async (config) => {

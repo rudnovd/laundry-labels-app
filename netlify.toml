@@ -30,6 +30,7 @@
     Content-Security-Policy = '''
       default-src 'self' https://ingest.sentry.io https://*.ingest.sentry.io https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com;
       object-src 'self';
+      img-src * 'self' blob: https:;
       child-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
       frame-ancestors 'none';
       upgrade-insecure-requests;

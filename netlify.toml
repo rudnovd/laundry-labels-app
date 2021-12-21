@@ -28,7 +28,7 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Content-Security-Policy = '''
-      default-src 'self' https://ingest.sentry.io https://*.ingest.sentry.io https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com;
+      default-src 'self' https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com;
       object-src 'self';
       img-src * 'self' blob: https:;
       child-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
@@ -43,28 +43,31 @@
     #Cross-Origin-Resource-Policy = "cross-origin"
     Permissions-Policy = '''
       accelerometer=(),
-      ambient-light-sensor=(),
       autoplay=(self),
-      battery=(self),
       camera=(self),
       cross-origin-isolated=(self),
       display-capture=(),
       document-domain=(),
       encrypted-media=(),
-      execution-while-not-rendered=(self),
-      execution-while-out-of-viewport=(self),
       fullscreen=(self),
       geolocation=(self),
       gyroscope=(self),
-      keyboard-map=(),
       magnetometer=(),
       microphone=(),
       midi=(),
-      navigation-override=(self),
       payment=(),
       picture-in-picture=(),
       usb=()
     '''
+    # Unrecognized features:
+    # Permissions-Policy = '''
+    #   ambient-light-sensor=(),
+    #   battery=(self),
+    #   execution-while-not-rendered=(self),
+    #   execution-while-out-of-viewport=(self),
+    #   keyboard-map=(),
+    #   navigation-override=(self),
+    # '''
 
 [[headers]]
   for = "/auth/logout"

@@ -1,15 +1,19 @@
 <template>
   <section class="profile-page q-pa-sm flex justify-center">
     <q-btn v-if="user" color="primary" label="Logout" icon="logout" @click="callLogoutDialog" />
+    <q-btn v-if="showInstallButton" color="primary" label="Install app" @click="installApp" />
     App version: {{ version }}
   </section>
 </template>
 
 <script lang="ts">
 import { useStore } from '@/store'
-import { defineComponent, computed } from '@vue/runtime-core'
+import { defineComponent, computed, ref } from '@vue/runtime-core'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let installEvent: any
 
 export default defineComponent({
   name: 'ProfilePage',
@@ -19,6 +23,22 @@ export default defineComponent({
     const router = useRouter()
 
     const user = computed(() => store.user)
+    const showInstallButton = ref(false)
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      /* eslint-disable no-console */
+      console.log('beforeinstallprompt called')
+      event.preventDefault()
+      installEvent = event
+      showInstallButton.value = true
+    })
+
+    window.addEventListener('appinstalled', () => {
+      showInstallButton.value = false
+      installEvent = null
+      /* eslint-disable no-console */
+      console.log('PWA was installed')
+    })
 
     const callLogoutDialog = () => {
       $q.dialog({
@@ -40,11 +60,15 @@ export default defineComponent({
       })
     }
 
+    const installApp = () => installEvent.prompt()
+
     return {
       user,
+      showInstallButton,
       version: process.env.VUE_APP_VERSION,
 
       callLogoutDialog,
+      installApp,
     }
   },
 })

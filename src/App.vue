@@ -15,8 +15,6 @@
         <router-view />
       </q-page-container>
     </main>
-
-    <button v-if="showInstallButton" class="install-button" type="button" @click="installApp">Install App</button>
   </q-layout>
 </template>
 
@@ -31,9 +29,6 @@ let icons: { [key: string]: string } = {}
 
 laundryIcons.forEach((icon) => (icons[icon.icon] = icon.path))
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let installEvent: any
-
 export default defineComponent({
   name: 'App',
   setup() {
@@ -43,7 +38,6 @@ export default defineComponent({
     const store = useStore()
 
     const user = computed(() => store.user)
-    const showInstallButton = ref(false)
     const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
     $q.iconMapFn = (iconName) => {
@@ -51,29 +45,11 @@ export default defineComponent({
       if (icon !== void 0) return { icon }
     }
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      /* eslint-disable no-console */
-      console.log('beforeinstallprompt called')
-      e.preventDefault()
-      installEvent = e
-      showInstallButton.value = true
-    })
-
-    const installApp = () => {
-      showInstallButton.value = false
-      installEvent.prompt()
-      installEvent.userChoice.then(() => {
-        installEvent = null
-      })
-    }
-
     return {
       router,
 
       user,
       showBackButton,
-      showInstallButton,
-      installApp,
     }
   },
 })

@@ -16,7 +16,7 @@
         filled
         dense
         lazy-rules
-        :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+        :rules="[(val: any) => (val && val.length > 0) || 'Please type something']"
       />
       <q-input
         v-model="password"
@@ -27,21 +27,21 @@
         filled
         dense
         lazy-rules
-        :rules="[(val) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
+        :rules="[(val: any) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
       />
 
-      <q-btn label="Registration" type="sumbmit" color="primary" />
+      <q-btn label="Registration" type="submit" color="primary" />
       <VueHcaptcha v-if="showCaptcha" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
     </q-form>
   </section>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from '@vue/runtime-core'
-import { throttle, useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { useStore } from '@/store'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import { throttle, useQuasar } from 'quasar'
+import { computed, defineComponent, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'RegistrationPage',
@@ -68,7 +68,7 @@ export default defineComponent({
     }
 
     const onSubmit = throttle(() => {
-      if (process.env.NODE_ENV !== 'development' && !captchaIsVerified.value) {
+      if (import.meta.env.PROD && !captchaIsVerified.value) {
         return $q.notify({
           type: 'negative',
           message: 'Captcha required',
@@ -95,8 +95,8 @@ export default defineComponent({
     }, 5000)
 
     return {
-      sitekey: process.env.VUE_APP_CAPTCHA_KEY,
-      showCaptcha: process.env.NODE_ENV !== 'development',
+      sitekey: import.meta.env.VUE_APP_CAPTCHA_KEY,
+      showCaptcha: import.meta.env.PROD,
       captchaForm,
       email,
       password,

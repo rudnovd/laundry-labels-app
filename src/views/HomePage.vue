@@ -1,7 +1,7 @@
 <template>
   <section class="home-page q-pa-sm">
     <div class="flex justify-between items-center q-mb-md">
-      <q-btn color="primary" icon="add" to="/create">Add item</q-btn>
+      <q-btn color="primary" icon="add" to="/create"> Add item </q-btn>
     </div>
 
     <section class="laundry-cards-section">
@@ -10,7 +10,7 @@
       </div>
 
       <div v-if="!isItemsLoading && items.length" class="laundry-cards q-mb-md">
-        <LaundryCard v-for="item in items" :key="item.id" :item="item" />
+        <LaundryCard v-for="item in items" :key="item._id" :item="item" />
       </div>
 
       <div v-if="!isItemsLoading && !items.length" class="flex column items-center">
@@ -22,10 +22,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import LaundryCard from '@/components/cards/LaundryCard.vue'
+import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import { useStore } from '@/store'
+import { computed, defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'HomePage',

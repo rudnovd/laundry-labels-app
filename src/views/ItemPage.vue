@@ -25,7 +25,7 @@
 
         <section class="flex justify-between">
           <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
-          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem._id}`)" />
+          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem?._id}`)" />
         </section>
       </section>
     </template>
@@ -33,12 +33,12 @@
 </template>
 
 <script lang="ts">
-import type { Item } from '@/interfaces/item'
-import { computed, defineComponent } from '@vue/runtime-core'
-import { useRoute, useRouter } from 'vue-router'
 import { laundryIconsMap } from '@/assets/laundryIcons'
-import { useQuasar } from 'quasar'
+import type { Item } from '@/interfaces/item'
 import { useStore } from '@/store'
+import { useQuasar } from 'quasar'
+import { computed, defineComponent } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'ItemPage',

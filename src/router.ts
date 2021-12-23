@@ -1,6 +1,7 @@
 import { useStore } from '@/store'
 import { LocalStorage } from 'quasar'
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/HomePage.vue'
 
 const publicRoutes: Array<RouteRecordRaw> = [

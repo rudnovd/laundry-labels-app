@@ -2,7 +2,8 @@ import router from '@/router'
 import { useStore } from '@/store'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import jwt_decode, { JwtPayload } from 'jwt-decode'
+import type { JwtPayload } from 'jwt-decode'
+import jwt_decode from 'jwt-decode'
 import { LocalStorage } from 'quasar'
 
 let isRefreshTokenRequestStarted = false
@@ -29,6 +30,7 @@ async function getAccessToken(): Promise<string> {
 
 const request = axios.create({
   validateStatus: (status) => status < 500,
+  timeout: 10000,
 })
 
 request.interceptors.request.use(async (config) => {

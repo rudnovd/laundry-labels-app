@@ -4,8 +4,8 @@
       <q-img
         v-if="route.params.id"
         :height="isDesktop ? '300px' : 'auto'"
-        :src="newItem.images.length && newItem.images[0]"
-        :class="{ 'no-image': !newItem.length }"
+        :src="newItem.images[0] || ''"
+        :class="{ 'no-image': !newItem.images.length }"
       />
 
       <section class="q-px-sm">
@@ -31,7 +31,7 @@
             </div>
           </template>
 
-          <template #list="scope">
+          <template #list="scope: any">
             <q-list separator>
               <q-item v-for="file in scope.files" :key="file.name">
                 <q-item-section>
@@ -83,7 +83,7 @@
             <div class="icons-chips">
               <button
                 v-for="icon in icons"
-                :key="icon.code"
+                :key="icon._id"
                 v-ripple
                 type="button"
                 class="icon-chip"
@@ -104,15 +104,15 @@
 </template>
 
 <script lang="ts">
-import type { Item, ItemBlank } from '@/interfaces/item'
-import { computed, defineComponent, reactive, ref } from '@vue/runtime-core'
-import Compressor from 'compressorjs'
-import { useRoute, useRouter } from 'vue-router'
 import { laundryIcons } from '@/assets/laundryIcons'
+import type { Item, ItemBlank } from '@/interfaces/item'
 import type { laundryIcon } from '@/interfaces/laundryIcon'
-import { QUploader, useQuasar } from 'quasar'
 import request from '@/services/request'
 import { useStore } from '@/store'
+import Compressor from 'compressorjs'
+import { QUploader, useQuasar } from 'quasar'
+import { computed, defineComponent, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'CreateItemPage',
@@ -129,7 +129,7 @@ export default defineComponent({
       images: [],
       tags: [],
     } as ItemBlank)
-    const uploadImageForm = ref<any>(QUploader)
+    const uploadImageForm = ref(QUploader)
     const uploadImageIsLoading = ref(false)
 
     const iconsByGroups = computed(() => {
@@ -157,13 +157,13 @@ export default defineComponent({
           })
           .finally(() => $q.loading.hide())
       } else {
-        const currentUserItem: Item | undefined = userItems.value.find(
-          (userItem: Item) => userItem._id === route.params.id
-        )
-        if (!currentUserItem) return
-        newItem.icons = currentUserItem.icons || []
-        newItem.images = currentUserItem.images || []
-        newItem.tags = currentUserItem.tags || []
+        const currentUserItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
+        // if (!currentUserItem) return
+        if (currentUserItem) {
+          newItem.icons = currentUserItem.icons || []
+          newItem.images = currentUserItem.images || []
+          newItem.tags = currentUserItem.tags || []
+        }
       }
     }
 

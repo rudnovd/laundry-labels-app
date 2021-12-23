@@ -16,7 +16,7 @@
         filled
         dense
         lazy-rules
-        :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+        :rules="[(val: any) => (val && val.length > 0) || 'Please type something']"
       />
       <q-input
         v-model="password"
@@ -27,7 +27,7 @@
         filled
         dense
         lazy-rules
-        :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+        :rules="[(val: any) => (val && val.length > 0) || 'Please type something']"
       />
 
       <q-btn label="Login" type="submit" color="primary" />
@@ -38,10 +38,10 @@
 
 <script lang="ts">
 import router from '@/router'
-import { computed, defineComponent, ref, watch } from '@vue/runtime-core'
-import { useQuasar, throttle } from 'quasar'
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { useStore } from '@/store'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import { throttle, useQuasar } from 'quasar'
+import { computed, defineComponent, ref, watch } from 'vue'
 
 export default defineComponent({
   name: 'LoginPage',
@@ -67,7 +67,7 @@ export default defineComponent({
     }
 
     const onSubmit = throttle(() => {
-      if (process.env.NODE_ENV !== 'development' && !captchaIsVerified.value) {
+      if (import.meta.env.PROD && !captchaIsVerified.value) {
         return $q.notify({
           type: 'negative',
           message: 'Captcha required',
@@ -90,8 +90,8 @@ export default defineComponent({
     }, 5000)
 
     return {
-      sitekey: process.env.VUE_APP_CAPTCHA_KEY,
-      showCaptcha: process.env.NODE_ENV !== 'development',
+      sitekey: import.meta.env.VUE_APP_CAPTCHA_KEY,
+      showCaptcha: import.meta.env.PROD,
       captchaForm,
       email,
       password,

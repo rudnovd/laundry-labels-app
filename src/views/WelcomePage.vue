@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { useStore } from '@/store'
-import { computed, defineComponent, watch } from '@vue/runtime-core'
+import { computed, defineComponent, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({

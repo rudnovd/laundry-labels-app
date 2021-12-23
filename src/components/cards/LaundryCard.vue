@@ -6,12 +6,12 @@
       loading="lazy"
       decoding="async"
       height="100%"
-      :alt="item.name"
+      :alt="item._id"
     />
 
     <section class="laundry-card-body">
       <ul>
-        <li v-for="icon in iconsValues.slice(0, 6)" :key="icon">
+        <li v-for="icon in iconsValues.slice(0, 6)" :key="icon._id">
           <q-icon tag="li" :name="`img:${icon.path}`" />
         </li>
       </ul>
@@ -52,7 +52,8 @@ export default defineComponent({
 .laundry-card {
   background: rgb(255, 255, 255);
   border-radius: 4px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%),
+    0 3px 1px -2px rgb(0 0 0 / 12%);
   position: relative;
   width: 100%;
   display: grid;

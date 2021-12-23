@@ -9,7 +9,7 @@ $negative: #c10015;
 $info: #31ccec;
 $warning: #f2c037;
 
-@import '~quasar-variables-styl';
+// @import '~quasar-variables-styl';
 
 @mixin media-small {
   @media (min-width: $breakpoint-sm-min) {

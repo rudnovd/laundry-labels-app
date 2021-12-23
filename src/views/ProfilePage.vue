@@ -2,14 +2,14 @@
   <section class="profile-page q-pa-sm flex justify-center">
     <q-btn v-if="user" color="primary" label="Logout" icon="logout" @click="callLogoutDialog" />
     <q-btn v-if="showInstallButton" color="primary" label="Install app" @click="installApp" />
-    App version: {{ version }}
+    <!-- App version: {{ version }} -->
   </section>
 </template>
 
 <script lang="ts">
 import { useStore } from '@/store'
-import { defineComponent, computed, ref } from '@vue/runtime-core'
 import { useQuasar } from 'quasar'
+import { computed, defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,7 +65,7 @@ export default defineComponent({
     return {
       user,
       showInstallButton,
-      version: process.env.VUE_APP_VERSION,
+      // version: '__APP_VERSION__',
 
       callLogoutDialog,
       installApp,

@@ -15,22 +15,18 @@
     "removeComments": true,
     "importsNotUsedAsValues": "error",
     "baseUrl": ".",
-    "types": [
-      "webpack-env"
-    ],
+    "types": ["vite/client"],
     "paths": {
       "@/*": [
         "src/*"
       ],
-      "~@/*": [
-        "src/*"
-      ]
     },
     "lib": [
       "esnext",
       "dom",
       "dom.iterable",
-      "scripthost"
+      "scripthost",
+      "WebWorker"
     ]
   },
   "include": [

@@ -1,7 +1,7 @@
 <template>
   <section class="error-page">
     <span>Page not found</span>
-    <router-link to="/">Return to Home page</router-link>
+    <router-link to="/"> Return to Home page </router-link>
   </section>
 </template>
 

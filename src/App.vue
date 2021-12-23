@@ -19,11 +19,11 @@
 </template>
 
 <script lang="ts">
-import { useQuasar } from 'quasar'
-import { computed, defineComponent, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { laundryIcons } from '@/assets/laundryIcons'
 import { useStore } from '@/store'
+import { useQuasar } from 'quasar'
+import { computed, defineComponent } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 let icons: { [key: string]: string } = {}
 
@@ -56,7 +56,7 @@ export default defineComponent({
 </script>
 
 <style>
-@import '~@/styles/main.scss';
+@import '@/styles/main.scss';
 </style>
 
 <style lang="scss" scoped>

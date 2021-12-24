@@ -1,8 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VUE_APP_CAPTCHA_KEY: string
-  readonly VUE_APP_VERSION: string
+  readonly VITE_APP_CAPTCHA_KEY: string
 }
 
 interface ImportMeta {

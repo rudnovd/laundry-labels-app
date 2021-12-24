@@ -90,7 +90,7 @@ export default defineComponent({
     }, 5000)
 
     return {
-      sitekey: import.meta.env.VUE_APP_CAPTCHA_KEY,
+      sitekey: import.meta.env.VITE_APP_CAPTCHA_KEY,
       showCaptcha: import.meta.env.PROD,
       captchaForm,
       email,

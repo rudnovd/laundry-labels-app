@@ -12,10 +12,10 @@ import router from './router'
 const app = createApp(App)
 app.use(Quasar, quasarUserOptions).use(createPinia()).use(router).mount('#app')
 
-// if (process.env.VUE_APP_SENTRY_DSN) {
+// if (process.env.VITE_APP_SENTRY_DSN) {
 //   Sentry.init({
 //     app,
-//     dsn: process.env.VUE_APP_SENTRY_DSN,
+//     dsn: process.env.VITE_APP_SENTRY_DSN,
 //     integrations: [
 //       new Integrations.BrowserTracing({
 //         routingInstrumentation: Sentry.vueRouterInstrumentation(router),

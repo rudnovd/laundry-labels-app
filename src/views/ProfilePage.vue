@@ -2,7 +2,7 @@
   <section class="profile-page q-pa-sm flex justify-center">
     <q-btn v-if="user" color="primary" label="Logout" icon="logout" @click="callLogoutDialog" />
     <q-btn v-if="showInstallButton" color="primary" label="Install app" @click="installApp" />
-    <!-- App version: {{ version }} -->
+    App version: {{ appVersion }}
   </section>
 </template>
 
@@ -14,6 +14,7 @@ import { useRouter } from 'vue-router'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let installEvent: any
+const appVersion = '__APP_VERSION__'
 
 export default defineComponent({
   name: 'ProfilePage',
@@ -65,7 +66,7 @@ export default defineComponent({
     return {
       user,
       showInstallButton,
-      // version: '__APP_VERSION__',
+      appVersion,
 
       callLogoutDialog,
       installApp,

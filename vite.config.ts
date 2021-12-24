@@ -40,7 +40,10 @@ export default ({ mode }) => {
 
   return defineConfig({
     define: {
-      __APP_VERSION__: process.env.npm_package_version,
+      __APP_VERSION__:
+        process.env.NODE_ENV === 'development'
+          ? JSON.stringify(process.env.npm_package_version)
+          : process.env.npm_package_version,
     },
     css: {
       preprocessorOptions: {

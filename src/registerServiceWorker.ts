@@ -3,7 +3,7 @@
 import { register } from 'register-service-worker'
 
 if (import.meta.env.PROD) {
-  register(`./sw.js`, {
+  register(`./sw.ts`, {
     ready() {
       console.log(
         'App is being served from cache by a service worker.\n' + 'For more details, visit https://goo.gl/AFskqB'
@@ -32,7 +32,7 @@ if (import.meta.env.PROD) {
   })
 
   let refreshing: unknown
-  navigator.serviceWorker.addEventListener('controllerchange', (e) => {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return
     window.location.reload()
     refreshing = true

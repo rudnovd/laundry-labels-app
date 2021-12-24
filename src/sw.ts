@@ -1,8 +1,8 @@
 import { clientsClaim, skipWaiting } from 'workbox-core'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
-const CACHE_VERSION = 1
-const CURRENT_CACHE = `main-${CACHE_VERSION}`
+// const CACHE_VERSION = 1
+// const CURRENT_CACHE = `main-${CACHE_VERSION}`
 
 declare let self: ServiceWorkerGlobalScope
 

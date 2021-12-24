@@ -1,5 +1,6 @@
 // https://eslint.org/docs/user-guide/configuring
 // https://eslint.vuejs.org/
+require('@rushstack/eslint-patch/modern-module-resolution')
 
 module.exports = {
   root: true,
@@ -12,9 +13,9 @@ module.exports = {
     'plugin:vue/vue3-strongly-recommended',
     'plugin:vue/vue3-recommended',
     'eslint:recommended',
-    '@vue/typescript/recommended',
+    '@vue/eslint-config-typescript/recommended',
     '@vue/prettier',
-    '@vue/prettier/@typescript-eslint',
+    '@vue/eslint-config-prettier',
   ],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? ['error', { allow: ['warn', 'error'] }] : 'off',

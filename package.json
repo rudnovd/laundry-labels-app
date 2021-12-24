@@ -3,10 +3,11 @@
   "version": "0.0.0-alpha.1",
   "private": true,
   "scripts": {
-    "start": "vite --mode development",
+    "start": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .ts,.vue src",
+    "lint:fix": "eslint --ext .ts,.vue src --fix"
   },
   "dependencies": {
     "@hcaptcha/vue3-hcaptcha": "^1.0.1",

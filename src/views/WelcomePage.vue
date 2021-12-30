@@ -19,7 +19,8 @@ export default defineComponent({
     const store = useStore()
 
     const user = computed(() => store.user)
-    watch(user, () => user.value && user.value._id && router.push('/'))
+    if (user.value?._id) router.push('/')
+    watch(user, () => user.value?._id && router.push('/'))
   },
 })
 </script>

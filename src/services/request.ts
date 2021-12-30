@@ -7,25 +7,29 @@ import jwt_decode from 'jwt-decode'
 import { LocalStorage } from 'quasar'
 
 let isRefreshTokenRequestStarted = false
-const publicRoutes = [{ path: /^\/auth\/.*/ }, { path: /^\/upload\/items\/.*/, methods: ['GET'] }]
+const publicRoutes = [{ path: /^\/api\/auth\/.*/ }, { path: /^\/upload\/items\/.*/, methods: ['GET'] }]
 
 async function getAccessToken(): Promise<string> {
-  const store = useStore()
-  let accessToken = LocalStorage.getItem('accessToken')?.toString()
-  if (!accessToken) {
-    accessToken = (await store.getAuthFromRefreshToken()).accessToken
-  } else {
-    const now = dayjs().unix()
-    const jwtPayload = jwt_decode(accessToken) as JwtPayload
-
-    if (!isRefreshTokenRequestStarted && jwtPayload.exp && jwtPayload.exp < now + 15) {
-      isRefreshTokenRequestStarted = true
-      accessToken = (await store.getAuthFromRefreshToken()).accessToken
+  try {
+    let accessToken = LocalStorage.getItem('accessToken')?.toString()
+    if (!accessToken) {
+      const auth = await axios.post('/api/auth/refreshtoken', {}, { withCredentials: true })
+      accessToken = auth.data.accessToken
+    } else {
+      const now = dayjs().unix()
+      const jwtPayload = jwt_decode(accessToken) as JwtPayload
+      if (!isRefreshTokenRequestStarted && jwtPayload.exp && jwtPayload.exp < now + 15) {
+        isRefreshTokenRequestStarted = true
+        const auth = await axios.post('/api/auth/refreshtoken', {}, { withCredentials: true })
+        accessToken = auth.data.accessToken
+      }
     }
-  }
 
-  isRefreshTokenRequestStarted = false
-  return accessToken ? accessToken : ''
+    isRefreshTokenRequestStarted = false
+    return accessToken || ''
+  } catch (error) {
+    return ''
+  }
 }
 
 const request = axios.create({

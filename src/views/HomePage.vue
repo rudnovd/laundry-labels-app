@@ -1,7 +1,7 @@
 <template>
   <section class="home-page q-pa-sm">
     <div class="flex justify-between items-center q-mb-md">
-      <q-btn color="primary" icon="add" to="/create"> Add item </q-btn>
+      <q-btn color="primary" icon="add" to="/create">Add item</q-btn>
     </div>
 
     <section class="laundry-cards-section">
@@ -15,7 +15,7 @@
 
       <div v-if="!isItemsLoading && !items.length" class="flex column items-center">
         No items added yet
-        <q-btn color="primary" to="/create"> Add first item </q-btn>
+        <q-btn color="primary" to="/create">Add first item</q-btn>
       </div>
     </section>
   </section>
@@ -25,7 +25,7 @@
 import LaundryCard from '@/components/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import { useStore } from '@/store'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, onBeforeMount, ref } from 'vue'
 
 export default defineComponent({
   name: 'HomePage',
@@ -39,7 +39,10 @@ export default defineComponent({
     const items = computed(() => store.items)
     const isItemsLoading = ref(false)
 
-    store.getItems().finally(() => (isItemsLoading.value = false))
+    onBeforeMount(() => {
+      isItemsLoading.value = true
+      store.getItems().finally(() => (isItemsLoading.value = false))
+    })
 
     return {
       items,

@@ -54,7 +54,8 @@ export default defineComponent({
     const router = useRouter()
 
     const user = computed(() => store.user)
-    watch(user, () => user.value && user.value._id && router.push('/'))
+    if (user.value?._id) router.push('/')
+    watch(user, () => user.value?._id && router.push('/'))
 
     const email = ref('')
     const password = ref('')

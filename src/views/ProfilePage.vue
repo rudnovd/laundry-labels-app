@@ -14,7 +14,6 @@ import { useRouter } from 'vue-router'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let installEvent: any
-const appVersion = '__APP_VERSION__'
 
 export default defineComponent({
   name: 'ProfilePage',
@@ -66,7 +65,7 @@ export default defineComponent({
     return {
       user,
       showInstallButton,
-      appVersion,
+      appVersion: import.meta.env.__APP_VERSION__,
 
       callLogoutDialog,
       installApp,

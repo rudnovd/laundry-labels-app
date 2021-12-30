@@ -40,10 +40,7 @@ export default ({ mode }) => {
 
   return defineConfig({
     define: {
-      __APP_VERSION__:
-        process.env.NODE_ENV === 'development'
-          ? JSON.stringify(process.env.npm_package_version)
-          : process.env.npm_package_version,
+      'import.meta.env.__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
     },
     css: {
       preprocessorOptions: {
@@ -76,17 +73,11 @@ export default ({ mode }) => {
         '^/api/.*': {
           target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/fallback/, ''),
+          rewrite: (path) => path.replace(/^\/api/, ''),
         },
         '^/upload/.*': {
           target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/fallback/, ''),
-        },
-        '^/auth/.*': {
-          target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/fallback/, ''),
         },
       },
     },

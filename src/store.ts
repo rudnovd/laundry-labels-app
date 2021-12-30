@@ -40,7 +40,7 @@ export const useStore = defineStore('data', {
     async login(payload: { email: string; password: string; token: string }) {
       try {
         const response = await request.post(
-          '/auth/login',
+          '/api/auth/login',
           { email: payload.email, password: payload.password, token: payload.token },
           { withCredentials: true }
         )
@@ -59,7 +59,7 @@ export const useStore = defineStore('data', {
     },
     async registration(payload: { email: string; password: string; token: string }) {
       try {
-        const response = await request.post('/auth/registration', {
+        const response = await request.post('/api/auth/registration', {
           email: payload.email,
           password: payload.password,
           token: payload.token,
@@ -79,7 +79,7 @@ export const useStore = defineStore('data', {
     },
     async logout() {
       try {
-        await request.post('/auth/logout', {}, { withCredentials: true })
+        await request.post('/api/auth/logout', {}, { withCredentials: true })
         LocalStorage.remove('accessToken')
         LocalStorage.remove('hasRefreshToken')
         this.user = {}
@@ -91,7 +91,7 @@ export const useStore = defineStore('data', {
     },
     async getAuthFromRefreshToken() {
       try {
-        const response = await request.post('/auth/refreshtoken', {}, { withCredentials: true })
+        const response = await request.post('/api/auth/refreshtoken', {}, { withCredentials: true })
         if (response.data.accessToken) {
           LocalStorage.set('accessToken', response.data.accessToken)
           LocalStorage.set('hasRefreshToken', true)

@@ -37,7 +37,7 @@ import { laundryIconsMap } from '@/assets/laundryIcons'
 import type { Item } from '@/interfaces/item'
 import { useStore } from '@/store'
 import { useQuasar } from 'quasar'
-import { computed, defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
@@ -48,13 +48,13 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
 
-    const items = computed(() => store.items)
-    const currentItem = computed(() => items.value.find((item: Item) => item._id === route.params.id))
+    const currentItem = ref<Item>()
 
-    if (!currentItem.value) {
-      $q.loading.show()
-      store.getItem({ _id: route.params.id as string }).finally(() => $q.loading.hide())
-    }
+    $q.loading.show()
+    store
+      .getItem({ _id: route.params.id as string })
+      .then(({ item }) => (currentItem.value = item))
+      .finally(() => $q.loading.hide())
 
     const callDeleteDialog = () => {
       $q.dialog({

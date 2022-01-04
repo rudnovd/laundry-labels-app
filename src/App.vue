@@ -5,7 +5,7 @@
         <q-btn v-show="showBackButton" icon="arrow_back" flat no-wrap padding="0" @click="router.back()" />
         <q-toolbar-title class="flex items-center justify-between">
           <q-btn flat icon="sell" label="Laundry Labels" to="/" :ripple="false" padding="0" />
-          <q-btn v-if="user._id" flat icon="person" to="/profile" :ripple="false" padding="0" />
+          <q-btn flat icon="person" to="/profile" :ripple="false" padding="0" />
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -21,8 +21,9 @@
 <script lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
 import { useStore } from '@/store'
-import { useQuasar } from 'quasar'
-import { computed, defineComponent } from 'vue'
+import { useOnline } from '@vueuse/core'
+import { LocalStorage, useQuasar } from 'quasar'
+import { computed, defineComponent, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 let icons: { [key: string]: string } = {}
@@ -36,8 +37,10 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
     const store = useStore()
+    const online = useOnline()
 
-    const user = computed(() => store.user)
+    const isOnline = computed({ get: () => store.isOnline, set: (newOnline) => (store.isOnline = newOnline) })
+    const install = computed(() => store.options.install)
     const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
     $q.iconMapFn = (iconName) => {
@@ -45,19 +48,35 @@ export default defineComponent({
       if (icon !== void 0) return { icon }
     }
 
+    window.addEventListener('beforeinstallprompt', (event) => {
+      /* eslint-disable no-console */
+      console.log('beforeinstallprompt called')
+      event.preventDefault()
+      install.value.event = event
+      install.value.showInstallButton = true
+    })
+
+    window.addEventListener('appinstalled', () => {
+      install.value.event = null
+      /* eslint-disable no-console */
+      console.log('PWA was installed')
+    })
+
+    // create localstorage item with user settings
+    if (!LocalStorage.getItem('userSettings')) {
+      LocalStorage.set('userSettings', { offlineMode: false })
+    }
+
+    watch(online, (newOnline) => (isOnline.value = newOnline))
+
     return {
       router,
 
-      user,
       showBackButton,
     }
   },
 })
 </script>
-
-<style>
-@import '@/styles/main.scss';
-</style>
 
 <style lang="scss" scoped>
 .install-button {

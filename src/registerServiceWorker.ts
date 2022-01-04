@@ -3,7 +3,7 @@
 import { register } from 'register-service-worker'
 
 if (import.meta.env.PROD) {
-  register(`./sw.ts`, {
+  register(`./sw.js`, {
     ready() {
       console.log(
         'App is being served from cache by a service worker.\n' + 'For more details, visit https://goo.gl/AFskqB'
@@ -20,8 +20,8 @@ if (import.meta.env.PROD) {
     },
     updated(registration) {
       console.log('New content is available; please refresh.')
-      const confirmationResult = confirm('New content found! Do you want to reload the app?')
-      if (registration.waiting && confirmationResult) registration.waiting.postMessage({ action: 'skipWaiting' })
+      // const confirmationResult = confirm('New content found! Do you want to reload the app?')
+      // if (registration.waiting && confirmationResult) registration.waiting.postMessage({ action: 'skipWaiting' })
     },
     offline() {
       console.log('No internet connection found. App is running in offline mode.')

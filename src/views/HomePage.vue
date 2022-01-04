@@ -13,7 +13,14 @@
         <LaundryCard v-for="item in items" :key="item._id" :item="item" />
       </div>
 
-      <div v-if="!isItemsLoading && !items.length" class="flex column items-center">
+      <div v-if="!isItemsLoading && offlineItems.length">
+        <div>unsynced items:</div>
+        <div class="laundry-cards q-mb-md">
+          <LaundryCard v-for="(item, index) in offlineItems" :key="`item-blank-${index}`" :item="item" />
+        </div>
+      </div>
+
+      <div v-if="!isItemsLoading && !items.length && !offlineItems.length" class="flex column items-center">
         No items added yet
         <q-btn color="primary" to="/create">Add first item</q-btn>
       </div>
@@ -37,6 +44,7 @@ export default defineComponent({
     const store = useStore()
 
     const items = computed(() => store.items)
+    const offlineItems = computed(() => store.offlineItems)
     const isItemsLoading = ref(false)
 
     onBeforeMount(() => {
@@ -46,6 +54,7 @@ export default defineComponent({
 
     return {
       items,
+      offlineItems,
       isItemsLoading,
     }
   },

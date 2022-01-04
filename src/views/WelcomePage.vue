@@ -1,27 +1,12 @@
 <template>
-  <section class="welcome-page q-pa-sm">
-    <section class="buttons-section">
-      <q-btn color="primary" label="Login" icon="login" to="/login" />
-      <q-btn color="primary" label="Registration" icon="person" to="/registration" />
-    </section>
-  </section>
+  <section class="welcome-page q-pa-sm"></section>
 </template>
 
 <script lang="ts">
-import { useStore } from '@/store'
-import { computed, defineComponent, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'WelcomePage',
-  setup() {
-    const router = useRouter()
-    const store = useStore()
-
-    const user = computed(() => store.user)
-    if (user.value?._id) router.push('/')
-    watch(user, () => user.value?._id && router.push('/'))
-  },
 })
 </script>
 

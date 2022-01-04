@@ -1,15 +1,14 @@
 import { useStore } from '@/store'
 import { LocalStorage } from 'quasar'
-import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/HomePage.vue'
 
-const publicRoutes: Array<RouteRecordRaw> = [
-  {
-    path: '/welcome',
-    name: 'Welcome',
-    component: () => import(/* webpackChunkName: "welcome" */ '@/views/WelcomePage.vue'),
-  },
+const publicRoutes = [
+  // {
+  //   path: '/welcome',
+  //   name: 'Welcome',
+  //   component: () => import(/* webpackChunkName: "welcome" */ '@/views/WelcomePage.vue'),
+  // },
   {
     path: '/login',
     name: 'Login',
@@ -61,16 +60,16 @@ const router = createRouter({
 
 router.beforeEach((to, _, next) => {
   const store = useStore()
+  if (store.offlineMode) return next()
 
+  const hasRefreshToken = LocalStorage.getItem('hasRefreshToken') as boolean
   if (publicRoutes.findIndex((route) => route.path === to.path) !== -1) {
-    if (!store.user._id && LocalStorage.getItem('hasRefreshToken') === true) {
-      store.getAuthFromRefreshToken()
-    }
+    if (!store.user._id && hasRefreshToken) store.getAuthFromRefreshToken()
     next()
-  } else if (!store.user._id && LocalStorage.getItem('hasRefreshToken') === true) {
-    store.getAuthFromRefreshToken().then((response) => (response.user._id ? next() : next({ path: '/welcome' })))
-  } else if (!store.user._id && !LocalStorage.getItem('hasRefreshToken')) {
-    next({ path: '/welcome' })
+  } else if (!store.user._id && hasRefreshToken) {
+    store.getAuthFromRefreshToken().then((response) => (response.user._id ? next() : next({ path: '/login' })))
+  } else if (!store.user._id && !hasRefreshToken) {
+    next({ path: '/login' })
   } else {
     next()
   }

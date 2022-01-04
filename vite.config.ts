@@ -2,33 +2,33 @@ import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { defineConfig, loadEnv } from 'vite'
-import { VitePWAOptions } from 'vite-plugin-pwa'
+import { VitePWA, VitePWAOptions } from 'vite-plugin-pwa'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: 'development',
   base: '/',
   includeAssets: ['favicon.svg'],
   strategies: 'injectManifest',
+  srcDir: 'src',
+  filename: 'sw.ts',
   manifest: {
     name: 'Laundry Labels App',
     short_name: 'Laundry Labels',
+    description: 'Store washing data for your clothes',
+    orientation: 'portrait',
     theme_color: '#ffffff',
+    start_url: '/',
+    id: '/',
     icons: [
       {
-        src: '/pwa-192x192.png',
+        src: '/favicon-192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/pwa-512x512.png',
+        src: '/favicon-512.png',
         sizes: '512x512',
         type: 'image/png',
-      },
-      {
-        src: '/pwa-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any maskable',
       },
     ],
   },
@@ -58,7 +58,7 @@ export default ({ mode }) => {
       quasar({
         sassVariables: 'src/styles/quasar-variables.scss',
       }),
-      // VitePWA(pwaOptions),
+      VitePWA(pwaOptions),
     ],
     resolve: {
       alias: [

@@ -6,6 +6,7 @@
     "start": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
+    "https": "PORT=4444 REINSTALL=true serve dist",
     "lint": "eslint --ext .ts,.vue src",
     "lint:fix": "eslint --ext .ts,.vue src --fix"
   },
@@ -40,6 +41,7 @@
     "eslint-formatter-codeframe": "^7.32.1",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.2.0",
+    "https-localhost": "^4.7.0",
     "prettier": "^2.5.1",
     "sass": "^1.45.2",
     "sass-loader": "^12.4.0",

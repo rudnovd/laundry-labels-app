@@ -90,7 +90,7 @@
                 :class="{ selected: isIconSelected(icon) }"
                 @click="selectIcon(icon)"
               >
-                <q-icon :name="`img:${icon.path}`" />
+                <q-icon class="icon-chip-icon" :name="`${icon.icon}`" size="5em" />
                 <span>{{ icon.description }}</span>
               </button>
             </div>
@@ -318,9 +318,10 @@ export default defineComponent({
 
   & img {
     font-size: 4rem;
+    width: 100%;
   }
 
-  & span {
+  & span:nth-child(2) {
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
@@ -344,5 +345,13 @@ export default defineComponent({
 
 .no-image {
   background: $grey-4;
+}
+
+.icon-chip-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

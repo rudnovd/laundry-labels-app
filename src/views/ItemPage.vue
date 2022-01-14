@@ -13,7 +13,7 @@
       <section class="q-px-sm">
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
-            <q-icon :name="`img:${laundryIconsMap[icon].path}`" />
+            <q-icon :name="laundryIconsMap[icon].icon" size="5em" />
             <span>{{ laundryIconsMap[icon].description }}</span>
           </div>
         </section>
@@ -136,7 +136,7 @@ export default defineComponent({
     font-size: 4rem;
   }
 
-  & span {
+  & span:nth-child(2) {
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;

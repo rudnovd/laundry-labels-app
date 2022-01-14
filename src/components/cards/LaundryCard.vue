@@ -12,7 +12,7 @@
     <section class="laundry-card-body">
       <ul>
         <li v-for="icon in iconsValues.slice(0, 6)" :key="icon._id">
-          <q-icon tag="li" :name="`img:${icon.path}`" />
+          <q-icon tag="li" :name="icon.icon" class="laundry-card-icon" size="2em" />
         </li>
       </ul>
 
@@ -52,7 +52,8 @@ export default defineComponent({
 .laundry-card {
   background: rgb(255, 255, 255);
   border-radius: 4px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%),
+    0 3px 1px -2px rgb(0 0 0 / 12%);
   position: relative;
   width: 100%;
   display: grid;
@@ -67,14 +68,14 @@ export default defineComponent({
   display: grid;
   gap: 12px;
 
-  span:first-child {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    overflow: hidden;
-  }
+  // span:first-child {
+  //   display: -webkit-box;
+  //   -webkit-line-clamp: 1;
+  //   -webkit-box-orient: vertical;
+  //   text-overflow: ellipsis;
+  //   overflow-wrap: break-word;
+  //   overflow: hidden;
+  // }
 
   ul {
     list-style-type: none;
@@ -112,5 +113,10 @@ export default defineComponent({
 
 .no-image {
   background: $grey-4;
+}
+
+.laundry-card-icon {
+  width: 100%;
+  height: 100%;
 }
 </style>

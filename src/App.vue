@@ -28,7 +28,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 let icons: { [key: string]: string } = {}
 
-laundryIcons.forEach((icon) => (icons[icon.icon] = icon.path))
+laundryIcons.forEach((icon) => (icons[icon.icon] = `img:${icon.path}`))
 
 export default defineComponent({
   name: 'App',

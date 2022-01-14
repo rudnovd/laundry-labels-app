@@ -109,7 +109,7 @@ export const laundryIcons: Array<laundryIcon> = [
   {
     _id: 'bleach-only-non-chlorine',
     icon: 'app:laundry-icon-bleach-non-chlorine',
-    path: '/icons/laundry/bleaching/bleach-non-chlorine.svg',
+    path: '/icons/laundry/bleaching/bleach-only-non-chlorine.svg',
     group: 'bleaching',
     description: 'Bleach only non chlorine',
   },

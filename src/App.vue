@@ -23,6 +23,7 @@ import { laundryIcons } from '@/assets/laundryIcons'
 import { useStore } from '@/store'
 import { useOnline } from '@vueuse/core'
 import { LocalStorage, useQuasar } from 'quasar'
+import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed, defineComponent, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -48,6 +49,20 @@ export default defineComponent({
       if (icon !== void 0) return { icon }
     }
 
+    useRegisterSW({
+      immediate: true,
+      onRegistered(registration) {
+        if (registration) {
+          /* eslint-disable no-console */
+          console.log('Service worker registered')
+        }
+      },
+      onRegisterError(error) {
+        /* eslint-disable no-console */
+        console.error(error)
+      },
+    })
+
     window.addEventListener('beforeinstallprompt', (event) => {
       /* eslint-disable no-console */
       console.log('beforeinstallprompt called')
@@ -64,7 +79,7 @@ export default defineComponent({
 
     // create localstorage item with user settings
     if (!LocalStorage.getItem('userSettings')) {
-      LocalStorage.set('userSettings', { offlineMode: false })
+      LocalStorage.set('userSettings', { offlineMode: true })
     }
 
     watch(online, (newOnline) => (isOnline.value = newOnline))

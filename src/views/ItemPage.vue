@@ -27,6 +27,10 @@
           <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
           <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem?._id}`)" />
         </section>
+
+        <section v-if="currentItem._id.indexOf('offline-') > -1" class="q-mt-sm">
+          <q-btn class="full-width" color="primary" label="Sync item with server" icon="sync" @click="syncItem" />
+        </section>
       </section>
     </template>
   </section>
@@ -37,7 +41,7 @@ import { laundryIconsMap } from '@/assets/laundryIcons'
 import type { Item } from '@/interfaces/item'
 import { useStore } from '@/store'
 import { useQuasar } from 'quasar'
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
@@ -48,6 +52,7 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
 
+    const offlineMode = computed({ get: () => store.offlineMode, set: (value) => (store.offlineMode = value) })
     const currentItem = ref<Item>()
 
     $q.loading.show()
@@ -69,6 +74,27 @@ export default defineComponent({
       })
     }
 
+    const syncItem = () => {
+      if (!currentItem.value) return
+
+      $q.loading.show()
+      offlineMode.value = false
+      const { _id, tags, icons, images } = currentItem.value
+      store
+        .postItem({
+          item: {
+            tags,
+            icons,
+            images,
+          },
+        })
+        .then(() => {
+          store.deleteItem({ _id })
+          router.push('/')
+        })
+        .finally(() => $q.loading.hide())
+    }
+
     return {
       router,
 
@@ -76,6 +102,7 @@ export default defineComponent({
       laundryIconsMap,
 
       callDeleteDialog,
+      syncItem,
     }
   },
 })

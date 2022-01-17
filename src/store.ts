@@ -47,7 +47,7 @@ function throwStoreError(error: { name: string; message: string }) {
 export const useStore = defineStore('data', {
   state: (): State => ({
     user: {},
-    offlineMode: userSettings.offlineMode,
+    offlineMode: userSettings ? userSettings.offlineMode : true,
     isOnline: navigator.onLine,
     items: [],
     offlineItems: [],
@@ -116,7 +116,13 @@ export const useStore = defineStore('data', {
     },
     async getItems() {
       this.items = await db.items.toArray()
-      this.offlineItems = await db.offlineItems.toArray()
+
+      const offlineItems = await db.offlineItems.toArray()
+      for (const offlineItem of offlineItems) {
+        const itemImages = await db.itemsImages.where({ itemId: offlineItem._id }).toArray()
+        offlineItem.images = itemImages.map((image) => URL.createObjectURL(image.image))
+      }
+      this.offlineItems = offlineItems
 
       if (!this.offlineMode) {
         const items = await request.get('/api/items').json<Array<Item>>()
@@ -133,6 +139,11 @@ export const useStore = defineStore('data', {
       // if offline item in offlineItems database
       if (payload._id.indexOf('offline-') !== -1) {
         item = await db.offlineItems.get({ _id: payload._id })
+
+        if (item) {
+          const itemImages = await db.itemsImages.where({ itemId: payload._id }).toArray()
+          item.images = itemImages.map((itemImage) => URL.createObjectURL(itemImage.image))
+        }
       } else {
         item = await db.items.get({ _id: payload._id })
       }
@@ -149,14 +160,19 @@ export const useStore = defineStore('data', {
     },
     async postItem(payload: { item: ItemBlank }) {
       if (this.offlineMode) {
+        const _id = `offline-${uid()}`
         const newOfflineItem: Item = {
           ...payload.item,
-          _id: `offline-${uid()}`,
+          _id,
           createdAt: new Date(),
           updatedAt: new Date(),
+          images: [],
         }
         const newIndex = await db.offlineItems.add(Dexie.deepClone(newOfflineItem))
         this.offlineItems = await db.offlineItems.toArray()
+
+        const currentImages = await db.itemsImages.where({ imageUrl: payload.item.images[0] }).toArray()
+        await db.itemsImages.update(currentImages[0], { itemId: _id })
         return await db.offlineItems.get(newIndex)
       }
 

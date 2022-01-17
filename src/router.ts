@@ -19,6 +19,11 @@ const publicRoutes = [
     name: 'Registartion',
     component: () => import(/* webpackChunkName: "registration" */ '@/views/RegistrationPage.vue'),
   },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import(/* webpackChunkName: "profile" */ '@/views/ProfilePage.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -29,11 +34,6 @@ const router = createRouter({
       path: '/',
       name: 'Home',
       component: Home,
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      component: () => import(/* webpackChunkName: "profile" */ '@/views/ProfilePage.vue'),
     },
     {
       path: '/create',

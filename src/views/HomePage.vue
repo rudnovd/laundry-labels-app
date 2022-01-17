@@ -32,7 +32,7 @@
 import LaundryCard from '@/components/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import { useStore } from '@/store'
-import { computed, defineComponent, onBeforeMount, ref } from 'vue'
+import { computed, defineComponent, onBeforeMount, onBeforeUnmount, ref } from 'vue'
 
 export default defineComponent({
   name: 'HomePage',
@@ -50,6 +50,12 @@ export default defineComponent({
     onBeforeMount(() => {
       isItemsLoading.value = true
       store.getItems().finally(() => (isItemsLoading.value = false))
+    })
+
+    onBeforeUnmount(() => {
+      offlineItems.value.forEach((offlineItem) => {
+        offlineItem.images.forEach((image) => URL.revokeObjectURL(image))
+      })
     })
 
     return {

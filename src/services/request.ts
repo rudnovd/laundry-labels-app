@@ -58,9 +58,6 @@ const request = ky.create({
     ],
     afterResponse: [
       async (_request, _options, response) => {
-        // validate errors with code < 500
-        if (response.status >= 500) return
-
         // if unauthorized error
         if (response.status === 401) {
           const store = useStore()

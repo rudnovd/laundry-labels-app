@@ -105,12 +105,13 @@
 
 <script lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
+import { db } from '@/db'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { laundryIcon } from '@/interfaces/laundryIcon'
 import request from '@/services/request'
 import { useStore } from '@/store'
 import Compressor from 'compressorjs'
-import { QUploader, useQuasar } from 'quasar'
+import { QUploader, uid, useQuasar } from 'quasar'
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -122,6 +123,7 @@ export default defineComponent({
     const route = useRoute()
     const store = useStore()
 
+    const offlineMode = computed(() => store.offlineMode)
     const userItems = computed(() => store.items)
 
     const newItem = reactive({
@@ -151,18 +153,18 @@ export default defineComponent({
         store
           .getItem({ _id: route.params.id as string })
           .then((response) => {
-            newItem.icons = response.item.icons || []
-            newItem.images = response.item.images || []
-            newItem.tags = response.item.tags || []
+            if (!response.item) return
+            newItem.icons = response.item.icons
+            newItem.images = response.item.images
+            newItem.tags = response.item.tags
           })
           .finally(() => $q.loading.hide())
       } else {
         const currentUserItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
-        // if (!currentUserItem) return
         if (currentUserItem) {
-          newItem.icons = currentUserItem.icons || []
-          newItem.images = currentUserItem.images || []
-          newItem.tags = currentUserItem.tags || []
+          newItem.icons = currentUserItem.icons
+          newItem.images = currentUserItem.images
+          newItem.tags = currentUserItem.tags
         }
       }
     }
@@ -189,16 +191,26 @@ export default defineComponent({
       try {
         const image = await compressorResult
 
-        let formData = new FormData()
-        formData.append('images', image)
+        if (!offlineMode.value) {
+          let formData = new FormData()
+          formData.append('images', image)
 
-        const imagesUrls = await request.post('/api/upload/items', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
+          const imagesUrls = await request
+            .post('/api/upload/items', {
+              body: formData,
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            })
+            .json<{ images: Array<string> }>()
 
-        newItem.images = imagesUrls.data.images
+          newItem.images = imagesUrls.images
+        } else {
+          const imageId = `offline-${uid()}`
+          const imgURL = URL.createObjectURL(image)
+          db.itemsImages.add({ _id: imageId, itemId: null, image, imageUrl: imgURL })
+          newItem.images = [imgURL]
+        }
       } catch (error) {
         console.error(error)
       } finally {

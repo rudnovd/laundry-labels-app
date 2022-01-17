@@ -32,7 +32,6 @@ export class RequestError extends Error {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function throwStoreError(error: { name: string; message: string }) {
   const requestError = new RequestError(error.name, error.message)
   console.error(`${requestError.name}: ${requestError.message}`)
@@ -41,7 +40,7 @@ function throwStoreError(error: { name: string; message: string }) {
     message: requestError.message,
     timeout: 5000,
   })
-  throw requestError
+  throw new Error(error.message)
 }
 
 export const useStore = defineStore('data', {

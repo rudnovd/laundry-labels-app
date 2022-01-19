@@ -170,8 +170,10 @@ export const useStore = defineStore('data', {
         const newIndex = await db.offlineItems.add(Dexie.deepClone(newOfflineItem))
         this.offlineItems = await db.offlineItems.toArray()
 
-        const currentImages = await db.itemsImages.where({ imageUrl: payload.item.images[0] }).toArray()
-        await db.itemsImages.update(currentImages[0], { itemId: _id })
+        if (payload.item.images.length) {
+          const currentImages = await db.itemsImages.where({ imageUrl: payload.item.images[0] }).toArray()
+          await db.itemsImages.update(currentImages[0], { itemId: _id })
+        }
         return await db.offlineItems.get(newIndex)
       }
 

@@ -212,8 +212,9 @@ export const useStore = defineStore('data', {
 store.use(({ store }) => {
   store.$onAction(({ onError }) => {
     // catch errors for all store actions
-    onError((response) => {
-      if (response instanceof Dexie.DexieError) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError((response: any) => {
+      if (response instanceof Dexie.DexieError || response.message) {
         const error = { error: { name: response.message, message: response.message } }
         throwStoreError(error.error)
       } else {

@@ -1,12 +1,6 @@
 [[redirects]]
   from = "/api/*"
-  to = "https://api.laundrylabels.app/api/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/auth/*"
-  to = "https://api.laundrylabels.app/auth/:splat"
+  to = "https://api.laundrylabels.app/:splat"
   status = 200
   force = true
 

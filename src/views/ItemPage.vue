@@ -83,15 +83,23 @@ export default defineComponent({
       offlineMode.value = false
       const { _id, tags, icons } = currentItem.value
 
-      let formData = new FormData()
       const images = await db.itemsImages.where({ itemId: _id }).toArray()
-      formData.append('images', images[0].image)
+      let imagesUrls: { images: Array<string> } = { images: [] }
+      if (images.length) {
+        let formData = new FormData()
+        formData.append('images', images[0].image)
 
-      const imagesUrls = await request
-        .post('/api/upload/items', {
-          body: formData,
-        })
-        .json<{ images: Array<string> }>()
+        try {
+          imagesUrls = await request
+            .post('/api/upload/items', {
+              body: formData,
+            })
+            .json<{ images: Array<string> }>()
+        } catch (error) {
+          console.error(error)
+          $q.loading.hide()
+        }
+      }
 
       try {
         await store.postItem({

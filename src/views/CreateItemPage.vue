@@ -198,9 +198,6 @@ export default defineComponent({
           const imagesUrls = await request
             .post('/api/upload/items', {
               body: formData,
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
             })
             .json<{ images: Array<string> }>()
 

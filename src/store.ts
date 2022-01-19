@@ -194,6 +194,8 @@ export const useStore = defineStore('data', {
     },
     async deleteItem(payload: { _id: string }) {
       if (payload._id.indexOf('offline-') !== -1) {
+        const itemImages = await db.itemsImages.where({ itemId: payload._id }).primaryKeys()
+        itemImages.forEach((image) => db.itemsImages.delete(image))
         db.offlineItems.delete(payload._id)
         this.offlineItems = await db.offlineItems.toArray()
         return this.offlineItems

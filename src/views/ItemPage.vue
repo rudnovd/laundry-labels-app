@@ -38,7 +38,9 @@
 
 <script lang="ts">
 import { laundryIconsMap } from '@/assets/laundryIcons'
+import { db } from '@/db'
 import type { Item } from '@/interfaces/item'
+import request from '@/services/request'
 import { useStore } from '@/store'
 import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
@@ -74,25 +76,36 @@ export default defineComponent({
       })
     }
 
-    const syncItem = () => {
+    const syncItem = async () => {
       if (!currentItem.value) return
 
       $q.loading.show()
       offlineMode.value = false
-      const { _id, tags, icons, images } = currentItem.value
-      store
-        .postItem({
+      const { _id, tags, icons } = currentItem.value
+
+      let formData = new FormData()
+      const images = await db.itemsImages.where({ itemId: _id }).toArray()
+      formData.append('images', images[0].image)
+
+      const imagesUrls = await request
+        .post('/api/upload/items', {
+          body: formData,
+        })
+        .json<{ images: Array<string> }>()
+
+      try {
+        await store.postItem({
           item: {
             tags,
             icons,
-            images,
+            images: imagesUrls.images,
           },
         })
-        .then(() => {
-          store.deleteItem({ _id })
-          router.push('/')
-        })
-        .finally(() => $q.loading.hide())
+        store.deleteItem({ _id })
+        router.push('/')
+      } finally {
+        $q.loading.hide()
+      }
     }
 
     return {

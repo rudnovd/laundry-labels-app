@@ -41,7 +41,8 @@ import { laundryIconsMap } from '@/assets/laundryIcons'
 import { db } from '@/db'
 import type { Item } from '@/interfaces/item'
 import request from '@/services/request'
-import { useStore } from '@/store'
+import { useItemsStore } from '@/store/items'
+import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -50,15 +51,16 @@ export default defineComponent({
   name: 'ItemPage',
   setup() {
     const $q = useQuasar()
-    const store = useStore()
     const router = useRouter()
     const route = useRoute()
+    const items = useItemsStore()
+    const user = useUserStore()
 
-    const offlineMode = computed({ get: () => store.offlineMode, set: (value) => (store.offlineMode = value) })
+    const offlineMode = computed({ get: () => user.offlineMode, set: (value) => (user.offlineMode = value) })
     const currentItem = ref<Item>()
 
     $q.loading.show()
-    store
+    items
       .getItem({ _id: route.params.id as string })
       .then(({ item }) => (currentItem.value = item))
       .finally(() => $q.loading.hide())
@@ -69,7 +71,7 @@ export default defineComponent({
         cancel: true,
       }).onOk(() => {
         $q.loading.show()
-        store
+        items
           .deleteItem({ _id: route.params.id as string })
           .then(() => router.push('/'))
           .finally(() => $q.loading.hide())
@@ -94,14 +96,14 @@ export default defineComponent({
         .json<{ images: Array<string> }>()
 
       try {
-        await store.postItem({
+        await items.postItem({
           item: {
             tags,
             icons,
             images: imagesUrls.images,
           },
         })
-        store.deleteItem({ _id })
+        items.deleteItem({ _id })
         router.push('/')
       } finally {
         $q.loading.hide()

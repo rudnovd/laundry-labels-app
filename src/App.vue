@@ -20,12 +20,12 @@
 
 <script lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
-import { useStore } from '@/store'
 import { useOnline } from '@vueuse/core'
 import { LocalStorage, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed, defineComponent, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from './store/user'
 
 let icons: { [key: string]: string } = {}
 
@@ -37,11 +37,11 @@ export default defineComponent({
     const $q = useQuasar()
     const router = useRouter()
     const route = useRoute()
-    const store = useStore()
+    const user = useUserStore()
     const online = useOnline()
 
-    const isOnline = computed({ get: () => store.isOnline, set: (newOnline) => (store.isOnline = newOnline) })
-    const install = computed(() => store.options.install)
+    const isOnline = computed({ get: () => user.isOnline, set: (newOnline) => (user.isOnline = newOnline) })
+    const install = computed(() => user.options.install)
     const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
     $q.iconMapFn = (iconName) => {

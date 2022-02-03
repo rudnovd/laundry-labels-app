@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import router from '@/router'
-import { useStore } from '@/store'
+import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
 import { computed, defineComponent, ref, watch } from 'vue'
@@ -50,9 +50,9 @@ export default defineComponent({
   },
   setup() {
     const $q = useQuasar()
-    const store = useStore()
+    const userStore = useUserStore()
 
-    const user = computed(() => store.user)
+    const user = computed(() => userStore.user)
     if (user.value?._id) router.push('/')
     watch(user, () => user.value?._id && router.push('/'))
 
@@ -77,7 +77,7 @@ export default defineComponent({
       }
 
       $q.loading.show()
-      store
+      userStore
         .login({ email: email.value, password: password.value, token: captchaVerificationToken.value })
         .then(() => {
           $q.notify({

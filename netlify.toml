@@ -70,7 +70,7 @@
     # '''
 
 [[headers]]
-  for = "/auth/logout"
+  for = "/api/auth/logout"
   [headers.values]
     Clear-Site-Data = "'cookies'"
 

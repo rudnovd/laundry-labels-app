@@ -1,6 +1,6 @@
-import { useStore } from '@/store'
 import { LocalStorage } from 'quasar'
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from './store/user'
 import Home from './views/HomePage.vue'
 
 const publicRoutes = [
@@ -59,16 +59,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _, next) => {
-  const store = useStore()
-  if (store.offlineMode) return next()
+  const user = useUserStore()
+  if (user.offlineMode) return next()
 
   const hasRefreshToken = LocalStorage.getItem('hasRefreshToken') as boolean
   if (publicRoutes.findIndex((route) => route.path === to.path) !== -1) {
-    if (!store.user._id && hasRefreshToken) store.getAuthFromRefreshToken()
+    if (!user.user._id && hasRefreshToken) user.getAuthFromRefreshToken()
     next()
-  } else if (!store.user._id && hasRefreshToken) {
-    store.getAuthFromRefreshToken().then((response) => (response.user._id ? next() : next({ path: '/login' })))
-  } else if (!store.user._id && !hasRefreshToken) {
+  } else if (!user.user._id && hasRefreshToken) {
+    user.getAuthFromRefreshToken().then((response) => (response.user._id ? next() : next({ path: '/login' })))
+  } else if (!user.user._id && !hasRefreshToken) {
     next({ path: '/login' })
   } else {
     next()

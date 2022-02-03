@@ -109,7 +109,8 @@ import { db } from '@/db'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { laundryIcon } from '@/interfaces/laundryIcon'
 import request from '@/services/request'
-import { useStore } from '@/store'
+import { useItemsStore } from '@/store/items'
+import { useUserStore } from '@/store/user'
 import Compressor from 'compressorjs'
 import { QUploader, uid, useQuasar } from 'quasar'
 import { computed, defineComponent, reactive, ref } from 'vue'
@@ -121,10 +122,11 @@ export default defineComponent({
     const $q = useQuasar()
     const router = useRouter()
     const route = useRoute()
-    const store = useStore()
+    const user = useUserStore()
+    const items = useItemsStore()
 
-    const offlineMode = computed(() => store.offlineMode)
-    const userItems = computed(() => store.items)
+    const offlineMode = computed(() => user.offlineMode)
+    const userItems = computed(() => items.items)
 
     const newItem = reactive({
       icons: [],
@@ -150,7 +152,7 @@ export default defineComponent({
     if (route.params.id) {
       if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
         $q.loading.show()
-        store
+        items
           .getItem({ _id: route.params.id as string })
           .then((response) => {
             if (!response.item) return
@@ -232,12 +234,12 @@ export default defineComponent({
       $q.loading.show()
 
       if (route.params.id) {
-        store
+        items
           .editItem({ item: { ...newItem, _id: route.params.id as string } })
           .then(() => router.push('/'))
           .finally(() => $q.loading.hide())
       } else {
-        store
+        items
           .postItem({ item: newItem })
           .then(() => router.push('/'))
           .finally(() => $q.loading.hide())

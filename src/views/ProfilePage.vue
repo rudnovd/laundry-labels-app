@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { setUserSettings } from '@/localstorage'
-import { useStore } from '@/store'
+import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
 import { computed, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
@@ -23,20 +23,20 @@ export default defineComponent({
   name: 'ProfilePage',
   setup() {
     const $q = useQuasar()
-    const store = useStore()
+    const userStore = useUserStore()
     const router = useRouter()
 
-    const isOnline = computed(() => store.isOnline)
-    const user = computed(() => store.user._id)
-    const install = computed(() => store.options.install)
+    const isOnline = computed(() => userStore.isOnline)
+    const user = computed(() => userStore.user._id)
+    const install = computed(() => userStore.options.install)
     const offlineMode = computed({
-      get: () => store.offlineMode,
+      get: () => userStore.offlineMode,
       set: (value) => {
-        store.offlineMode = value
+        userStore.offlineMode = value
         setUserSettings({ offlineMode: value })
       },
     })
-    const showInstallButton = computed(() => store.options.install.showInstallButton)
+    const showInstallButton = computed(() => userStore.options.install.showInstallButton)
 
     const callLogoutDialog = () => {
       $q.dialog({
@@ -45,7 +45,7 @@ export default defineComponent({
         cancel: true,
       }).onOk(() => {
         $q.loading.show()
-        store
+        userStore
           .logout()
           .then(() => {
             $q.notify({

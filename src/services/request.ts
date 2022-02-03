@@ -1,6 +1,6 @@
 import type { UserRefreshTokenResponse } from '@/interfaces/user'
 import router from '@/router'
-import { useStore } from '@/store'
+import { useUserStore } from '@/store/user'
 import dayjs from 'dayjs'
 import type { JwtPayload } from 'jwt-decode'
 import jwt_decode from 'jwt-decode'
@@ -60,12 +60,12 @@ const request = ky.create({
       async (_request, _options, response) => {
         // if unauthorized error
         if (response.status === 401) {
-          const store = useStore()
-          store.user = {}
+          const user = useUserStore()
+          user.user = {}
           router.push('/login')
         } else if (!response.ok) {
-          // throw { error: { name: string; message: string } } from server
-          throw await response.json()
+          const error = await response.json()
+          throw { name: error.error.name, message: error.error.message }
         }
       },
     ],

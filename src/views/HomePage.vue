@@ -31,7 +31,7 @@
 <script lang="ts">
 import LaundryCard from '@/components/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
-import { useStore } from '@/store'
+import { useItemsStore } from '@/store/items'
 import { computed, defineComponent, onBeforeMount, onBeforeUnmount, ref } from 'vue'
 
 export default defineComponent({
@@ -41,15 +41,15 @@ export default defineComponent({
     LaundryCard,
   },
   setup() {
-    const store = useStore()
+    const itemsStore = useItemsStore()
 
-    const items = computed(() => store.items)
-    const offlineItems = computed(() => store.offlineItems)
+    const items = computed(() => itemsStore.items)
+    const offlineItems = computed(() => itemsStore.offlineItems)
     const isItemsLoading = ref(false)
 
     onBeforeMount(() => {
       isItemsLoading.value = true
-      store.getItems().finally(() => (isItemsLoading.value = false))
+      itemsStore.getItems().finally(() => (isItemsLoading.value = false))
     })
 
     onBeforeUnmount(() => {

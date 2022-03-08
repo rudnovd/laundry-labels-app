@@ -1,105 +1,92 @@
 <template>
   <section class="create-item-page" :class="{ 'q-pb-md': route.params.id, 'q-py-md': !route.params.id }">
-    <q-form class="create-item-form" @submit="onSubmit">
+    <section class="info-container">
+      <!-- Uploaded image displays in edit route -->
       <q-img
         v-if="route.params.id"
+        class="item-image"
         :height="isDesktop ? '300px' : 'auto'"
         :src="newItem.images[0] || ''"
         :class="{ 'no-image': !newItem.images.length }"
       />
 
-      <section class="q-px-sm">
-        <q-uploader
-          v-if="!route.params.id"
-          ref="uploadImageForm"
-          class="upload-image q-mb-md"
-          :max-total-size="10485760"
-          accept="image/jpg, image/jpeg, image/png"
-          :max-files="1"
-          @added="onAddImage"
-          @rejected="onAddFileReject"
-        >
-          <template #header>
-            <div class="row no-wrap items-center q-pa-sm q-gutter-xs">
-              <div class="col">
-                <div class="q-uploader__title">Upload image</div>
-              </div>
-              <q-btn v-if="!newItem.images.length" type="a" icon="add_box" round dense flat>
-                <q-uploader-add-trigger />
-              </q-btn>
-              <q-btn v-if="newItem.images.length" icon="delete" round dense flat @click="onRemoveFile" />
+      <q-uploader
+        v-if="!route.params.id"
+        ref="uploadImageForm"
+        class="upload-image"
+        :max-total-size="10485760"
+        accept="image/jpg, image/jpeg, image/png"
+        :max-files="1"
+        @added="onAddImage"
+        @rejected="onAddFileReject"
+      >
+        <template #header>
+          <div class="row no-wrap items-center q-pa-sm q-gutter-xs">
+            <div class="col">
+              <div class="q-uploader__title">Upload image</div>
             </div>
-          </template>
-
-          <template #list="scope: any">
-            <q-list separator>
-              <q-item v-for="file in scope.files" :key="file.name">
-                <q-item-section>
-                  <q-item-label v-if="uploadImageIsLoading" caption>
-                    <q-spinner color="primary" size="3em" />
-                  </q-item-label>
-                  <q-item-label v-if="!uploadImageIsLoading && newItem.images.length" caption>
-                    <q-img :src="newItem.images[0]" height="200px" alt="Uploaded image" />
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </template>
-        </q-uploader>
-
-        <q-select
-          v-model="newItem.tags"
-          class="q-mb-md"
-          outlined
-          clearable
-          label="tags"
-          use-input
-          multiple
-          hide-dropdown-icon
-          new-value-mode="add-unique"
-          :placeholder="!newItem.tags.length ? 'Input or select tags from list' : ''"
-          :max-values="10"
-          :options="[
-            'black',
-            'white',
-            'red',
-            'yellow',
-            'green',
-            'jeans',
-            't-shirt',
-            'dress',
-            'sweater',
-            'shorts',
-            'skirts',
-          ]"
-          use-chips
-          autocomplete="off"
-        />
-
-        <section class="washing-icons-container q-mb-md">
-          <div v-for="(icons, group) in iconsByGroups" :key="group" class="icons-group">
-            <span>{{ group }}</span>
-
-            <div class="icons-chips">
-              <button
-                v-for="icon in icons"
-                :key="icon._id"
-                v-ripple
-                type="button"
-                class="icon-chip"
-                :class="{ selected: isIconSelected(icon) }"
-                @click="selectIcon(icon)"
-              >
-                <q-icon class="icon-chip-icon" :name="`${icon.icon}`" size="5em" />
-                <span>{{ icon.description }}</span>
-              </button>
-            </div>
+            <q-btn v-if="!newItem.images.length" type="a" icon="add_box" round dense flat>
+              <q-uploader-add-trigger />
+            </q-btn>
+            <q-btn v-if="newItem.images.length" icon="delete" round dense flat @click="onRemoveFile" />
           </div>
-        </section>
+        </template>
 
-        <q-btn color="positive" class="full-width" type="submit" :label="route.params.id ? 'Save' : 'Create'" />
-      </section>
-    </q-form>
+        <template #list="scope: any">
+          <q-list separator>
+            <q-item v-for="file in scope.files" :key="file.name">
+              <q-item-section>
+                <q-item-label v-if="uploadImageIsLoading" caption>
+                  <q-spinner color="primary" size="3em" />
+                </q-item-label>
+                <q-item-label v-if="!uploadImageIsLoading && newItem.images.length" caption>
+                  <q-img :src="newItem.images[0]" height="200px" alt="Uploaded image" />
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </template>
+      </q-uploader>
+
+      <q-select
+        v-model="newItem.tags"
+        class="select-tags"
+        outlined
+        clearable
+        label="tags"
+        use-input
+        multiple
+        hide-dropdown-icon
+        new-value-mode="add-unique"
+        :placeholder="!newItem.tags.length ? 'Input or select tags from list' : ''"
+        :max-values="10"
+        :options="standardTags"
+        use-chips
+        autocomplete="off"
+      />
+    </section>
+
+    <section class="washing-icons-container">
+      <div v-for="(icons, group) in iconsByGroups" :key="group" class="icons-group">
+        <span>{{ group }}</span>
+
+        <div class="icons-chips">
+          <button
+            v-for="icon in icons"
+            :key="icon._id"
+            v-ripple
+            type="button"
+            :class="{ selected: isIconSelected(icon) }"
+            @click="selectIcon(icon)"
+          >
+            <q-icon class="icon-chip-icon" :name="`${icon.icon}`" size="5em" />
+            <span>{{ icon.description }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <q-btn color="positive" class="submit-button" :label="route.params.id ? 'Save' : 'Create'" @click="onSubmit" />
   </section>
 </template>
 
@@ -127,15 +114,19 @@ export default defineComponent({
 
     const offlineMode = computed(() => user.offlineMode)
     const userItems = computed(() => items.items)
-
-    const newItem = reactive({
-      icons: [],
-      images: [],
-      tags: [],
-    } as ItemBlank)
-    const uploadImageForm = ref(QUploader)
-    const uploadImageIsLoading = ref(false)
-
+    const standardTags = [
+      'black',
+      'white',
+      'red',
+      'yellow',
+      'green',
+      'jeans',
+      't-shirt',
+      'dress',
+      'sweater',
+      'shorts',
+      'skirts',
+    ]
     const iconsByGroups = computed(() => {
       const map: {
         [key: string]: Array<laundryIcon>
@@ -149,7 +140,16 @@ export default defineComponent({
       return map
     })
 
+    const newItem = reactive({
+      icons: [],
+      images: [],
+      tags: [],
+    } as ItemBlank)
+    const uploadImageForm = ref(QUploader)
+    const uploadImageIsLoading = ref(false)
+
     if (route.params.id) {
+      // Get item data if this doesn't exist in store
       if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
         $q.loading.show()
         items
@@ -248,12 +248,13 @@ export default defineComponent({
 
     return {
       route,
+      isDesktop: $q.platform.is.desktop,
 
+      standardTags,
       iconsByGroups,
       uploadImageForm,
       newItem,
       uploadImageIsLoading,
-      isDesktop: $q.platform.is.desktop,
 
       selectIcon,
       isIconSelected,
@@ -268,28 +269,53 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .create-item-page {
-  max-width: 1280px;
+  max-width: 1920px;
   margin: auto;
-}
-
-.create-item-form {
   display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "info"
+    "icons"
+    "submit";
+
   gap: 1.5rem;
+  padding: 16px;
+
+  @include media-medium {
+    grid-template-columns: 2fr 5fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "info icons"
+      ". submit";
+  }
+}
+.info-container {
+  grid-area: info;
 }
 
-.color-picker-container {
-  display: grid;
-  gap: 4px;
+.item-image {
+  margin-bottom: 16px;
+}
 
-  .selected-color {
-    height: 24px;
-    border-radius: 4px;
-  }
+.no-image {
+  background: $grey-4;
+}
+
+.upload-image {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.select-tags {
+  margin-bottom: 16px;
 }
 
 .washing-icons-container {
   display: grid;
   gap: 1rem;
+  grid-area: icons;
+  margin-bottom: 16px;
 }
 
 .icons-group {
@@ -313,49 +339,37 @@ export default defineComponent({
   @include media-small {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-}
 
-.icon-chip {
-  display: grid;
-  position: relative;
-  padding: 0.25rem;
-  grid-template-columns: 64px auto;
-  gap: 0.5rem;
-  align-items: center;
-  border: 1px solid $grey-4;
-  border-radius: 8px;
-  background: white;
-  cursor: pointer;
+  & > button {
+    display: grid;
+    position: relative;
+    padding: 0.25rem;
+    grid-template-columns: 64px auto;
+    gap: 0.5rem;
+    align-items: center;
+    border: 1px solid $grey-4;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
 
-  & img {
-    font-size: 4rem;
-    width: 100%;
+    & img {
+      font-size: 4rem;
+      width: 100%;
+    }
+
+    & span:nth-child(2) {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      overflow-wrap: break-word;
+      overflow: hidden;
+    }
+
+    &.selected {
+      background-color: rgba($grey-6, 0.3);
+    }
   }
-
-  & span:nth-child(2) {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    overflow: hidden;
-  }
-
-  &.selected {
-    background-color: rgba($grey-6, 0.3);
-  }
-}
-
-.icon-chip-text {
-  font-size: 0.5rem;
-}
-
-.upload-image {
-  width: 100%;
-}
-
-.no-image {
-  background: $grey-4;
 }
 
 .icon-chip-icon {
@@ -364,5 +378,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.submit-button {
+  width: 100%;
+  grid-area: submit;
 }
 </style>

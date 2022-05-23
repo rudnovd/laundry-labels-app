@@ -16,7 +16,7 @@
     "@vueuse/core": "^7.5.3",
     "compressorjs": "^1.1.1",
     "dayjs": "^1.10.7",
-    "dexie": "^3.2.0",
+    "dexie": "^3.2.2",
     "jwt-decode": "^3.1.2",
     "ky": "^0.28.7",
     "pinia": "^2.0.9",

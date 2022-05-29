@@ -1,40 +1,35 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "esnext",
     "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
-    "importHelpers": true,
     "moduleResolution": "node",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": true,
-    "sourceMap": true,
-    "removeComments": true,
-    "importsNotUsedAsValues": "error",
     "baseUrl": ".",
-    "types": ["vite/client", "vite-plugin-pwa/client"],
+    "types": ["node", "vite/client", "vite-plugin-pwa/client"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
+      "@/*": ["./src/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost",
-      "WebWorker"
-    ]
+
+    "importsNotUsedAsValues": "error",
+    "noImplicitThis": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": true,
+
+    // Required in Vue projects
+    "jsx": "preserve",
+
+    // For `<script setup>`
+    "preserveValueImports": true,
+
+    // Vite recommended (https://vitejs.dev/guide/features.html#typescript-compiler-options=)
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
+    "skipLibCheck": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*", "env.d.ts", "vite.config.ts"],
+  "exclude": ["dist, node_modules"]
 }

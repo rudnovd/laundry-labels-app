@@ -36,72 +36,56 @@
   </section>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import router from '@/router'
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-export default defineComponent({
-  name: 'LoginPage',
-  components: {
-    VueHcaptcha,
-  },
-  setup() {
-    const $q = useQuasar()
-    const userStore = useUserStore()
+const $q = useQuasar()
+const userStore = useUserStore()
 
-    const user = computed(() => userStore.user)
-    if (user.value?._id) router.push('/')
-    watch(user, () => user.value?._id && router.push('/'))
+const user = computed(() => userStore.user)
+if (user.value?._id) router.push('/')
+watch(user, () => user.value?._id && router.push('/'))
 
-    const email = ref('')
-    const password = ref('')
-    const captchaForm = ref<VueHcaptcha>()
-    const captchaIsVerified = ref(false)
-    const captchaVerificationToken = ref('')
+const email = ref('')
+const password = ref('')
+const captchaForm = ref<VueHcaptcha>()
+const captchaIsVerified = ref(false)
+const captchaVerificationToken = ref('')
 
-    const onVerifyCaptcha = (token: string) => {
-      captchaIsVerified.value = true
-      captchaVerificationToken.value = token
-    }
+const onVerifyCaptcha = (token: string) => {
+  captchaIsVerified.value = true
+  captchaVerificationToken.value = token
+}
 
-    const onSubmit = throttle(() => {
-      if (import.meta.env.PROD && !captchaIsVerified.value) {
-        return $q.notify({
-          type: 'negative',
-          message: 'Captcha required',
-          timeout: 5000,
-        })
-      }
+const onSubmit = throttle(() => {
+  if (import.meta.env.PROD && !captchaIsVerified.value) {
+    return $q.notify({
+      type: 'negative',
+      message: 'Captcha required',
+      timeout: 5000,
+    })
+  }
 
-      $q.loading.show()
-      userStore
-        .login({ email: email.value, password: password.value, token: captchaVerificationToken.value })
-        .then(() => {
-          $q.notify({
-            type: 'positive',
-            message: 'Sign in successfully',
-          })
-          router.push('/')
-        })
-        .catch(() => captchaForm.value?.reset())
-        .finally(() => $q.loading.hide())
-    }, 5000)
+  $q.loading.show()
+  userStore
+    .login({ email: email.value, password: password.value, token: captchaVerificationToken.value })
+    .then(() => {
+      $q.notify({
+        type: 'positive',
+        message: 'Sign in successfully',
+      })
+      router.push('/')
+    })
+    .catch(() => captchaForm.value?.reset())
+    .finally(() => $q.loading.hide())
+}, 5000)
 
-    return {
-      sitekey: import.meta.env.VITE_APP_CAPTCHA_KEY,
-      showCaptcha: import.meta.env.PROD,
-      captchaForm,
-      email,
-      password,
-
-      onSubmit,
-      onVerifyCaptcha,
-    }
-  },
-})
+const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
+const showCaptcha = import.meta.env.PROD
 </script>
 
 <style lang="scss" scoped>

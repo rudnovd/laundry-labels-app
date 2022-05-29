@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia'
 import { Notify } from 'quasar'
 
-export const pinia = createPinia()
+const pinia = createPinia()
 
 pinia.use(({ store }) => {
   store.$onAction(({ onError }) => {
@@ -18,3 +18,5 @@ pinia.use(({ store }) => {
     })
   })
 })
+
+export default pinia

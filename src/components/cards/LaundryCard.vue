@@ -1,5 +1,6 @@
 <template>
-  <div v-ripple class="laundry-card" @click="router.push(`/item/${item._id}`)">
+  <!-- TODO: v-ripple error (https://github.com/quasarframework/quasar/issues/13154)  -->
+  <div class="laundry-card" @click="router.push(`/item/${item._id}`)">
     <q-img
       :class="{ 'no-image': !item.images.length }"
       :src="item.images && item.images[0]"
@@ -23,37 +24,26 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
 import type { Item } from '@/interfaces/item'
-import { defineComponent } from 'vue'
+import { defineProps } from 'vue'
 import { useRouter } from 'vue-router'
 
-export default defineComponent({
-  name: 'LaundryCard',
-  props: {
-    item: {
-      type: Object as () => Item,
-      required: true,
-    },
-  },
-  setup(props) {
-    const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon._id) !== -1)
+const props = defineProps<{
+  item: Item
+}>()
 
-    return {
-      router: useRouter(),
-      iconsValues,
-    }
-  },
-})
+const router = useRouter()
+
+const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon._id) !== -1)
 </script>
 
 <style lang="scss" scoped>
 .laundry-card {
   background: rgb(255, 255, 255);
   border-radius: 4px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%),
-    0 3px 1px -2px rgb(0 0 0 / 12%);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%);
   position: relative;
   width: 100%;
   display: grid;

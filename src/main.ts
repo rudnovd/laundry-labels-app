@@ -1,6 +1,6 @@
 import App from '@/App.vue'
 import router from '@/router'
-import { pinia } from '@/store'
+import pinia from '@/store'
 import '@/styles/main.scss'
 import '@/styles/quasar.scss'
 import '@quasar/extras/material-icons/material-icons.css'

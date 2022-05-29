@@ -71,10 +71,10 @@
         <span>{{ group }}</span>
 
         <div class="icons-chips">
+          <!-- TODO: v-ripple error (https://github.com/quasarframework/quasar/issues/13154)  -->
           <button
             v-for="icon in icons"
             :key="icon._id"
-            v-ripple
             type="button"
             :class="{ selected: isIconSelected(icon) }"
             @click="selectIcon(icon)"
@@ -90,7 +90,7 @@
   </section>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
 import { db } from '@/db'
 import type { Item, ItemBlank } from '@/interfaces/item'
@@ -100,171 +100,153 @@ import { useItemsStore } from '@/store/items'
 import { useUserStore } from '@/store/user'
 import Compressor from 'compressorjs'
 import { QUploader, uid, useQuasar } from 'quasar'
-import { computed, defineComponent, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-export default defineComponent({
-  name: 'CreateItemPage',
-  setup() {
-    const $q = useQuasar()
-    const router = useRouter()
-    const route = useRoute()
-    const user = useUserStore()
-    const items = useItemsStore()
+const $q = useQuasar()
+const router = useRouter()
+const route = useRoute()
+const user = useUserStore()
+const items = useItemsStore()
 
-    const offlineMode = computed(() => user.offlineMode)
-    const userItems = computed(() => items.items)
-    const standardTags = [
-      'black',
-      'white',
-      'red',
-      'yellow',
-      'green',
-      'jeans',
-      't-shirt',
-      'dress',
-      'sweater',
-      'shorts',
-      'skirts',
-    ]
-    const iconsByGroups = computed(() => {
-      const map: {
-        [key: string]: Array<laundryIcon>
-      } = {}
+const offlineMode = computed(() => user.offlineMode)
+const userItems = computed(() => items.items)
+const standardTags = [
+  'black',
+  'white',
+  'red',
+  'yellow',
+  'green',
+  'jeans',
+  't-shirt',
+  'dress',
+  'sweater',
+  'shorts',
+  'skirts',
+]
 
-      laundryIcons.forEach((icon) => {
-        if (map[icon.group]) map[icon.group].push(icon)
-        else map[icon.group] = [icon]
-      })
+const iconsByGroups = computed(() => {
+  const map: {
+    [key: string]: Array<laundryIcon>
+  } = {}
 
-      return map
-    })
+  laundryIcons.forEach((icon) => {
+    if (map[icon.group]) map[icon.group].push(icon)
+    else map[icon.group] = [icon]
+  })
 
-    const newItem = reactive({
-      icons: [],
-      images: [],
-      tags: [],
-    } as ItemBlank)
-    const uploadImageForm = ref(QUploader)
-    const uploadImageIsLoading = ref(false)
-
-    if (route.params.id) {
-      // Get item data if this doesn't exist in store
-      if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
-        $q.loading.show()
-        items
-          .getItem({ _id: route.params.id as string })
-          .then((response) => {
-            if (!response.item) return
-            newItem.icons = response.item.icons
-            newItem.images = response.item.images
-            newItem.tags = response.item.tags
-          })
-          .finally(() => $q.loading.hide())
-      } else {
-        const currentUserItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
-        if (currentUserItem) {
-          newItem.icons = currentUserItem.icons
-          newItem.images = currentUserItem.images
-          newItem.tags = currentUserItem.tags
-        }
-      }
-    }
-
-    const selectIcon = (selectedIcon: laundryIcon) => {
-      const iconIndex = newItem.icons.findIndex((icon) => icon === selectedIcon._id)
-      iconIndex !== -1 ? newItem.icons.splice(iconIndex, 1) : newItem.icons.push(selectedIcon._id)
-    }
-
-    const isIconSelected = (selectedIcon: laundryIcon) => {
-      return newItem.icons.find((icon) => icon === selectedIcon._id)
-    }
-
-    const onAddImage = async (imgs: File[]) => {
-      uploadImageIsLoading.value = true
-      const compressorResult = new Promise((resolve: (value: Blob) => void, reject) => {
-        new Compressor(imgs[0], {
-          quality: 0.4,
-          success: resolve,
-          error: reject,
-        })
-      })
-
-      try {
-        const image = await compressorResult
-
-        if (!offlineMode.value) {
-          let formData = new FormData()
-          formData.append('images', image)
-
-          const imagesUrls = await request
-            .post('/api/upload/items', {
-              body: formData,
-            })
-            .json<{ images: Array<string> }>()
-
-          newItem.images = imagesUrls.images
-        } else {
-          const imageId = `offline-${uid()}`
-          const imgURL = URL.createObjectURL(image)
-          db.itemsImages.add({ _id: imageId, itemId: null, image, imageUrl: imgURL })
-          newItem.images = [imgURL]
-        }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        uploadImageIsLoading.value = false
-      }
-    }
-
-    const onRemoveFile = () => {
-      newItem.images = []
-      uploadImageForm.value.reset()
-    }
-
-    const onAddFileReject = (errors: Array<{ failedPropValidation: string; file: File }>) => {
-      if (errors.find((error) => error.failedPropValidation === 'max-total-size')) {
-        $q.notify({ type: 'negative', message: 'Max file size is 10 mb' })
-      } else if (errors.find((error) => error.failedPropValidation === 'accept')) {
-        $q.notify({ type: 'negative', message: 'Wrong file type' })
-      }
-    }
-
-    const onSubmit = () => {
-      $q.loading.show()
-
-      if (route.params.id) {
-        items
-          .editItem({ item: { ...newItem, _id: route.params.id as string } })
-          .then(() => router.push('/'))
-          .finally(() => $q.loading.hide())
-      } else {
-        items
-          .postItem({ item: newItem })
-          .then(() => router.push('/'))
-          .finally(() => $q.loading.hide())
-      }
-    }
-
-    return {
-      route,
-      isDesktop: $q.platform.is.desktop,
-
-      standardTags,
-      iconsByGroups,
-      uploadImageForm,
-      newItem,
-      uploadImageIsLoading,
-
-      selectIcon,
-      isIconSelected,
-      onSubmit,
-      onAddImage,
-      onRemoveFile,
-      onAddFileReject,
-    }
-  },
+  return map
 })
+
+const newItem = reactive({
+  icons: [],
+  images: [],
+  tags: [],
+} as ItemBlank)
+const uploadImageForm = ref(QUploader)
+const uploadImageIsLoading = ref(false)
+
+if (route.params.id) {
+  // Get item data if this doesn't exist in store
+  if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
+    $q.loading.show()
+    items
+      .getItem({ _id: route.params.id as string })
+      .then((response) => {
+        if (!response.item) return
+        newItem.icons = response.item.icons
+        newItem.images = response.item.images
+        newItem.tags = response.item.tags
+      })
+      .finally(() => $q.loading.hide())
+  } else {
+    const currentUserItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
+    if (currentUserItem) {
+      newItem.icons = currentUserItem.icons
+      newItem.images = currentUserItem.images
+      newItem.tags = currentUserItem.tags
+    }
+  }
+}
+
+const selectIcon = (selectedIcon: laundryIcon) => {
+  const iconIndex = newItem.icons.findIndex((icon) => icon === selectedIcon._id)
+  iconIndex !== -1 ? newItem.icons.splice(iconIndex, 1) : newItem.icons.push(selectedIcon._id)
+}
+
+const isIconSelected = (selectedIcon: laundryIcon) => {
+  return newItem.icons.find((icon) => icon === selectedIcon._id)
+}
+
+const onAddImage = (files: readonly any[]) => {
+  uploadImageIsLoading.value = true
+  const compressorResult = new Promise((resolve: (value: Blob) => void, reject) => {
+    new Compressor(files[0], {
+      quality: 0.4,
+      success: resolve,
+      error: reject,
+    })
+  })
+
+  compressorResult
+    .then((image) => {
+      if (!offlineMode.value) {
+        let formData = new FormData()
+        formData.append('images', image)
+
+        request
+          .post('/api/upload/items', {
+            body: formData,
+          })
+          .json<{ images: Array<string> }>()
+          .then((imagesUrls) => {
+            newItem.images = imagesUrls.images
+          })
+      } else {
+        const imageId = `offline-${uid()}`
+        const imgURL = URL.createObjectURL(image)
+        db.itemsImages.add({ _id: imageId, itemId: null, image, imageUrl: imgURL })
+        newItem.images = [imgURL]
+      }
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+    .finally(() => {
+      uploadImageIsLoading.value = false
+    })
+}
+
+const onRemoveFile = () => {
+  newItem.images = []
+  uploadImageForm.value.reset()
+}
+
+const onAddFileReject = (errors: Array<{ failedPropValidation: string; file: File }>) => {
+  if (errors.find((error) => error.failedPropValidation === 'max-total-size')) {
+    $q.notify({ type: 'negative', message: 'Max file size is 10 mb' })
+  } else if (errors.find((error) => error.failedPropValidation === 'accept')) {
+    $q.notify({ type: 'negative', message: 'Wrong file type' })
+  }
+}
+
+const onSubmit = () => {
+  $q.loading.show()
+
+  if (route.params.id) {
+    items
+      .editItem({ item: { ...newItem, _id: route.params.id as string } })
+      .then(() => router.push('/'))
+      .finally(() => $q.loading.hide())
+  } else {
+    items
+      .postItem({ item: newItem })
+      .then(() => router.push('/'))
+      .finally(() => $q.loading.hide())
+  }
+}
+
+const isDesktop = $q.platform.is.desktop
 </script>
 
 <style lang="scss" scoped>
@@ -275,9 +257,9 @@ export default defineComponent({
   grid-template-columns: 100%;
   grid-template-rows: auto;
   grid-template-areas:
-    "info"
-    "icons"
-    "submit";
+    'info'
+    'icons'
+    'submit';
 
   gap: 1.5rem;
   padding: 16px;
@@ -286,10 +268,11 @@ export default defineComponent({
     grid-template-columns: 2fr 5fr;
     grid-template-rows: auto auto;
     grid-template-areas:
-      "info icons"
-      ". submit";
+      'info icons'
+      '. submit';
   }
 }
+
 .info-container {
   grid-area: info;
 }

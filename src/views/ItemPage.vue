@@ -36,7 +36,7 @@
   </section>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { laundryIconsMap } from '@/assets/laundryIcons'
 import { db } from '@/db'
 import type { Item } from '@/interfaces/item'
@@ -44,91 +44,76 @@ import request from '@/services/request'
 import { useItemsStore } from '@/store/items'
 import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-export default defineComponent({
-  name: 'ItemPage',
-  setup() {
-    const $q = useQuasar()
-    const router = useRouter()
-    const route = useRoute()
-    const items = useItemsStore()
-    const user = useUserStore()
+const $q = useQuasar()
+const router = useRouter()
+const route = useRoute()
+const items = useItemsStore()
+const user = useUserStore()
 
-    const offlineMode = computed({ get: () => user.offlineMode, set: (value) => (user.offlineMode = value) })
-    const currentItem = ref<Item>()
+const offlineMode = computed({ get: () => user.offlineMode, set: (value) => (user.offlineMode = value) })
+const currentItem = ref<Item>()
 
+$q.loading.show()
+items
+  .getItem({ _id: route.params.id as string })
+  .then(({ item }) => (currentItem.value = item))
+  .finally(() => $q.loading.hide())
+
+const callDeleteDialog = () => {
+  $q.dialog({
+    message: `Delete item?`,
+    cancel: true,
+  }).onOk(() => {
     $q.loading.show()
     items
-      .getItem({ _id: route.params.id as string })
-      .then(({ item }) => (currentItem.value = item))
+      .deleteItem({ _id: route.params.id as string })
+      .then(() => router.push('/'))
       .finally(() => $q.loading.hide())
+  })
+}
 
-    const callDeleteDialog = () => {
-      $q.dialog({
-        message: `Delete item?`,
-        cancel: true,
-      }).onOk(() => {
-        $q.loading.show()
-        items
-          .deleteItem({ _id: route.params.id as string })
-          .then(() => router.push('/'))
-          .finally(() => $q.loading.hide())
-      })
-    }
+const syncItem = async () => {
+  if (!currentItem.value) return
 
-    const syncItem = async () => {
-      if (!currentItem.value) return
+  $q.loading.show()
+  offlineMode.value = false
+  const { _id, tags, icons } = currentItem.value
 
-      $q.loading.show()
-      offlineMode.value = false
-      const { _id, tags, icons } = currentItem.value
+  const images = await db.itemsImages.where({ itemId: _id }).toArray()
+  let imagesUrls: { images: Array<string> } = { images: [] }
+  if (images.length) {
+    let formData = new FormData()
+    formData.append('images', images[0].image)
 
-      const images = await db.itemsImages.where({ itemId: _id }).toArray()
-      let imagesUrls: { images: Array<string> } = { images: [] }
-      if (images.length) {
-        let formData = new FormData()
-        formData.append('images', images[0].image)
-
-        try {
-          imagesUrls = await request
-            .post('/api/upload/items', {
-              body: formData,
-            })
-            .json<{ images: Array<string> }>()
-        } catch (error) {
-          console.error(error)
-          $q.loading.hide()
-        }
-      }
-
-      try {
-        await items.postItem({
-          item: {
-            tags,
-            icons,
-            images: imagesUrls.images,
-          },
+    try {
+      imagesUrls = await request
+        .post('/api/upload/items', {
+          body: formData,
         })
-        items.deleteItem({ _id })
-        router.push('/')
-      } finally {
-        $q.loading.hide()
-      }
+        .json<{ images: Array<string> }>()
+    } catch (error) {
+      console.error(error)
+      $q.loading.hide()
     }
+  }
 
-    return {
-      router,
-
-      currentItem,
-      laundryIconsMap,
-
-      callDeleteDialog,
-      syncItem,
-    }
-  },
-})
+  try {
+    await items.postItem({
+      item: {
+        tags,
+        icons,
+        images: imagesUrls.images,
+      },
+    })
+    items.deleteItem({ _id })
+    router.push('/')
+  } finally {
+    $q.loading.hide()
+  }
+}
 </script>
 
 <style lang="scss" scoped>

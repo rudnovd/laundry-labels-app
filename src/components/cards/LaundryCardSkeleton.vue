@@ -1,5 +1,6 @@
 <template>
-  <div v-ripple class="laundry-card">
+  <!-- TODO: v-ripple error (https://github.com/quasarframework/quasar/issues/13154)  -->
+  <div class="laundry-card">
     <q-skeleton height="100%" square />
 
     <section class="laundry-card-body">
@@ -17,14 +18,6 @@
     </section>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'LaundryCardSkeleton',
-})
-</script>
 
 <style lang="scss" scoped>
 .laundry-card {

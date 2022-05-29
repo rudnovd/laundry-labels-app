@@ -18,12 +18,12 @@
   </q-layout>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
 import { useOnline } from '@vueuse/core'
 import { LocalStorage, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { computed, defineComponent, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from './store/user'
 
@@ -31,66 +31,55 @@ let icons: { [key: string]: string } = {}
 
 laundryIcons.forEach((icon) => (icons[icon.icon] = `img:${icon.path}`))
 
-export default defineComponent({
-  name: 'App',
-  setup() {
-    const $q = useQuasar()
-    const router = useRouter()
-    const route = useRoute()
-    const user = useUserStore()
-    const online = useOnline()
+const $q = useQuasar()
+const router = useRouter()
+const route = useRoute()
+const user = useUserStore()
+const online = useOnline()
 
-    const isOnline = computed({ get: () => user.isOnline, set: (newOnline) => (user.isOnline = newOnline) })
-    const install = computed(() => user.options.install)
-    const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
+const isOnline = computed({ get: () => user.isOnline, set: (newOnline) => (user.isOnline = newOnline) })
+const install = computed(() => user.options.install)
+const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
 
-    $q.iconMapFn = (iconName) => {
-      const icon = icons[iconName]
-      if (icon !== void 0) return { icon }
-    }
+$q.iconMapFn = (iconName) => {
+  const icon = icons[iconName]
+  if (icon !== void 0) return { icon }
+}
 
-    useRegisterSW({
-      immediate: true,
-      onRegistered(registration) {
-        if (registration) {
-          /* eslint-disable no-console */
-          console.log('Service worker registered')
-        }
-      },
-      onRegisterError(error) {
-        /* eslint-disable no-console */
-        console.error(error)
-      },
-    })
-
-    window.addEventListener('beforeinstallprompt', (event) => {
+useRegisterSW({
+  immediate: true,
+  onRegistered(registration) {
+    if (registration) {
       /* eslint-disable no-console */
-      console.log('beforeinstallprompt called')
-      event.preventDefault()
-      install.value.event = event
-      install.value.showInstallButton = true
-    })
-
-    window.addEventListener('appinstalled', () => {
-      install.value.event = null
-      /* eslint-disable no-console */
-      console.log('PWA was installed')
-    })
-
-    // create localstorage item with user settings
-    if (!LocalStorage.getItem('userSettings')) {
-      LocalStorage.set('userSettings', { offlineMode: true })
-    }
-
-    watch(online, (newOnline) => (isOnline.value = newOnline))
-
-    return {
-      router,
-
-      showBackButton,
+      console.log('Service worker registered')
     }
   },
+  onRegisterError(error) {
+    /* eslint-disable no-console */
+    console.error(error)
+  },
 })
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  /* eslint-disable no-console */
+  console.log('beforeinstallprompt called')
+  event.preventDefault()
+  install.value.event = event
+  install.value.showInstallButton = true
+})
+
+window.addEventListener('appinstalled', () => {
+  install.value.event = null
+  /* eslint-disable no-console */
+  console.log('PWA was installed')
+})
+
+// create localstorage item with user settings
+if (!LocalStorage.getItem('userSettings')) {
+  LocalStorage.set('userSettings', { offlineMode: true })
+}
+
+watch(online, (newOnline) => (isOnline.value = newOnline))
 </script>
 
 <style lang="scss" scoped>

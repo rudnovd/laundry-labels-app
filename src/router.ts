@@ -1,28 +1,28 @@
 import { LocalStorage } from 'quasar'
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from './pages/HomePage.vue'
 import { useUserStore } from './store/user'
-import Home from './views/HomePage.vue'
 
 const publicRoutes = [
   // {
   //   path: '/welcome',
   //   name: 'Welcome',
-  //   component: () => import(/* webpackChunkName: "welcome" */ '@/views/WelcomePage.vue'),
+  //   component: () => import(/* webpackChunkName: "welcome" */ '@/pages/WelcomePage.vue'),
   // },
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '@/views/LoginPage.vue'),
+    component: () => import('@/pages/LoginPage.vue'),
   },
   {
     path: '/registration',
     name: 'Registartion',
-    component: () => import(/* webpackChunkName: "registration" */ '@/views/RegistrationPage.vue'),
+    component: () => import('@/pages/RegistrationPage.vue'),
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import(/* webpackChunkName: "profile" */ '@/views/ProfilePage.vue'),
+    component: () => import('@/pages/ProfilePage.vue'),
   },
 ]
 
@@ -38,22 +38,22 @@ const router = createRouter({
     {
       path: '/create',
       name: 'Create new item',
-      component: () => import(/* webpackChunkName: "createitem" */ '@/views/CreateItemPage.vue'),
+      component: () => import('@/pages/CreateItemPage.vue'),
     },
     {
       path: '/edit/:id',
       name: 'Edit item',
-      component: () => import(/* webpackChunkName: "createitem" */ '@/views/CreateItemPage.vue'),
+      component: () => import('@/pages/CreateItemPage.vue'),
     },
     {
       path: '/item/:id',
       name: 'Item',
-      component: () => import(/* webpackChunkName: "item" */ '@/views/ItemPage.vue'),
+      component: () => import('@/pages/ItemPage.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'Page not found',
-      component: () => import(/* webpackChunkName: "error" */ '@/views/ErrorPage.vue'),
+      component: () => import('@/pages/ErrorPage.vue'),
     },
   ],
 })

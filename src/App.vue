@@ -10,11 +10,11 @@
       </q-toolbar>
     </q-header>
 
-    <main>
-      <q-page-container class="full-height">
+    <q-page-container>
+      <q-page>
         <router-view />
-      </q-page-container>
-    </main>
+      </q-page>
+    </q-page-container>
   </q-layout>
 </template>
 

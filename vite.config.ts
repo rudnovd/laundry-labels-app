@@ -1,8 +1,9 @@
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
-import { defineConfig, loadEnv } from 'vite'
-import { VitePWA, VitePWAOptions } from 'vite-plugin-pwa'
+import { fileURLToPath, URL } from 'url'
+import { defineConfig } from 'vite'
+import type { VitePWAOptions } from 'vite-plugin-pwa'
+import { VitePWA } from 'vite-plugin-pwa'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: 'development',
@@ -35,18 +36,21 @@ const pwaOptions: Partial<VitePWAOptions> = {
 }
 
 // https://vitejs.dev/config/
-export default ({ mode }) => {
-  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-
+export default () => {
   return defineConfig({
     define: {
       'import.meta.env.__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
+    },
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
     },
     css: {
       preprocessorOptions: {
         scss: {
           additionalData: `
-            @import "@/styles/quasar.variables.scss";
+            @import "@/styles/quasar-variables";
           `,
         },
       },
@@ -60,14 +64,7 @@ export default ({ mode }) => {
       }),
       VitePWA(pwaOptions),
     ],
-    resolve: {
-      alias: [
-        {
-          find: '@',
-          replacement: path.resolve(__dirname, 'src'),
-        },
-      ],
-    },
+
     server: {
       proxy: {
         '^/api/.*': {

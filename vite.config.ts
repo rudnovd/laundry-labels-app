@@ -1,7 +1,7 @@
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import type { VitePWAOptions } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -36,10 +36,11 @@ const pwaOptions: Partial<VitePWAOptions> = {
 }
 
 // https://vitejs.dev/config/
-export default () => {
-  return defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  return {
     define: {
-      'import.meta.env.__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
+      'import.meta.env.__APP_VERSION__': JSON.stringify(env.npm_package_version),
     },
     resolve: {
       alias: {
@@ -68,15 +69,15 @@ export default () => {
     server: {
       proxy: {
         '^/api/.*': {
-          target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
+          target: `${env.VITE_APP_API_URL}:${env.VITE_APP_API_PORT}`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
         '^/upload/.*': {
-          target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
+          target: `${env.VITE_APP_API_URL}:${env.VITE_APP_API_PORT}`,
           changeOrigin: true,
         },
       },
     },
-  })
-}
+  }
+})

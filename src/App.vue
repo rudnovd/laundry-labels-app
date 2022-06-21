@@ -20,12 +20,10 @@
 
 <script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
-import { useOnline } from '@vueuse/core'
-import { LocalStorage, useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useUserStore } from './store/user'
 
 let icons: { [key: string]: string } = {}
 
@@ -34,12 +32,8 @@ laundryIcons.forEach((icon) => (icons[icon.icon] = `img:${icon.path}`))
 const $q = useQuasar()
 const router = useRouter()
 const route = useRoute()
-const user = useUserStore()
-const online = useOnline()
-
-const isOnline = computed({ get: () => user.isOnline, set: (newOnline) => (user.isOnline = newOnline) })
-const install = computed(() => user.options.install)
-const showBackButton = computed(() => ['/', '/welcome'].indexOf(route.path) === -1)
+// const install = computed(() => userStore.options.install)
+const showBackButton = computed(() => ['/', '/welcome', '/signin', '/signup'].indexOf(route.path) === -1)
 
 $q.iconMapFn = (iconName) => {
   const icon = icons[iconName]
@@ -60,40 +54,25 @@ useRegisterSW({
   },
 })
 
-window.addEventListener('beforeinstallprompt', (event) => {
-  /* eslint-disable no-console */
-  console.log('beforeinstallprompt called')
-  event.preventDefault()
-  install.value.event = event
-  install.value.showInstallButton = true
-})
+// window.addEventListener('beforeinstallprompt', (event) => {
+//   /* eslint-disable no-console */
+//   console.log('beforeinstallprompt called')
+//   event.preventDefault()
+//   // install.value.event = event
+//   // install.value.showInstallButton = true
+// })
 
-window.addEventListener('appinstalled', () => {
-  install.value.event = null
-  /* eslint-disable no-console */
-  console.log('PWA was installed')
-})
-
-// create localstorage item with user settings
-if (!LocalStorage.getItem('userSettings')) {
-  LocalStorage.set('userSettings', { offlineMode: true })
-}
-
-watch(online, (newOnline) => (isOnline.value = newOnline))
+// window.addEventListener('appinstalled', () => {
+//   install.value.event = null
+//   /* eslint-disable no-console */
+//   console.log('PWA was installed')
+// })
 </script>
 
 <style lang="scss" scoped>
-.install-button {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-}
-
-.loading-app {
-  display: grid;
-  gap: 1rem;
-  height: 100vh;
-  place-content: center;
-  place-items: center;
-}
+// .install-button {
+//   position: fixed;
+//   right: 24px;
+//   bottom: 24px;
+// }
 </style>

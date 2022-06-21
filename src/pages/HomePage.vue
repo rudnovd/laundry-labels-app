@@ -1,10 +1,10 @@
 <template>
-  <section class="home-page q-pa-sm">
+  <section class="q-pa-sm">
     <div class="flex justify-between items-center q-mb-md">
       <q-btn color="primary" icon="add" to="/create">Add item</q-btn>
     </div>
 
-    <section class="laundry-cards-section">
+    <section>
       <div v-if="isItemsLoading" class="laundry-cards">
         <LaundryCardSkeleton v-for="skeleton in 4" :key="`skeleton-${skeleton}`" />
       </div>
@@ -13,14 +13,7 @@
         <LaundryCard v-for="item in items" :key="item._id" :item="item" />
       </div>
 
-      <div v-if="!isItemsLoading && offlineItems.length">
-        <div>unsynced items:</div>
-        <div class="laundry-cards q-mb-md">
-          <LaundryCard v-for="(item, index) in offlineItems" :key="`item-blank-${index}`" :item="item" />
-        </div>
-      </div>
-
-      <div v-if="!isItemsLoading && !items.length && !offlineItems.length" class="flex column items-center">
+      <div v-if="!isItemsLoading && !items.length" class="flex column items-center">
         No items added yet
         <q-btn color="primary" to="/create">Add first item</q-btn>
       </div>
@@ -32,23 +25,16 @@
 import LaundryCard from '@/components/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import { useItemsStore } from '@/store/items'
-import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 
 const itemsStore = useItemsStore()
 
 const items = computed(() => itemsStore.items)
-const offlineItems = computed(() => itemsStore.offlineItems)
 const isItemsLoading = ref(false)
 
 onBeforeMount(() => {
   isItemsLoading.value = true
-  itemsStore.getItems().finally(() => (isItemsLoading.value = false))
-})
-
-onBeforeUnmount(() => {
-  offlineItems.value.forEach((offlineItem) => {
-    offlineItem.images.forEach((image) => URL.revokeObjectURL(image))
-  })
+  itemsStore.get().finally(() => (isItemsLoading.value = false))
 })
 </script>
 

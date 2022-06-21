@@ -72,7 +72,7 @@ const onSubmit = throttle(() => {
 
   $q.loading.show()
   userStore
-    .login({ email: email.value, password: password.value, token: captchaVerificationToken.value })
+    .signIn({ email: email.value, password: password.value, token: captchaVerificationToken.value })
     .then(() => {
       $q.notify({
         type: 'positive',

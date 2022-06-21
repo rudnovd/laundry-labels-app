@@ -1,5 +1,5 @@
 <template>
-  <section class="create-item-page" :class="{ 'q-pb-md': route.params.id, 'q-py-md': !route.params.id }">
+  <section class="create-item-page" :class="{ 'q-pa-md': route.params.id, 'q-pa-sm': !route.params.id }">
     <section class="info-container">
       <!-- Uploaded image displays in edit route -->
       <q-img
@@ -92,25 +92,19 @@
 
 <script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
-import { db } from '@/db'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { laundryIcon } from '@/interfaces/laundryIcon'
-import request from '@/services/request'
 import { useItemsStore } from '@/store/items'
-import { useUserStore } from '@/store/user'
-import Compressor from 'compressorjs'
-import { QUploader, uid, useQuasar } from 'quasar'
+import { QUploader, useQuasar } from 'quasar'
 import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()
 const route = useRoute()
-const user = useUserStore()
-const items = useItemsStore()
+const itemsStore = useItemsStore()
 
-const offlineMode = computed(() => user.offlineMode)
-const userItems = computed(() => items.items)
+const userItems = computed(() => itemsStore.items)
 const standardTags = [
   'black',
   'white',
@@ -150,13 +144,12 @@ if (route.params.id) {
   // Get item data if this doesn't exist in store
   if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
     $q.loading.show()
-    items
-      .getItem({ _id: route.params.id as string })
-      .then((response) => {
-        if (!response.item) return
-        newItem.icons = response.item.icons
-        newItem.images = response.item.images
-        newItem.tags = response.item.tags
+    itemsStore
+      .getById({ _id: route.params.id as string })
+      .then((item) => {
+        newItem.icons = item.icons
+        newItem.images = item.images
+        newItem.tags = item.tags
       })
       .finally(() => $q.loading.hide())
   } else {
@@ -180,34 +173,11 @@ const isIconSelected = (selectedIcon: laundryIcon) => {
 
 const onAddImage = (files: readonly any[]) => {
   uploadImageIsLoading.value = true
-  const compressorResult = new Promise((resolve: (value: Blob) => void, reject) => {
-    new Compressor(files[0], {
-      quality: 0.4,
-      success: resolve,
-      error: reject,
-    })
-  })
 
-  compressorResult
-    .then((image) => {
-      if (!offlineMode.value) {
-        let formData = new FormData()
-        formData.append('images', image)
-
-        request
-          .post('/api/upload/items', {
-            body: formData,
-          })
-          .json<{ images: Array<string> }>()
-          .then((imagesUrls) => {
-            newItem.images = imagesUrls.images
-          })
-      } else {
-        const imageId = `offline-${uid()}`
-        const imgURL = URL.createObjectURL(image)
-        db.itemsImages.add({ _id: imageId, itemId: null, image, imageUrl: imgURL })
-        newItem.images = [imgURL]
-      }
+  itemsStore
+    .uploadImage({ image: files[0] })
+    .then((imagesUrls) => {
+      newItem.images = imagesUrls.images
     })
     .catch((error) => {
       console.error(error)
@@ -234,13 +204,13 @@ const onSubmit = () => {
   $q.loading.show()
 
   if (route.params.id) {
-    items
-      .editItem({ item: { ...newItem, _id: route.params.id as string } })
+    itemsStore
+      .edit({ item: { ...newItem, _id: route.params.id as string } })
       .then(() => router.push('/'))
       .finally(() => $q.loading.hide())
   } else {
-    items
-      .postItem({ item: newItem })
+    itemsStore
+      .create({ item: newItem })
       .then(() => router.push('/'))
       .finally(() => $q.loading.hide())
   }
@@ -262,7 +232,6 @@ const isDesktop = $q.platform.is.desktop
     'submit';
 
   gap: 1.5rem;
-  padding: 16px;
 
   @include media-medium {
     grid-template-columns: 2fr 5fr;

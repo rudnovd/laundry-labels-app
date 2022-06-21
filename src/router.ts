@@ -4,25 +4,20 @@ import Home from './pages/HomePage.vue'
 import { useUserStore } from './store/user'
 
 const publicRoutes = [
-  // {
-  //   path: '/welcome',
-  //   name: 'Welcome',
-  //   component: () => import(/* webpackChunkName: "welcome" */ '@/pages/WelcomePage.vue'),
-  // },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/LoginPage.vue'),
+    path: '/welcome',
+    name: 'Welcome',
+    component: () => import('@/pages/WelcomePage.vue'),
   },
   {
-    path: '/registration',
-    name: 'Registartion',
-    component: () => import('@/pages/RegistrationPage.vue'),
+    path: '/signin',
+    name: 'Sign in',
+    component: () => import('@/pages/SignInPage.vue'),
   },
   {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('@/pages/ProfilePage.vue'),
+    path: '/signup',
+    name: 'Sign up',
+    component: () => import('@/pages/SignUpPage.vue'),
   },
 ]
 
@@ -34,6 +29,11 @@ const router = createRouter({
       path: '/',
       name: 'Home',
       component: Home,
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: () => import('@/pages/ProfilePage.vue'),
     },
     {
       path: '/create',
@@ -59,17 +59,15 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _, next) => {
-  const user = useUserStore()
-  if (user.offlineMode) return next()
+  const userStore = useUserStore()
 
   const hasRefreshToken = LocalStorage.getItem('hasRefreshToken') as boolean
-  if (publicRoutes.findIndex((route) => route.path === to.path) !== -1) {
-    if (!user.user._id && hasRefreshToken) user.getAuthFromRefreshToken()
+  if (publicRoutes.some((route) => route.path === to.path)) {
     next()
-  } else if (!user.user._id && hasRefreshToken) {
-    user.getAuthFromRefreshToken().then((response) => (response.user._id ? next() : next({ path: '/login' })))
-  } else if (!user.user._id && !hasRefreshToken) {
-    next({ path: '/login' })
+  } else if (!userStore.user?._id && hasRefreshToken) {
+    userStore.getAuthFromRefreshToken().then((response) => (response.user?._id ? next() : next({ path: '/signIn' })))
+  } else if (!userStore.user?._id && !hasRefreshToken) {
+    next({ path: '/signin' })
   } else {
     next()
   }
@@ -82,6 +80,6 @@ router.afterEach((to) => {
 router.resolve({
   name: 'Page not found',
   params: { pathMatch: ['not', 'found'] },
-}).href // '/not/found'
+}).href
 
 export default router

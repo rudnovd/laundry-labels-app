@@ -1,19 +1,17 @@
 <template>
-  <section class="profile-page q-pa-sm flex justify-center">
-    <div>
-      <q-toggle v-model="offlineMode" :disable="!isOnline" color="green" label="Offline mode" left-label />
-      <q-btn icon="help_outline" flat dense @click="showOfflineModeModal" />
+  <section class="q-pa-sm column flex-center">
+    <div class="column q-gutter-y-sm">
+      <q-btn v-if="!user" color="primary" label="Sign in" icon="login" to="/signin" />
+      <q-btn v-if="!user" color="primary" label="Sign up" icon="person" to="/signup" />
+      <q-btn v-if="user" color="primary" label="Sign Out" icon="logout" @click="callLogoutDialog" />
+      <!-- <q-btn v-if="showInstallButton" color="primary" label="Install app" @click="installApp" /> -->
     </div>
-    <q-btn v-if="!user" color="primary" label="Login" icon="login" to="/login" />
-    <q-btn v-if="!user" color="primary" label="Registration" icon="person" to="/registration" />
-    <q-btn v-if="user" color="primary" label="Logout" icon="logout" @click="callLogoutDialog" />
-    <q-btn v-if="showInstallButton" color="primary" label="Install app" @click="installApp" />
-    App version: {{ appVersion }}
+
+    <div class="column q-mt-sm">App version: {{ appVersion }}</div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { setUserSettings } from '@/localstorage'
 import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
 import { computed } from 'vue'
@@ -23,17 +21,9 @@ const $q = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
 
-const isOnline = computed(() => userStore.isOnline)
-const user = computed(() => userStore.user._id)
-const install = computed(() => userStore.options.install)
-const offlineMode = computed({
-  get: () => userStore.offlineMode,
-  set: (value) => {
-    userStore.offlineMode = value
-    setUserSettings({ offlineMode: value })
-  },
-})
-const showInstallButton = computed(() => userStore.options.install.showInstallButton)
+const user = computed(() => userStore.user)
+// const install = computed(() => userStore.options.install)
+// const showInstallButton = computed(() => userStore.options.install.showInstallButton)
 
 const callLogoutDialog = () => {
   $q.dialog({
@@ -43,34 +33,20 @@ const callLogoutDialog = () => {
   }).onOk(() => {
     $q.loading.show()
     userStore
-      .logout()
+      .signOut()
       .then(() => {
         $q.notify({
           type: 'positive',
           message: 'Sign out successfully',
         })
-        router.push('/')
+        router.push('/welcome')
       })
       .finally(() => $q.loading.hide())
   })
 }
-
-const showOfflineModeModal = () => {
-  $q.dialog({
-    message: 'All items store in your device. They can be synced with server if you have account.',
-  })
-}
-
-const installApp = () => {
-  install.value.event?.prompt()
-}
+// const installApp = () => {
+//   install.value.event?.prompt()
+// }
 
 const appVersion = import.meta.env.__APP_VERSION__
 </script>
-
-<style lang="scss" scoped>
-.profile-page {
-  display: grid;
-  gap: 1rem;
-}
-</style>

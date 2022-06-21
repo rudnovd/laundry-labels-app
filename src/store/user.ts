@@ -1,36 +1,18 @@
 import type { User, UserLoginResponse, UserRefreshTokenResponse } from '@/interfaces/user'
-import { setUserSettings, userSettings } from '@/localstorage'
 import request from '@/services/request'
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
 
 interface UserState {
-  user: User | Record<string, unknown>
-  offlineMode: boolean
-  isOnline: boolean
-
-  options: {
-    install: {
-      event: any
-      showInstallButton: boolean
-    }
-  }
+  user: User | null
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    user: {},
-    offlineMode: userSettings ? userSettings.offlineMode : true,
-    isOnline: navigator.onLine,
-    options: {
-      install: {
-        event: null,
-        showInstallButton: false,
-      },
-    },
+    user: null,
   }),
   actions: {
-    async login(payload: { email: string; password: string; token: string }) {
+    async signIn(payload: { email: string; password: string; token: string }) {
       const response = await request
         .post('/api/auth/login', {
           json: { email: payload.email, password: payload.password, token: payload.token },
@@ -38,12 +20,11 @@ export const useUserStore = defineStore('user', {
         .json<UserLoginResponse>()
       LocalStorage.set('accessToken', response.accessToken)
       LocalStorage.set('hasRefreshToken', true)
-      setUserSettings({ offlineMode: false })
       this.user = response.user
 
       return this.user
     },
-    async registration(payload: { email: string; password: string; token: string }) {
+    async signUp(payload: { email: string; password: string; token: string }) {
       const response = await request
         .post('/api/auth/registration', {
           json: {
@@ -55,17 +36,15 @@ export const useUserStore = defineStore('user', {
         .json<UserLoginResponse>()
       LocalStorage.set('accessToken', response.accessToken)
       LocalStorage.set('hasRefreshToken', true)
-      setUserSettings({ offlineMode: false })
       this.user = response.user
 
       return this.user
     },
-    async logout() {
+    async signOut() {
       await request.post('/api/auth/logout')
       LocalStorage.remove('accessToken')
       LocalStorage.remove('hasRefreshToken')
-      setUserSettings({ offlineMode: true })
-      this.user = {}
+      this.user = null
 
       return this.user
     },

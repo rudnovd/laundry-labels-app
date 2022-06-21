@@ -73,7 +73,7 @@ const onSubmit = throttle(() => {
 
   $q.loading.show()
   userStore
-    .registration({
+    .signUp({
       email: email.value,
       password: password.value,
       token: captchaVerificationToken.value,

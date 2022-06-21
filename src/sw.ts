@@ -31,6 +31,21 @@ registerRoute(
   })
 )
 
+registerRoute(
+  ({ url }) => url.pathname.startsWith('res.cloudinary.com'),
+  new StaleWhileRevalidate({
+    cacheName: 'cloudinary-items-images-cache',
+    fetchOptions: {
+      method: 'get',
+    },
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [200],
+      }),
+    ],
+  })
+)
+
 // always update service worker
 self.skipWaiting()
 clientsClaim()

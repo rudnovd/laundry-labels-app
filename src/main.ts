@@ -16,6 +16,11 @@ const quasarOptions: Partial<QuasarPluginOptions> = {
     LocalStorage,
     Dialog,
   },
+  config: {
+    loading: {
+      delay: 300,
+    },
+  },
 }
 
 const app = createApp(App)

@@ -17,7 +17,9 @@ async function getAccessToken(): Promise<string> {
     // get new token
     if (!accessToken) {
       const auth = await ky.post('/api/auth/refreshtoken').json<UserRefreshTokenResponse>()
-      accessToken = auth.refreshToken
+      LocalStorage.set('accessToken', auth.accessToken)
+      LocalStorage.set('hasRefreshToken', true)
+      accessToken = auth.accessToken
     } else {
       const now = dayjs().unix()
       const MAX_REQUEST_TIME_SECONDS = 10
@@ -27,13 +29,16 @@ async function getAccessToken(): Promise<string> {
       if (!isRefreshTokenRequestStarted && jwtPayload.exp && jwtPayload.exp < now + MAX_REQUEST_TIME_SECONDS) {
         isRefreshTokenRequestStarted = true
         const auth = await ky.post('/api/auth/refreshtoken').json<UserRefreshTokenResponse>()
-        console.log(auth)
-        accessToken = auth.refreshToken
+        LocalStorage.set('accessToken', auth.accessToken)
+        LocalStorage.set('hasRefreshToken', true)
+        accessToken = auth.accessToken
       }
     }
 
     return accessToken
   } catch (error) {
+    LocalStorage.remove('accessToken')
+    LocalStorage.remove('hasRefreshToken')
     return ''
   } finally {
     isRefreshTokenRequestStarted = false
@@ -61,8 +66,8 @@ const request = ky.create({
         // if unauthorized error
         if (response.status === 401) {
           const user = useUserStore()
-          user.user = {}
-          router.push('/login')
+          user.user = null
+          router.push('/signIn')
         } else if (!response.ok) {
           const error = await response.json()
           throw { name: error.error.name, message: error.error.message }

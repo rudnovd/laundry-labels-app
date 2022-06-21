@@ -27,10 +27,6 @@
           <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
           <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem?._id}`)" />
         </section>
-
-        <section v-if="currentItem._id.indexOf('offline-') > -1" class="q-mt-sm">
-          <q-btn class="full-width" color="primary" label="Sync item with server" icon="sync" @click="syncItem" />
-        </section>
       </section>
     </template>
   </section>
@@ -38,29 +34,31 @@
 
 <script setup lang="ts">
 import { laundryIconsMap } from '@/assets/laundryIcons'
-import { db } from '@/db'
 import type { Item } from '@/interfaces/item'
-import request from '@/services/request'
 import { useItemsStore } from '@/store/items'
-import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()
 const route = useRoute()
-const items = useItemsStore()
-const user = useUserStore()
+const itemsStore = useItemsStore()
 
-const offlineMode = computed({ get: () => user.offlineMode, set: (value) => (user.offlineMode = value) })
 const currentItem = ref<Item>()
 
-$q.loading.show()
-items
-  .getItem({ _id: route.params.id as string })
-  .then(({ item }) => (currentItem.value = item))
-  .finally(() => $q.loading.hide())
+const item = itemsStore.items.find((_item) => _item._id === route.params.id)
+if (!item) {
+  $q.loading.show({ delay: 300 })
+  itemsStore
+    .getById({ _id: route.params.id as string })
+    .then((item) => {
+      currentItem.value = item
+    })
+    .finally(() => $q.loading.hide())
+} else {
+  currentItem.value = item
+}
 
 const callDeleteDialog = () => {
   $q.dialog({
@@ -68,51 +66,11 @@ const callDeleteDialog = () => {
     cancel: true,
   }).onOk(() => {
     $q.loading.show()
-    items
-      .deleteItem({ _id: route.params.id as string })
+    itemsStore
+      .delete({ _id: route.params.id as string })
       .then(() => router.push('/'))
       .finally(() => $q.loading.hide())
   })
-}
-
-const syncItem = async () => {
-  if (!currentItem.value) return
-
-  $q.loading.show()
-  offlineMode.value = false
-  const { _id, tags, icons } = currentItem.value
-
-  const images = await db.itemsImages.where({ itemId: _id }).toArray()
-  let imagesUrls: { images: Array<string> } = { images: [] }
-  if (images.length) {
-    let formData = new FormData()
-    formData.append('images', images[0].image)
-
-    try {
-      imagesUrls = await request
-        .post('/api/upload/items', {
-          body: formData,
-        })
-        .json<{ images: Array<string> }>()
-    } catch (error) {
-      console.error(error)
-      $q.loading.hide()
-    }
-  }
-
-  try {
-    await items.postItem({
-      item: {
-        tags,
-        icons,
-        images: imagesUrls.images,
-      },
-    })
-    items.deleteItem({ _id })
-    router.push('/')
-  } finally {
-    $q.loading.hide()
-  }
 }
 </script>
 

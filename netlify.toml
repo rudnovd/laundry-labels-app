@@ -22,9 +22,9 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Content-Security-Policy = '''
-      default-src 'self' https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com;
+      default-src 'self' https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com https://cloudinary.com https://*.cloudinary.com;
       object-src 'self';
-      img-src * 'self' blob: https:;
+      img-src 'self' https://cloudinary.com https://*.cloudinary.com;
       child-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
       frame-ancestors 'none';
       upgrade-insecure-requests;
@@ -69,6 +69,6 @@
     Clear-Site-Data = "'cookies'"
 
 [[headers]]
-  for = "https://cloudflareinsights.com/*"
+  for = "https://*.cloudflareinsights.com"
   [headers.values]
     Access-Control-Allow-Origin = "https://laundrylabels.app"

@@ -34,9 +34,9 @@
         :rules="[(val: any) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
       />
 
-      <q-btn label="Sign up" type="submit" color="primary" />
+      <VueHcaptcha ref="captchaForm" class="q-mb-sm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
 
-      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      <q-btn label="Sign up" type="submit" color="primary" />
     </q-form>
 
     <div class="row q-mt-lg">
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
-import type VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'

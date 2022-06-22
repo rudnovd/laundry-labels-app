@@ -34,9 +34,9 @@
         :rules="[(val: any) => (val && val.length > 0) || 'Please type something']"
       />
 
-      <q-btn label="Sign in" type="submit" color="primary" />
+      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" class="q-mb-sm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
 
-      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" class="q-mt-sm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      <q-btn label="Sign in" type="submit" color="primary" />
     </q-form>
 
     <div class="row q-mt-lg">

@@ -21,6 +21,7 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
+    Access-Control-Allow-Origin = "*"
     Content-Security-Policy = '''
       default-src 'self' https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com https://cloudinary.com https://*.cloudinary.com;
       object-src 'self';
@@ -68,7 +69,7 @@
   [headers.values]
     Clear-Site-Data = "'cookies'"
 
-[[headers]]
-  for = "https://*.cloudflareinsights.com"
-  [headers.values]
-    Access-Control-Allow-Origin = "https://laundrylabels.app"
+# [[headers]]
+#   for = "https://*.cloudflareinsights.com"
+#   [headers.values]
+#     Access-Control-Allow-Origin = "https://laundrylabels.app"

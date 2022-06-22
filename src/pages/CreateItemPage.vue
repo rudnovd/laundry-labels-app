@@ -50,7 +50,7 @@
 
       <q-select
         v-model="newItem.tags"
-        class="select-tags"
+        class="q-mb-md"
         outlined
         clearable
         label="tags"
@@ -75,7 +75,6 @@
           <button
             v-for="icon in icons"
             :key="icon._id"
-            type="button"
             :class="{ selected: isIconSelected(icon) }"
             @click="selectIcon(icon)"
           >
@@ -259,10 +258,6 @@ const isDesktop = $q.platform.is.desktop
   width: 100%;
 }
 
-.select-tags {
-  margin-bottom: 16px;
-}
-
 .washing-icons-container {
   display: grid;
   gap: 1rem;
@@ -274,7 +269,7 @@ const isDesktop = $q.platform.is.desktop
   display: grid;
   gap: 0.25rem;
 
-  span:first-child {
+  & > span:first-child {
     text-transform: capitalize;
     font-size: 1.125rem;
     font-weight: 500;
@@ -304,11 +299,6 @@ const isDesktop = $q.platform.is.desktop
     background: white;
     cursor: pointer;
 
-    & img {
-      font-size: 4rem;
-      width: 100%;
-    }
-
     & span:nth-child(2) {
       display: -webkit-box;
       -webkit-line-clamp: 4;
@@ -322,14 +312,6 @@ const isDesktop = $q.platform.is.desktop
       background-color: rgba($grey-6, 0.3);
     }
   }
-}
-
-.icon-chip-icon {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .submit-button {

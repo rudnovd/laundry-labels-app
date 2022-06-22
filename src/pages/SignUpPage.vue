@@ -34,7 +34,7 @@
         :rules="[(val: any) => (val && val.length >= 6) || 'Please use minimum 6 characters']"
       />
 
-      <VueHcaptcha ref="captchaForm" class="q-mb-sm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" class="q-mb-sm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
 
       <q-btn label="Sign up" type="submit" color="primary" />
     </q-form>

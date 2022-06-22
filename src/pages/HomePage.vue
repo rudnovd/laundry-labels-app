@@ -1,7 +1,7 @@
 <template>
   <section class="q-pa-sm">
     <div class="flex justify-between items-center q-mb-md">
-      <q-btn color="primary" icon="add" to="/create">Add item</q-btn>
+      <q-btn color="primary" icon="add" to="/create" :disable="items.length >= 20">Add item</q-btn>
     </div>
 
     <section>

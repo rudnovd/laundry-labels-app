@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.2](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.1...v0.0.0-alpha.2) (2022-06-22)
+
+
+### Features
+
+* add delay for loading plugin ([1e8f8bd](https://github.com/rudnovd/laundry-labels-app/commit/1e8f8bd856eb4982410727921ec294f169f4adca))
+* add service worker registration ([efdf2d3](https://github.com/rudnovd/laundry-labels-app/commit/efdf2d3be665011fdf6fd11fe0b7d7e3dea9f9d0))
+* **CreateItemPage:** write offline images in db ([08df663](https://github.com/rudnovd/laundry-labels-app/commit/08df663e53ed55bdd516039aae2881dfc75d1881))
+* **db:** add itemsImages table ([5ee5a85](https://github.com/rudnovd/laundry-labels-app/commit/5ee5a85815f01ba799e083909fac08b4ad4b5e60))
+* **HomePage:** add disabled for new item button ([019dd1d](https://github.com/rudnovd/laundry-labels-app/commit/019dd1dcae4263aa990d881a6f7ab408b7114cb3))
+* **HomePage:** add offline items ([1847d6f](https://github.com/rudnovd/laundry-labels-app/commit/1847d6f9a6d6fd2c8732541a17500780334253f7))
+* **HomePage:** revoke objects urls on unmount ([11afdac](https://github.com/rudnovd/laundry-labels-app/commit/11afdac923f2e0df11f3f116bfc079310bfae292))
+* init offline database ([72a90cf](https://github.com/rudnovd/laundry-labels-app/commit/72a90cfa2c9b511ae172dd0ff426e6ec0f850fb8))
+* init service worker ([bef0fa3](https://github.com/rudnovd/laundry-labels-app/commit/bef0fa3e02a70db4d0d20b5d9d8434632eab5529))
+* **interfaces:** add types for auth requests ([43e9fab](https://github.com/rudnovd/laundry-labels-app/commit/43e9fab5a2e1b539199db2caed915fafe59ead64))
+* **ItemPage:** add button for save offline item ([23a476a](https://github.com/rudnovd/laundry-labels-app/commit/23a476a85448f82ebdbf9d4d5807e9309373f55b))
+* **ItemPage:** upload image in syncItem function ([1ee6bae](https://github.com/rudnovd/laundry-labels-app/commit/1ee6bae03827645322547a9f20f2c35b19d1551b))
+* migrate to Vite ([0e037b3](https://github.com/rudnovd/laundry-labels-app/commit/0e037b3abb5896de51e1ffd06f3d53dcc48087f2))
+* **ProfilePage:** add offline; move buttons from welcome page ([0ee306b](https://github.com/rudnovd/laundry-labels-app/commit/0ee306befdd6387f13c958733cddf05b04968717))
+* **request:** migrate from Axios to Ky ([677d366](https://github.com/rudnovd/laundry-labels-app/commit/677d366bce68bcec1855ee66d3c0ce3ed1b85f81))
+* **router:** offline; tmp remove welcome route ([00b3249](https://github.com/rudnovd/laundry-labels-app/commit/00b324948444e38ac2fe0d3759356420faea6f89))
+* **serviceworker:** cache all user images ([3007422](https://github.com/rudnovd/laundry-labels-app/commit/30074221603a37a9dda6c9c2ee839702c04b8dfe))
+* **serviceworker:** cache cloudinary images ([be51e33](https://github.com/rudnovd/laundry-labels-app/commit/be51e33b5095d4e3c2e258eacc25eac6b8bcee43))
+* **store:** delete offline images on deleteItem ([cbd2751](https://github.com/rudnovd/laundry-labels-app/commit/cbd2751eb5faa9a2f90913cbe3b2d31f58e58e4d))
+* **store:** generate images url for offline items ([90281d7](https://github.com/rudnovd/laundry-labels-app/commit/90281d7cf812e4a012931b19e6065cf3113e48ff))
+* **stote:** add offline access ([91b65d6](https://github.com/rudnovd/laundry-labels-app/commit/91b65d64ec432f1b51f4f9fc2f10012ef2b119a4))
+
+
+### Bug Fixes
+
+* **CreateItemPage:** fix icons styles ([f49f122](https://github.com/rudnovd/laundry-labels-app/commit/f49f122e15fad51c3b326a19afe06cbc5698dc96))
+* **CreateItemPage:** fix image upload request ([a35edae](https://github.com/rudnovd/laundry-labels-app/commit/a35edaecff9152e54b195089c8c8cd6fffadd1e9))
+* fix env names ([436f110](https://github.com/rudnovd/laundry-labels-app/commit/436f110257f9a08cb1e7287a0478718c9c876854))
+* fix redirects if user logged in ([268aeb1](https://github.com/rudnovd/laundry-labels-app/commit/268aeb1117f38351c5dc783618f2fe66e4de45c0))
+* **HomePage:** fix items loading state ([cce6939](https://github.com/rudnovd/laundry-labels-app/commit/cce69391052427bd48576e0c8f60471cfebd7c8b))
+* **ItemPage:** fix syncItem when item w/o images ([ac2e35a](https://github.com/rudnovd/laundry-labels-app/commit/ac2e35ae65549093f2aac69fcfc24ba783f3463e))
+* **request:** fix recursion error ([e4eb824](https://github.com/rudnovd/laundry-labels-app/commit/e4eb8245dcac7fa330cc4a27eda2a0cb2551557d))
+* **request:** remove 500 status validation ignore ([2a611e3](https://github.com/rudnovd/laundry-labels-app/commit/2a611e3f2904dfeb4b66b64746d1c3de9b7964d4))
+* **request:** remove always send auth token ([f2ccff9](https://github.com/rudnovd/laundry-labels-app/commit/f2ccff9517ee108f4882231f5a411676f3bd1980))
+* **services:** fix request service errors ([3c308f7](https://github.com/rudnovd/laundry-labels-app/commit/3c308f79d7494bf4d69372ceaf7063a158ad4633))
+* **SignUpPage:** fix captcha component state ([a85c95f](https://github.com/rudnovd/laundry-labels-app/commit/a85c95fa80ae44dfa041ffd8fc43f391562b85a7))
+* **store:** fix Dexie error handling ([b538ee4](https://github.com/rudnovd/laundry-labels-app/commit/b538ee4e0dced927722a527ca2d70d7796f1ea80))
+* **store:** fix postItem for offline ([de26cc0](https://github.com/rudnovd/laundry-labels-app/commit/de26cc0e78dbab3603c50c657f4b213c119bd7eb))
+* **store:** throw another store error ([ee06a45](https://github.com/rudnovd/laundry-labels-app/commit/ee06a45926c3e25aa074e98a56f4a83d950f80d6))
+* **store:** throw error in throwStoreError ([390a5a4](https://github.com/rudnovd/laundry-labels-app/commit/390a5a43400a82d4ccefeec8de7d67b27fc8b713))
+* **sw:** fix sw register ([492904d](https://github.com/rudnovd/laundry-labels-app/commit/492904da2da9d479f8c82e1a5055058a077e98e6))
+* **vite:** fix APP_VERSION define ([05f845a](https://github.com/rudnovd/laundry-labels-app/commit/05f845acff54515beebe6e7ae58ec06bafc0f52c))
+* **vite:** fix APP_VERSION define ([4d3aa80](https://github.com/rudnovd/laundry-labels-app/commit/4d3aa809e75e407077ef4bc7da2b45036a5c0efa))
+
 ## [0.0.0-alpha.1](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.0...v0.0.0-alpha.1) (2021-12-05)
 
 ## 0.0.0-alpha.0 (2021-11-30)

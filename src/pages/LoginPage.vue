@@ -52,7 +52,7 @@ watch(user, () => user.value?._id && router.push('/'))
 
 const email = ref('')
 const password = ref('')
-const captchaForm = ref<VueHcaptcha>()
+const captchaForm = ref()
 const captchaIsVerified = ref(false)
 const captchaVerificationToken = ref('')
 

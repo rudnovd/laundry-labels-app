@@ -10,9 +10,9 @@ interface ErrorResponse {
 
 pinia.use(({ store }) => {
   store.$onAction(({ name, args, onError }) => {
-    // catch errors for all store actions
-    onError((e) => {
-      const error: ErrorResponse = e as ErrorResponse
+    // catch errors from all store actions
+    onError((storeError) => {
+      const error: ErrorResponse = storeError as ErrorResponse
 
       if (import.meta.env.DEV) {
         console.warn(`Failed action "${name}" in store "${store.$id}" with args "${JSON.stringify(args)}".`)
@@ -21,7 +21,6 @@ pinia.use(({ store }) => {
       if (!error.name || !error.message) throw new Error()
 
       console.error(`${error.name}: ${error.message}`)
-
       Notify.create({
         type: 'negative',
         message: error.message,

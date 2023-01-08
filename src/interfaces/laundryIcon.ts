@@ -1,7 +1,5 @@
-export interface laundryIcon {
+export interface LaundryIcon {
   _id: string
-  icon: string
-  path: string
   group: string
   description: string
 }

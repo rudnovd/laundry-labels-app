@@ -1,8 +1,8 @@
 export interface Item {
   _id: string
-  icons: string[]
-  images: string[]
-  tags: string[]
+  icons: Array<string>
+  images: Array<string>
+  tags: Array<string>
   createdAt: string
   updatedAt: string
 }

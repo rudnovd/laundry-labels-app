@@ -27,7 +27,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 let icons: { [key: string]: string } = {}
 
-laundryIcons.forEach((icon) => (icons[icon.icon] = `img:${icon.path}`))
+laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.group.replace(' ', '-')}/${icon._id}.svg`))
 
 const $q = useQuasar()
 const router = useRouter()

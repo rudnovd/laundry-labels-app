@@ -68,8 +68,13 @@ export default defineConfig(({ mode }) => {
 
     server: {
       proxy: {
+        '^/auth/.*': {
+          target: `${env.VITE_APP_API_URL}:${env.VITE_APP_API_PORT}/auth`,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/auth/, ''),
+        },
         '^/api/.*': {
-          target: `${env.VITE_APP_API_URL}:${env.VITE_APP_API_PORT}`,
+          target: `${env.VITE_APP_API_URL}:${env.VITE_APP_API_PORT}/api`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },

@@ -19,6 +19,11 @@ const publicRoutes = [
     name: 'Sign up',
     component: () => import('@/pages/SignUpPage.vue'),
   },
+  // {
+  //   path: '/redirect',
+  //   name: 'Redirect',
+  //   component: () => import('@/pages/RedirectPage.vue'),
+  // },
 ]
 
 const router = createRouter({
@@ -28,7 +33,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: Home,
+      component: () => import('@/pages/HomePage.vue'),
     },
     {
       path: '/profile',
@@ -36,14 +41,14 @@ const router = createRouter({
       component: () => import('@/pages/ProfilePage.vue'),
     },
     {
-      path: '/create',
-      name: 'Create new item',
+      path: '/item/create',
+      name: 'Create item',
       component: () => import('@/pages/CreateItemPage.vue'),
     },
     {
-      path: '/edit/:id',
+      path: '/item/edit/:id',
       name: 'Edit item',
-      component: () => import('@/pages/CreateItemPage.vue'),
+      component: () => import('@/pages/EditItemPage.vue'),
     },
     {
       path: '/item/:id',

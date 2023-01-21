@@ -18,7 +18,7 @@ const quasarOptions: Partial<QuasarPluginOptions> = {
   },
   config: {
     loading: {
-      delay: 300,
+      delay: 500,
     },
   },
 }

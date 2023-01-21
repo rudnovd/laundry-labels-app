@@ -1,37 +1,31 @@
 import type { UserRefreshTokenResponse } from '@/interfaces/user'
 import router from '@/router'
 import { useUserStore } from '@/store/user'
-import dayjs from 'dayjs'
-import type { JwtPayload } from 'jwt-decode'
-import jwt_decode from 'jwt-decode'
 import ky from 'ky'
 import { LocalStorage } from 'quasar'
+import { isAccessTokenValid } from './jwt'
 
-let isRefreshTokenRequestStarted = false
-const publicRoutes = [{ path: /\/api\/auth\/.*/ }, { path: /\/upload\/items\/.*/, methods: ['GET'] }]
+const publicRoutes = [{ path: /\/auth\/.*/ }, { path: /\/upload\/items\/.*/, methods: ['GET'] }]
 
-async function getAccessToken(): Promise<string> {
+enum ResponseStatus {
+  Unauthorized = 400,
+  InternalServerError = 500,
+}
+
+const refreshTokenRequests: Array<Promise<UserRefreshTokenResponse>> = []
+export async function getAccessToken() {
   try {
-    let accessToken = LocalStorage.getItem('accessToken')?.toString()
+    let accessToken = LocalStorage.getItem('accessToken')?.toString() ?? ''
 
-    // get new token
-    if (!accessToken) {
-      const auth = await ky.post('/api/auth/refreshtoken').json<UserRefreshTokenResponse>()
-      LocalStorage.set('accessToken', auth.accessToken)
-      LocalStorage.set('hasRefreshToken', true)
-      accessToken = auth.accessToken
-    } else {
-      const now = dayjs().unix()
-      const MAX_REQUEST_TIME_SECONDS = 10
-      const jwtPayload: JwtPayload = jwt_decode(accessToken)
-
-      // if current token expired soon get new token
-      if (!isRefreshTokenRequestStarted && jwtPayload.exp && jwtPayload.exp < now + MAX_REQUEST_TIME_SECONDS) {
-        isRefreshTokenRequestStarted = true
-        const auth = await ky.post('/api/auth/refreshtoken').json<UserRefreshTokenResponse>()
-        LocalStorage.set('accessToken', auth.accessToken)
-        LocalStorage.set('hasRefreshToken', true)
-        accessToken = auth.accessToken
+    if (!refreshTokenRequests.length && !isAccessTokenValid()) {
+      refreshTokenRequests.push(ky.post('/auth/refreshtoken').json<UserRefreshTokenResponse>())
+    }
+    if (refreshTokenRequests.length) {
+      const auth = await Promise.all(refreshTokenRequests)
+      accessToken = auth[0].accessToken
+      if (!isAccessTokenValid()) {
+        LocalStorage.set('accessToken', accessToken)
+        LocalStorage.set('hasRefreshToken', !!accessToken)
       }
     }
 
@@ -39,20 +33,21 @@ async function getAccessToken(): Promise<string> {
   } catch (error) {
     LocalStorage.remove('accessToken')
     LocalStorage.remove('hasRefreshToken')
-    return ''
+    throw { name: 'Internal Server Error', message: 'Internal Server Error' }
   } finally {
-    isRefreshTokenRequestStarted = false
+    refreshTokenRequests.pop()
   }
 }
 
 const request = ky.create({
-  timeout: 10000,
+  timeout: 30000,
+  throwHttpErrors: false,
   hooks: {
     beforeRequest: [
       async (request) => {
         const isPublicRoute = publicRoutes.find((publicRoute) => {
           const isMatchUrl = request.url?.match(publicRoute.path)
-          const isRouteMethodAllowed = publicRoute.methods ? publicRoute.methods.indexOf(request.method) > -1 : true
+          const isRouteMethodAllowed = publicRoute.methods ? publicRoute.methods.includes(request.method) : true
           return isMatchUrl && isRouteMethodAllowed
         })
         if (isPublicRoute) return
@@ -63,19 +58,26 @@ const request = ky.create({
     ],
     afterResponse: [
       async (_request, _options, response) => {
-        // if unauthorized error
-        if (response.status === 401) {
-          const user = useUserStore()
-          user.user = null
-          router.push('/signIn')
-        } else if (!response.ok) {
-          const error = await response.json()
-          throw { name: error.error.name, message: error.error.message }
+        if (response.ok) return
+
+        switch (response.status) {
+          case ResponseStatus.Unauthorized: {
+            const user = useUserStore()
+            user.user = null
+            router.push('/signIn')
+            throw { name: 'Unauthorized', message: 'Authorization error' }
+          }
+          case ResponseStatus.InternalServerError: {
+            throw { name: 'Internal Server Error', message: 'Internal Server Error' }
+          }
+          default: {
+            const error = await response.json()
+            throw { name: error.error.name, message: error.error.message }
+          }
         }
       },
     ],
   },
-  throwHttpErrors: false,
 })
 
 export default request

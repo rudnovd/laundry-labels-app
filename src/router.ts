@@ -1,7 +1,7 @@
+import { isAccessTokenValid } from '@/services/jwt'
+import { useUserStore } from '@/store/user'
 import { LocalStorage } from 'quasar'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from './pages/HomePage.vue'
-import { useUserStore } from './store/user'
 
 const publicRoutes = [
   {
@@ -63,18 +63,35 @@ const router = createRouter({
   ],
 })
 
+// function redirectIfLoggedIn(_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) {
+//   console.log('redirectIfLoggedIn')
+//   const userStore = useUserStore()
+//   const isUserLoggedIn = !!userStore.user?._id
+//   if (isUserLoggedIn) {
+//     next({ name: 'Redirect', state: { message: 'You are already signed in', path: '/' } })
+//   }
+// }
+
 router.beforeEach((to, _, next) => {
   const userStore = useUserStore()
+  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
+  const isUserLoggedIn = !!userStore.user?._id
 
-  const hasRefreshToken = LocalStorage.getItem('hasRefreshToken') as boolean
-  if (publicRoutes.some((route) => route.path === to.path)) {
+  if (isUserLoggedIn) {
     next()
-  } else if (!userStore.user?._id && hasRefreshToken) {
-    userStore.getAuthFromRefreshToken().then((response) => (response.user?._id ? next() : next({ path: '/signIn' })))
-  } else if (!userStore.user?._id && !hasRefreshToken) {
-    next({ path: '/signin' })
   } else {
-    next()
+    if (publicRoutes.some((route) => route.path === to.path)) {
+      next()
+    } else if (hasRefreshToken) {
+      if (isAccessTokenValid()) {
+        const auth = userStore.signInFromAccessToken()
+        next(auth.user?._id ? to.path : { name: 'Sign in' })
+      } else {
+        userStore.signInFromRefreshToken().then((response) => (response.user?._id ? next() : next({ name: 'Sign in' })))
+      }
+    } else {
+      next({ name: 'Sign in' })
+    }
   }
 })
 

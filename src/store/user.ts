@@ -1,5 +1,7 @@
 import type { User, UserLoginResponse, UserRefreshTokenResponse } from '@/interfaces/user'
 import request from '@/services/request'
+import type { JwtPayload } from 'jwt-decode'
+import jwtDecode from 'jwt-decode'
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
 
@@ -63,6 +65,14 @@ export const useUserStore = defineStore('user', {
       }
 
       return { user: this.user, accessToken: '' }
+    },
+    signInFromAccessToken() {
+      const accessToken = LocalStorage.getItem('accessToken')?.toString()
+      if (accessToken) {
+        this.user = jwtDecode<JwtPayload & { data: { _id: string } }>(accessToken).data
+      }
+
+      return { user: this.user, accessToken }
     },
   },
 })

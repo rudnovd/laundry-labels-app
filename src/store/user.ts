@@ -48,7 +48,7 @@ export const useUserStore = defineStore('user', {
 
       return this.user
     },
-    async getAuthFromRefreshToken() {
+    async signInFromRefreshToken() {
       try {
         const response = await request.post('/auth/refreshtoken').json<UserRefreshTokenResponse>()
         if (response.accessToken) {

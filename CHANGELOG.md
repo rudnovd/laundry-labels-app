@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.3](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.2...v0.0.0-alpha.3) (2023-01-22)
+
+
+### Features
+
+* **components:** add EditItemPage component ([1797986](https://github.com/rudnovd/laundry-labels-app/commit/1797986ef1fd801a695e16a9842d8570c19e91bf))
+* **components:** add LaundryIconsGroup component ([3053805](https://github.com/rudnovd/laundry-labels-app/commit/3053805235e903672b33640616afcd2953144e70))
+* **components:** add SelectItemTags component ([58d9d03](https://github.com/rudnovd/laundry-labels-app/commit/58d9d03cbb245a3b3e10d014b56f5a12511a37f7))
+* **components:** add UploadItemImage component ([cbb7733](https://github.com/rudnovd/laundry-labels-app/commit/cbb77330e0ee1aad4f03cd02183518698ef5b546))
+* **components:** update CreateItemPage component ([5303b7d](https://github.com/rudnovd/laundry-labels-app/commit/5303b7d93697b96bf79ceb6a3f2689f22aad57e1))
+* **interfaces:** add name to Item interface ([5d7c267](https://github.com/rudnovd/laundry-labels-app/commit/5d7c26755f2594ffe0780c559f234d4c3e8a0e47))
+* **ItemPage:** add name field to Item page ([6d1ddb7](https://github.com/rudnovd/laundry-labels-app/commit/6d1ddb77590af5900b2a8613aa4f79f165e2409b))
+* **LaundryIconsGroup:** add value prop ([0805393](https://github.com/rudnovd/laundry-labels-app/commit/0805393e50f0081a32e5ac4d746619ed6ccc4b91))
+* **router:** update router functions ([da2e3e9](https://github.com/rudnovd/laundry-labels-app/commit/da2e3e95fc3d164e0a804ac4ea9f62616313f267))
+* **services:** add jwt module ([db4c05f](https://github.com/rudnovd/laundry-labels-app/commit/db4c05f1996d082f1dab081efb8f4293a4e422ec))
+* **store:** add new function in user store ([c5f44a8](https://github.com/rudnovd/laundry-labels-app/commit/c5f44a84b7c3cf7beaaf253669ee6fe306941587))
+
+
+### Bug Fixes
+
+* **interfaces:** remove isDisabled from User interface ([af5e45b](https://github.com/rudnovd/laundry-labels-app/commit/af5e45b3cd20b3d5b2a092f09ddd753eb81f5119))
+* **request:** fix Unauthorized error number ([5d2f77e](https://github.com/rudnovd/laundry-labels-app/commit/5d2f77eef9b494f53a11d887d720eeea7fc84328))
+* **types:** fix Hcaptcha types ([d648c69](https://github.com/rudnovd/laundry-labels-app/commit/d648c694222c3d12e4eaa7f064932c45527b20ae))
+
 ## [0.0.0-alpha.2](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.1...v0.0.0-alpha.2) (2022-06-22)
 
 

@@ -1,22 +1,28 @@
 <template>
-  <!-- TODO: v-ripple error (https://github.com/quasarframework/quasar/issues/13154)  -->
   <q-card class="laundry-card" flat bordered @click="router.push(`/item/${item._id}`)">
     <q-card-section horizontal class="full-height">
-      <q-img v-if="item.images.length" class="col-5" :src="item.images[0]" />
+      <q-img v-if="item.images.length" class="col-4" :src="item.images[0]" />
 
-      <q-card-section
-        :class="item.images.length ? 'col-7' : 'col-12'"
-        class="q-pa-sm column justify-between laundry-card-body"
-      >
-        <div class="icons row full-width" :class="!item.images.length && 'no-image'">
+      <q-card-section :class="item.images.length ? 'col-8' : 'col-12'" class="q-pa-sm column laundry-card-body">
+        <div class="item-name q-mb-sm">{{ item.name }}</div>
+
+        <div class="icons row full-width q-mb-sm" :class="!item.images.length && 'no-image'">
           <ul>
-            <li v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)" :key="icon._id">
-              <q-icon tag="li" :name="icon.icon" class="laundry-card-icon" size="2.2em" />
+            <li
+              v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)"
+              :key="icon._id"
+              @click="(e) => e.stopPropagation()"
+            >
+              <q-icon tag="li" :name="icon._id" class="laundry-card-icon" size="2.6em">
+                <q-tooltip>
+                  {{ icon.description }}
+                </q-tooltip>
+              </q-icon>
             </li>
           </ul>
         </div>
 
-        <div v-if="item.tags.length" class="row no-wrap overflow-auto full-width q-pb-sm">
+        <div v-if="item.tags.length" class="row no-wrap overflow-auto overflow-hidden-y full-width q-pb-sm">
           <q-chip v-for="tag in item.tags" :key="tag">{{ tag }}</q-chip>
         </div>
       </q-card-section>
@@ -43,17 +49,29 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
   width: 100%;
   user-select: none;
   max-width: 500px;
-  height: 150px;
+  height: 180px;
+  cursor: pointer;
+}
+
+.item-name {
+  height: 1.2em;
+}
+
+.laundry-card-body {
+  flex-wrap: nowrap;
 }
 
 .icons {
+  overflow: hidden;
+  max-height: 80px;
+
   ul {
     width: 100%;
     list-style-type: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(3, minmax(32px, 1fr));
+    grid-template: repeat(2, 1fr) / repeat(3, minmax(36px, 1fr));
     gap: 0.5rem;
   }
 
@@ -63,7 +81,8 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
     justify-content: center;
     border: 1px solid $grey-6;
     border-radius: 4px;
-    height: 32px;
+    height: 36px;
+    cursor: help;
   }
 }
 

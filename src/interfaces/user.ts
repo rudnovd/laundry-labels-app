@@ -1,6 +1,5 @@
 export interface User {
   _id: string
-  isDisabled: boolean
 }
 
 export interface UserRefreshTokenResponse {

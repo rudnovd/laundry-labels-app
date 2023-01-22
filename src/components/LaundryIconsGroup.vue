@@ -9,7 +9,7 @@
         v-ripple
         :class="{
           selected: icon._id === selectedIcon?._id,
-          'icon-transparent': selectedIcon?._id && selectedIcon?._id && selectedIcon?._id !== icon._id,
+          'icon-transparent': selectedIcon?._id && selectedIcon?._id !== icon._id,
         }"
         @click="onClickIcon(icon)"
       >
@@ -24,21 +24,24 @@
 import type { LaundryIcon } from '@/interfaces/laundryIcon'
 import { ref } from 'vue'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     group: {
       name: string
       icons: Array<LaundryIcon>
     }
+    value?: LaundryIcon | null
   }>(),
-  {}
+  {
+    value: null,
+  }
 )
 const emit = defineEmits<{
   (e: 'change', icon: LaundryIcon): void
   (e: 'remove', icon: LaundryIcon): void
 }>()
 
-const selectedIcon = ref<LaundryIcon | null>(null)
+const selectedIcon = ref<LaundryIcon | null>(props.value)
 
 const onClickIcon = (icon: LaundryIcon) => {
   if (selectedIcon.value) {
@@ -49,8 +52,9 @@ const onClickIcon = (icon: LaundryIcon) => {
       return
     }
   }
+
   selectedIcon.value = icon
-  emit('change', icon)
+  emit('change', selectedIcon.value)
 }
 </script>
 

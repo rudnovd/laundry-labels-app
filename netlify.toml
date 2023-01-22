@@ -6,7 +6,7 @@
 
 [[redirects]]
   from = "/auth/*"
-  to = "https://laundry-labels-app.onrender.com/:splat"
+  to = "https://laundry-labels-app.onrender.com/auth/:splat"
   status = 200
   force = true
 

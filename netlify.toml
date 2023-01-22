@@ -1,12 +1,12 @@
 [[redirects]]
   from = "/api/*"
-  to = "https://api.laundrylabels.app/:splat"
+  to = "https://laundry-labels-app.onrender.com/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/upload/*"
-  to = "https://api.laundrylabels.app/upload/:splat"
+  to = "https://laundry-labels-app.onrender.com/upload/:splat"
   status = 200
   force = true
 

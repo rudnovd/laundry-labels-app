@@ -1,9 +1,8 @@
 <template>
-  <section class="q-pa-sm column items-center">
+  <section class="login-page q-pa-sm">
     <h1 class="text-h6">Sign in</h1>
-
     <q-form
-      class="login-form column items-center"
+      class="login-form"
       autocorrect="off"
       autocapitalize="off"
       autocomplete="off"
@@ -12,18 +11,16 @@
     >
       <q-input
         v-model="email"
-        class="q-mb-sm"
         type="email"
         label="Email"
-        maxlength="128"
+        maxlength="320"
         filled
         dense
         lazy-rules
-        :rules="[(val: any) => (val && val.length > 0) || 'Please type something']"
+        :rules="[(v) => (v && v.length) || 'The email field is not filled']"
       />
       <q-input
         v-model="password"
-        class="q-mb-sm"
         type="password"
         label="Password"
         maxlength="64"
@@ -31,14 +28,12 @@
         filled
         dense
         lazy-rules
-        :rules="[(val: any) => (val && val.length > 0) || 'Please type something']"
+        :rules="[(v) => (v && v.length) || 'The password field is not filled']"
       />
 
-      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" class="q-mb-sm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
-
+      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
       <q-btn label="Sign in" type="submit" color="primary" />
     </q-form>
-
     <div class="row q-mt-lg">
       <div class="col-xs-12">Don't have an account? <router-link to="/signup">Sign up</router-link></div>
     </div>
@@ -46,15 +41,14 @@
 </template>
 
 <script setup lang="ts">
+import router from '@/router'
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 
-const $q = useQuasar()
+const { loading, notify } = useQuasar()
 const userStore = useUserStore()
-const router = useRouter()
 
 const user = computed(() => userStore.user)
 if (user.value?._id) router.push('/')
@@ -73,27 +67,24 @@ const onVerifyCaptcha = (token: string) => {
 
 const onSubmit = throttle(() => {
   if (import.meta.env.PROD && !captchaIsVerified.value) {
-    return $q.notify({
+    return notify({
       type: 'negative',
       message: 'Captcha required',
-      timeout: 5000,
     })
   }
 
-  $q.loading.show()
+  loading.show()
   userStore
     .signIn({ email: email.value, password: password.value, token: captchaVerificationToken.value })
     .then(() => {
-      $q.notify({
+      notify({
         type: 'positive',
         message: 'Sign in successfully',
       })
       router.push('/')
     })
-    .catch(() => {
-      captchaForm.value?.reset()
-    })
-    .finally(() => $q.loading.hide())
+    .catch(() => captchaForm.value?.reset())
+    .finally(() => loading.hide())
 }, 5000)
 
 const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
@@ -101,7 +92,17 @@ const showCaptcha = import.meta.env.PROD
 </script>
 
 <style lang="scss" scoped>
-.login-form > label {
-  min-width: 250px;
+.login-page {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.login-form {
+  display: grid;
+  grid-template-columns: 100%;
+  gap: 0.5rem;
+  grid-auto-flow: row;
+  width: 300px;
 }
 </style>

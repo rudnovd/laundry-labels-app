@@ -13,19 +13,21 @@
       <section class="q-px-sm">
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
-            <q-icon :name="laundryIconsMap[icon].icon" size="5em" />
+            <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
             <span>{{ laundryIconsMap[icon].description }}</span>
           </div>
         </section>
 
+        <section v-if="currentItem.name" class="q-mb-md">Name: {{ currentItem.name }}</section>
+
         <section v-if="currentItem.tags.length" class="item-tags q-mb-md">
-          <div>Tags:</div>
+          Tags:
           <q-chip v-for="tag in currentItem.tags" :key="tag">{{ tag }}</q-chip>
         </section>
 
         <section class="flex justify-between">
           <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
-          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/edit/${currentItem?._id}`)" />
+          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/item/edit/${currentItem?._id}`)" />
         </section>
       </section>
     </template>
@@ -40,7 +42,7 @@ import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const $q = useQuasar()
+const { loading, dialog } = useQuasar()
 const router = useRouter()
 const route = useRoute()
 const itemsStore = useItemsStore()
@@ -49,27 +51,27 @@ const currentItem = ref<Item>()
 
 const item = itemsStore.items.find((_item) => _item._id === route.params.id)
 if (!item) {
-  $q.loading.show({ delay: 300 })
+  loading.show()
   itemsStore
-    .getById({ _id: route.params.id as string })
+    .getItemById({ _id: route.params.id as string })
     .then((item) => {
       currentItem.value = item
     })
-    .finally(() => $q.loading.hide())
+    .finally(() => loading.hide())
 } else {
   currentItem.value = item
 }
 
 const callDeleteDialog = () => {
-  $q.dialog({
+  dialog({
     message: `Delete item?`,
     cancel: true,
   }).onOk(() => {
-    $q.loading.show()
+    loading.show()
     itemsStore
-      .delete({ _id: route.params.id as string })
+      .deleteItem({ _id: route.params.id as string })
       .then(() => router.push('/'))
-      .finally(() => $q.loading.hide())
+      .finally(() => loading.hide())
   })
 }
 </script>

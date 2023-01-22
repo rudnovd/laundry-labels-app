@@ -5,6 +5,12 @@
   force = true
 
 [[redirects]]
+  from = "/auth/*"
+  to = "https://laundry-labels-app.onrender.com/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/upload/*"
   to = "https://laundry-labels-app.onrender.com/upload/:splat"
   status = 200

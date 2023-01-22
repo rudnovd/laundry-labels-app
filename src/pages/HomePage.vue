@@ -1,21 +1,21 @@
 <template>
   <section class="q-pa-sm">
     <div class="flex justify-between items-center q-mb-md">
-      <q-btn color="primary" icon="add" to="/create" :disable="items.length >= 20">Add item</q-btn>
+      <q-btn color="primary" icon="add" to="/item/create" :disable="items.length >= 20">Add item</q-btn>
     </div>
 
     <section>
-      <div v-if="isItemsLoading" class="laundry-cards">
+      <div v-if="loading.isActive" class="laundry-cards">
         <LaundryCardSkeleton v-for="skeleton in 4" :key="`skeleton-${skeleton}`" />
       </div>
 
-      <div v-if="!isItemsLoading && items.length" class="laundry-cards q-mb-md">
+      <div v-if="!loading.isActive && items.length" class="laundry-cards q-mb-md">
         <LaundryCard v-for="item in items" :key="item._id" :item="item" />
       </div>
 
-      <div v-if="!isItemsLoading && !items.length" class="flex column items-center">
+      <div v-if="!loading.isActive && !items.length" class="flex column items-center">
         No items added yet
-        <q-btn color="primary" to="/create">Add first item</q-btn>
+        <q-btn color="primary" to="/item/create">Add first item</q-btn>
       </div>
     </section>
   </section>
@@ -25,16 +25,17 @@
 import LaundryCard from '@/components/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import { useItemsStore } from '@/store/items'
-import { computed, onBeforeMount, ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { computed, onBeforeMount } from 'vue'
 
+const { loading } = useQuasar()
 const itemsStore = useItemsStore()
 
 const items = computed(() => itemsStore.items)
-const isItemsLoading = ref(false)
 
 onBeforeMount(() => {
-  isItemsLoading.value = true
-  itemsStore.get().finally(() => (isItemsLoading.value = false))
+  loading.isActive = true
+  itemsStore.getItems().finally(() => (loading.isActive = false))
 })
 </script>
 
@@ -45,7 +46,7 @@ onBeforeMount(() => {
   gap: 1rem;
 
   @include media-small {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   }
 }
 

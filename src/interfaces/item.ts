@@ -1,5 +1,6 @@
 export interface Item {
   _id: string
+  name: string
   icons: Array<string>
   images: Array<string>
   tags: Array<string>

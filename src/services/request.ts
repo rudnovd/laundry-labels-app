@@ -8,7 +8,7 @@ import { isAccessTokenValid } from './jwt'
 const publicRoutes = [{ path: /\/auth\/.*/ }, { path: /\/upload\/items\/.*/, methods: ['GET'] }]
 
 enum ResponseStatus {
-  Unauthorized = 400,
+  Unauthorized = 401,
   InternalServerError = 500,
 }
 

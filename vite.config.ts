@@ -6,9 +6,6 @@ import type { VitePWAOptions } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  mode: 'development',
-  base: '/',
-  includeAssets: ['favicon.svg'],
   strategies: 'injectManifest',
   srcDir: 'src',
   filename: 'sw.ts',
@@ -16,9 +13,8 @@ const pwaOptions: Partial<VitePWAOptions> = {
     name: 'Laundry Labels App',
     short_name: 'Laundry Labels',
     description: 'Store washing data for your clothes',
-    orientation: 'portrait',
-    theme_color: '#ffffff',
-    start_url: '/',
+    orientation: 'portrait-primary',
+    theme_color: '#9ccc65',
     id: '/',
     icons: [
       {
@@ -32,7 +28,9 @@ const pwaOptions: Partial<VitePWAOptions> = {
         type: 'image/png',
       },
     ],
+    categories: ['lifestyle', 'productivity', 'utilities'],
   },
+  includeAssets: ['robots.txt', 'sitemap.txt'],
 }
 
 // https://vitejs.dev/config/

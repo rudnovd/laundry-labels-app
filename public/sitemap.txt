@@ -1,0 +1,4 @@
+https://laundrylabels.netlify.app
+https://laundrylabels.netlify.app/signin
+https://laundrylabels.netlify.app/signup
+https://laundrylabels.netlify.app/welcome

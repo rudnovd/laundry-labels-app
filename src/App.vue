@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
+import { watchOnce } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed } from 'vue'
@@ -40,7 +41,7 @@ $q.iconMapFn = (iconName) => {
   if (icon !== void 0) return { icon }
 }
 
-useRegisterSW({
+const { updateServiceWorker, needRefresh } = useRegisterSW({
   immediate: true,
   onRegistered(registration) {
     if (registration) {
@@ -52,6 +53,11 @@ useRegisterSW({
     /* eslint-disable no-console */
     console.error(error)
   },
+})
+
+watchOnce(needRefresh, () => {
+  $q.loading.show({ message: 'Updating app...' })
+  updateServiceWorker()
 })
 
 // window.addEventListener('beforeinstallprompt', (event) => {

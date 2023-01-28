@@ -27,8 +27,8 @@ export const useItemsStore = defineStore('items', {
     },
     async editItem(payload: { item: Omit<Item, 'updatedAt' | 'createdAt'> }) {
       const editedItem = await request.put(`/api/item/${payload.item._id}`, { json: payload.item }).json<Item>()
-      const itemForUpdateIndex = this.items.findIndex((item) => item._id === payload.item._id)
-      this.items[itemForUpdateIndex] = editedItem
+      const itemForUpdateIndex = this.items.findIndex((item) => item._id === editedItem._id)
+      this.items.splice(itemForUpdateIndex, 1, editedItem)
       return this.items
     },
     async deleteItem(payload: { _id: string }) {

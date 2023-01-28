@@ -2,8 +2,8 @@
   <section class="item-page q-pb-md">
     <template v-if="currentItem">
       <q-img
+        v-if="currentItem.images.length"
         class="item-image q-mb-md"
-        :class="{ 'no-image': !currentItem.images.length }"
         :src="currentItem.images[0]"
         loading="lazy"
         decoding="async"
@@ -13,8 +13,14 @@
       <section class="q-px-sm">
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
-            <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
-            <span>{{ laundryIconsMap[icon].description }}</span>
+            <template v-if="!laundryIconsMap[icon]">
+              <q-icon name="clear" size="5em" />
+              <span>Icon updated, please re-create item</span>
+            </template>
+            <template v-else>
+              <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
+              <span>{{ laundryIconsMap[icon].description }}</span>
+            </template>
           </div>
         </section>
 
@@ -139,9 +145,5 @@ const callDeleteDialog = () => {
     overflow-wrap: break-word;
     overflow: hidden;
   }
-}
-
-.no-image {
-  background: $grey-4;
 }
 </style>

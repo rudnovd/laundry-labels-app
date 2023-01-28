@@ -29,13 +29,15 @@
     X-Content-Type-Options = "nosniff"
     Access-Control-Allow-Origin = "*"
     Content-Security-Policy = '''
-      default-src 'self' https://cloudflareinsights.com https://*.cloudflareinsights.com https://hcaptcha.com https://*.hcaptcha.com https://cloudinary.com https://*.cloudinary.com;
-      object-src 'self';
-      img-src 'self' https://cloudinary.com https://*.cloudinary.com;
-      child-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
+      default-src 'self';
+      object-src 'none';
+      script-src 'self' https://cloudflareinsights.com https://hcaptcha.com;
+      img-src 'self' blob: https://*.cloudinary.com;
+      child-src 'self' https://*.hcaptcha.com;
+      connect-src 'self' https://*.hcaptcha.com;
       frame-ancestors 'none';
       upgrade-insecure-requests;
-      block-all-mixed-content
+      block-all-mixed-content;
     '''
     X-Permitted-Cross-Domain-Policies = "none"
     Referrer-Policy = "no-referrer"

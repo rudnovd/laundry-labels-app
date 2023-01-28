@@ -12,7 +12,11 @@
 
     <q-page-container>
       <q-page>
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <KeepAlive :include="keepAliveComponents">
+            <component :is="Component" />
+          </KeepAlive>
+        </router-view>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -28,13 +32,14 @@ import { useRoute, useRouter } from 'vue-router'
 
 let icons: { [key: string]: string } = {}
 
-laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.group.replace(' ', '-')}/${icon._id}.svg`))
+laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.group}/${icon._id}.svg`))
 
 const $q = useQuasar()
 const router = useRouter()
 const route = useRoute()
 // const install = computed(() => userStore.options.install)
 const showBackButton = computed(() => ['/', '/welcome', '/signin', '/signup'].indexOf(route.path) === -1)
+const keepAliveComponents = ['HomePage']
 
 $q.iconMapFn = (iconName) => {
   const icon = icons[iconName]

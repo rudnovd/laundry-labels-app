@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
 import { watchOnce } from '@vueuse/core'
-import { useQuasar } from 'quasar'
+import { QSpinnerGears, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -43,20 +43,10 @@ $q.iconMapFn = (iconName) => {
 
 const { updateServiceWorker, needRefresh } = useRegisterSW({
   immediate: true,
-  onRegistered(registration) {
-    if (registration) {
-      /* eslint-disable no-console */
-      console.log('Service worker registered')
-    }
-  },
-  onRegisterError(error) {
-    /* eslint-disable no-console */
-    console.error(error)
-  },
 })
 
 watchOnce(needRefresh, () => {
-  $q.loading.show({ message: 'Updating app...' })
+  $q.loading.show({ message: 'Updating app...', spinner: QSpinnerGears, ignoreDefaults: true })
   updateServiceWorker()
 })
 

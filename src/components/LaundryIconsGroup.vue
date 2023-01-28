@@ -1,6 +1,6 @@
 <template>
   <section class="laundry-icon-group">
-    <span>{{ group.name }}</span>
+    <span>{{ group.name.replace('-', ' ') }}</span>
 
     <div class="group-icons">
       <button

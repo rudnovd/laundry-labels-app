@@ -2,7 +2,7 @@
   <q-uploader
     ref="uploadImageRef"
     class="full-width q-mb-sm"
-    :max-file-size="TEN_MEGABYTES"
+    :max-file-size="FIFTEEN_MEGABYTES"
     :max-files="1"
     accept="image/jpg, image/jpeg, image/png, image/webp, image/avif"
     multiple
@@ -16,7 +16,7 @@
   >
     <template #header>
       <div class="row items-center justify-between q-pa-sm">
-        Upload photos (up to 3)
+        Upload photo
         <q-btn type="a" icon="add_box" round dense flat>
           <q-uploader-add-trigger />
         </q-btn>
@@ -69,7 +69,8 @@ const emit = defineEmits(['uploaded', 'remove'])
 
 const { notify } = useQuasar()
 
-const TEN_MEGABYTES = 10485760
+const FIFTEEN_MEGABYTES = 15728640
+
 const accessToken = LocalStorage.getItem('accessToken')?.toString()
 
 const uploadImageRef = ref<QUploader>()

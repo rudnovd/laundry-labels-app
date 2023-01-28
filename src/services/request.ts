@@ -3,7 +3,7 @@ import router from '@/router'
 import { useUserStore } from '@/store/user'
 import ky from 'ky'
 import { LocalStorage } from 'quasar'
-import { isAccessTokenValid } from './jwt'
+import { isAccessTokenValid, removeAccessToken } from './jwt'
 
 const publicRoutes = [{ path: /\/auth\/.*/ }, { path: /\/upload\/items\/.*/, methods: ['GET'] }]
 
@@ -58,12 +58,15 @@ const request = ky.create({
     ],
     afterResponse: [
       async (_request, _options, response) => {
-        if (response.ok) return
+        if (response.ok) {
+          return
+        }
 
         switch (response.status) {
           case ResponseStatus.Unauthorized: {
             const user = useUserStore()
             user.user = null
+            removeAccessToken()
             router.push('/signIn')
             throw { name: 'Unauthorized', message: 'Authorization error' }
           }

@@ -19,3 +19,7 @@ export function isAccessTokenValid() {
 
   return true
 }
+
+export function removeAccessToken() {
+  return LocalStorage.remove('accessToken')
+}

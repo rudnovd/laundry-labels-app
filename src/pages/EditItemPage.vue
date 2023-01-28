@@ -1,12 +1,7 @@
 <template>
   <section v-if="!loading.isActive" class="create-item-page q-pa-md">
     <section class="info-container">
-      <q-img
-        class="item-image"
-        height="200px"
-        :src="editingItem.images[0] || ''"
-        :class="{ 'no-image': !editingItem.images.length }"
-      />
+      <q-img v-if="editingItem.images.length" class="q-mb-sm" height="200px" />
 
       <SelectItemTags v-model="editingItem.tags" />
 
@@ -117,14 +112,6 @@ const onSubmit = () => {
 
 .info-container {
   grid-area: info;
-}
-
-.item-image {
-  margin-bottom: 16px;
-}
-
-.no-image {
-  background: $grey-4;
 }
 
 .washing-icons-container {

@@ -35,7 +35,8 @@ const pwaOptions: Partial<VitePWAOptions> = {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = { ...process.env, ...loadEnv(mode, process.cwd()) }
+
   return {
     define: {
       'import.meta.env.__APP_VERSION__': JSON.stringify(env.npm_package_version),

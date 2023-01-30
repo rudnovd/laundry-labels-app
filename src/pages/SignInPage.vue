@@ -31,7 +31,7 @@
         :rules="[(v) => (v && v.length) || 'The password field is not filled']"
       />
 
-      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
       <q-btn label="Sign in" type="submit" color="primary" />
     </q-form>
     <div class="row q-mt-lg">
@@ -66,7 +66,7 @@ const onVerifyCaptcha = (token: string) => {
 }
 
 const onSubmit = throttle(() => {
-  if (import.meta.env.PROD && !captchaIsVerified.value) {
+  if (import.meta.env.PROD && !isLocal && !captchaIsVerified.value) {
     return notify({
       type: 'negative',
       message: 'Captcha required',
@@ -89,6 +89,7 @@ const onSubmit = throttle(() => {
 
 const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
 const showCaptcha = import.meta.env.PROD
+const isLocal = import.meta.env.VITE_APP_IS_LOCAL
 </script>
 
 <style lang="scss" scoped>

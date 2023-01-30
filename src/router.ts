@@ -83,7 +83,9 @@ router.beforeEach((to, _, next) => {
     if (publicRoutes.some((route) => route.path === to.path)) {
       next()
     } else if (hasRefreshToken) {
-      if (isAccessTokenValid()) {
+      if (!window.navigator.onLine) {
+        next()
+      } else if (isAccessTokenValid()) {
         const auth = userStore.signInFromAccessToken()
         next(auth.user?._id ? to.path : { name: 'Sign in' })
       } else {

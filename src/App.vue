@@ -27,8 +27,13 @@ import { laundryIcons } from '@/assets/laundryIcons'
 import { computedWithControl, watchOnce } from '@vueuse/core'
 import { QSpinnerGears, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from './store/user'
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>
+}
 
 let icons: { [key: string]: string } = {}
 
@@ -37,9 +42,10 @@ laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.gro
 const $q = useQuasar()
 const router = useRouter()
 const route = useRoute()
-// const install = computed(() => userStore.options.install)
+const userStore = useUserStore()
 const showBackButton = computed(() => ['/', '/welcome', '/signin', '/signup'].indexOf(route.path) === -1)
 const keepAliveComponents = ['HomePage']
+const isBrowser = window.matchMedia('(display-mode: browser)').matches
 
 $q.iconMapFn = (iconName) => {
   const icon = icons[iconName]
@@ -58,30 +64,33 @@ const previousPageLink = computedWithControl(router.currentRoute, () => {
   }
 })
 
+onMounted(() => {
+  if (isBrowser) {
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt)
+    window.addEventListener('appinstalled', onAppInstalled)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt)
+  window.removeEventListener('appinstalled', onAppInstalled)
+})
+
 watchOnce(needRefresh, () => {
   $q.loading.show({ message: 'Updating app...', spinner: QSpinnerGears, ignoreDefaults: true })
   updateServiceWorker()
 })
 
-// window.addEventListener('beforeinstallprompt', (event) => {
-//   /* eslint-disable no-console */
-//   console.log('beforeinstallprompt called')
-//   event.preventDefault()
-//   // install.value.event = event
-//   // install.value.showInstallButton = true
-// })
+const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
+  event.preventDefault()
+  userStore.settings.installApp = {
+    show: true,
+    event,
+  }
+}
 
-// window.addEventListener('appinstalled', () => {
-//   install.value.event = null
-//   /* eslint-disable no-console */
-//   console.log('PWA was installed')
-// })
+const onAppInstalled = () => {
+  $q.notify({ type: 'positive', message: 'App installed' })
+  delete userStore.settings.installApp
+}
 </script>
-
-<style lang="scss" scoped>
-// .install-button {
-//   position: fixed;
-//   right: 24px;
-//   bottom: 24px;
-// }
-</style>

@@ -33,7 +33,7 @@
       />
 
       <q-btn label="Sign up" type="submit" color="primary" />
-      <VueHcaptcha v-if="showCaptcha" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
     </q-form>
     <div class="row q-mt-lg">
       <div class="col-xs-12">Already registered? <router-link to="/signin">Sign in</router-link></div>
@@ -68,7 +68,7 @@ const onVerifyCaptcha = (token: string) => {
 }
 
 const onSubmit = throttle(() => {
-  if (import.meta.env.PROD && !captchaIsVerified.value) {
+  if (import.meta.env.PROD && !isLocal && !captchaIsVerified.value) {
     return notify({
       type: 'negative',
       message: 'Captcha required',
@@ -96,6 +96,7 @@ const onSubmit = throttle(() => {
 
 const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
 const showCaptcha = import.meta.env.PROD
+const isLocal = import.meta.env.VITE_APP_IS_LOCAL
 </script>
 
 <style lang="scss" scoped>

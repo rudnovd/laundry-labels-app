@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "types": ["node", "vite/client", "vite-plugin-pwa/client"],
+    "typeRoots": ["./src/global.d.ts"],
     "paths": {
       "@/*": ["./src/*"]
     },

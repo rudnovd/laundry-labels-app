@@ -5,13 +5,24 @@ import jwtDecode from 'jwt-decode'
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>
+}
+
 interface UserState {
   user: User | null
+  settings: {
+    installApp?: {
+      event: BeforeInstallPromptEvent
+      show: boolean
+    }
+  }
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
+    settings: {},
   }),
   actions: {
     async signIn(payload: { email: string; password: string; token: string }) {

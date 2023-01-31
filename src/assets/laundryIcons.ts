@@ -7,6 +7,16 @@ export const laundryIcons: Array<LaundryIcon> = [
     description: 'Machine wash',
   },
   {
+    _id: 'mild-wash',
+    group: 'washing',
+    description: 'Mild machine wash',
+  },
+  {
+    _id: 'very-mild-wash',
+    group: 'washing',
+    description: 'Very mild machine wash',
+  },
+  {
     _id: 'hand-wash',
     group: 'washing',
     description: 'Hand wash',
@@ -22,9 +32,29 @@ export const laundryIcons: Array<LaundryIcon> = [
     description: 'Wash at or below 30°C',
   },
   {
+    _id: 'mild-wash-cold',
+    group: 'washing',
+    description: 'Mild wash at or below 30°C',
+  },
+  {
+    _id: 'very-mild-wash-cold',
+    group: 'washing',
+    description: 'Very mild wash at or below 30°C',
+  },
+  {
     _id: 'wash-warm',
     group: 'washing',
     description: 'Wash at or below 40°C',
+  },
+  {
+    _id: 'mild-wash-warm',
+    group: 'washing',
+    description: 'Mild wash at or below 40°C',
+  },
+  {
+    _id: 'very-mild-wash-warm',
+    group: 'washing',
+    description: 'Very mild wash at or below 40°C',
   },
   {
     _id: 'wash-hot',
@@ -32,9 +62,29 @@ export const laundryIcons: Array<LaundryIcon> = [
     description: 'Wash at or below 50°C',
   },
   {
+    _id: 'mild-wash-hot',
+    group: 'washing',
+    description: 'Mild wash at or below 50°C',
+  },
+  {
+    _id: 'very-mild-wash-hot',
+    group: 'washing',
+    description: 'Very mild wash at or below 50°C',
+  },
+  {
     _id: 'wash-very-hot',
     group: 'washing',
     description: 'Wash at or below 60°C',
+  },
+  {
+    _id: 'mild-wash-very-hot',
+    group: 'washing',
+    description: 'Mild wash at or below 60°C',
+  },
+  {
+    _id: 'very-mild-wash-very-hot',
+    group: 'washing',
+    description: 'Very mild wash at or below 60°C',
   },
   {
     _id: 'iron',
@@ -60,6 +110,16 @@ export const laundryIcons: Array<LaundryIcon> = [
     _id: 'iron-high',
     group: 'ironing',
     description: 'Iron at high temperature (max. 200°C)',
+  },
+  {
+    _id: 'iron-steam',
+    group: 'ironing',
+    description: 'Iron with steam',
+  },
+  {
+    _id: 'iron-do-not-steam',
+    group: 'ironing',
+    description: 'Do not steam',
   },
   {
     _id: 'bleach',

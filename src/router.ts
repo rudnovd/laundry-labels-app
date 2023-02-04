@@ -1,86 +1,124 @@
 import { isAccessTokenValid } from '@/services/jwt'
 import { useUserStore } from '@/store/user'
 import { LocalStorage } from 'quasar'
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type NavigationGuardNext,
+  type RouteLocationNormalized,
+  type RouteRecordRaw,
+} from 'vue-router'
 
-const publicRoutes = [
+function isUserSignedIn() {
+  const userStore = useUserStore()
+  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
+  return !!userStore.user?._id || isAccessTokenValid() || (hasRefreshToken && !window.navigator.onLine) || false
+}
+
+function redirectIfSignedIn(_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) {
+  isUserSignedIn() ? next({ name: 'Redirect' }) : next()
+}
+
+const publicRoutes: Array<RouteRecordRaw> = [
   {
-    path: '/welcome',
-    name: 'Welcome',
-    component: () => import('@/pages/WelcomePage.vue'),
+    path: '',
+    name: 'Home',
+    component: () => import('@/pages/HomePage.vue'),
   },
   {
-    path: '/signin',
+    path: 'sign-in',
     name: 'Sign in',
     component: () => import('@/pages/SignInPage.vue'),
+    beforeEnter: redirectIfSignedIn,
+    meta: {
+      redirect: {
+        text: 'You are already sign in, redirecting...',
+        path: window.history.state?.back || '/',
+      },
+    },
   },
   {
-    path: '/signup',
+    path: 'sign-up',
     name: 'Sign up',
     component: () => import('@/pages/SignUpPage.vue'),
+    beforeEnter: redirectIfSignedIn,
+    meta: {
+      redirect: {
+        text: 'You are already sign in, redirecting...',
+        path: window.history.state?.back || '/',
+      },
+    },
   },
-  // {
-  //   path: '/redirect',
-  //   name: 'Redirect',
-  //   component: () => import('@/pages/RedirectPage.vue'),
-  // },
+  {
+    path: '/redirect',
+    name: 'Redirect',
+    component: () => import('@/pages/RedirectPage.vue'),
+    props: (route) => route.redirectedFrom?.meta.redirect,
+  },
+]
+
+const userRoutes: Array<RouteRecordRaw> = [
+  {
+    path: 'items',
+    name: 'Items',
+    component: () => import('@/pages/ItemsPage.vue'),
+  },
+  {
+    path: 'items/create',
+    name: 'Create item',
+    component: () => import('@/pages/items/CreateItemPage.vue'),
+  },
+  {
+    path: 'items/edit/:id',
+    name: 'Edit item',
+    component: () => import('@/pages/items/EditItemPage.vue'),
+  },
+  {
+    path: 'items/:id',
+    name: 'Item',
+    component: () => import('@/pages/items/ItemPage.vue'),
+  },
+  {
+    path: 'profile',
+    name: 'Profile',
+    component: () => import('@/pages/ProfilePage.vue'),
+  },
+
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'Page not found',
+    component: () => import('@/pages/ErrorPage.vue'),
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory('/'),
   routes: [
-    ...publicRoutes,
     {
       path: '/',
-      name: 'Home',
-      component: () => import('@/pages/HomePage.vue'),
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      component: () => import('@/pages/ProfilePage.vue'),
-    },
-    {
-      path: '/item/create',
-      name: 'Create item',
-      component: () => import('@/pages/CreateItemPage.vue'),
-    },
-    {
-      path: '/item/edit/:id',
-      name: 'Edit item',
-      component: () => import('@/pages/EditItemPage.vue'),
-    },
-    {
-      path: '/item/:id',
-      name: 'Item',
-      component: () => import('@/pages/ItemPage.vue'),
+      component: () => import('@/layouts/PublicLayout.vue'),
+      children: publicRoutes,
+      beforeEnter: (_to, _from, next) => {
+        isUserSignedIn() ? next({ name: 'Items' }) : next()
+      },
     },
     {
       path: '/:pathMatch(.*)*',
-      name: 'Page not found',
-      component: () => import('@/pages/ErrorPage.vue'),
+      component: () => import('@/layouts/UserLayout.vue'),
+      children: userRoutes,
     },
   ],
 })
 
-// function redirectIfLoggedIn(_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) {
-//   console.log('redirectIfLoggedIn')
-//   const userStore = useUserStore()
-//   const isUserLoggedIn = !!userStore.user?._id
-//   if (isUserLoggedIn) {
-//     next({ name: 'Redirect', state: { message: 'You are already signed in', path: '/' } })
-//   }
-// }
-
 router.beforeEach((to, _, next) => {
   const userStore = useUserStore()
   const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
-  const isUserLoggedIn = !!userStore.user?._id
+  const isUserSignedIn = !!userStore.user?._id
 
-  if (isUserLoggedIn) {
+  if (isUserSignedIn) {
     next()
   } else {
-    if (publicRoutes.some((route) => route.path === to.path)) {
+    if (publicRoutes.some((route) => route.name === to.name)) {
       next()
     } else if (hasRefreshToken) {
       if (!window.navigator.onLine) {
@@ -97,8 +135,8 @@ router.beforeEach((to, _, next) => {
   }
 })
 
-router.afterEach((to) => {
-  if (to.name) document.title = to.name.toString()
+router.beforeResolve((to) => {
+  document.title = to.name ? to.name.toString() : 'Laundry Labels App'
 })
 
 router.resolve({

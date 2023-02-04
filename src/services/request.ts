@@ -67,7 +67,7 @@ const request = ky.create({
             const user = useUserStore()
             user.user = null
             removeAccessToken()
-            router.push('/signIn')
+            router.push({ name: 'Sign in' })
             throw { name: 'Unauthorized', message: 'Authorization error' }
           }
           case ResponseStatus.InternalServerError: {

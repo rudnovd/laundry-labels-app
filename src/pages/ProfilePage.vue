@@ -1,5 +1,5 @@
 <template>
-  <section class="q-pa-sm column flex-center">
+  <q-page class="q-pa-sm column flex-center">
     <div class="column q-gutter-y-sm">
       <q-btn
         v-if="userStore.settings.installApp?.show"
@@ -8,13 +8,11 @@
         icon="install_mobile"
         @click="userStore.settings.installApp?.event.prompt()"
       />
-      <q-btn v-if="!user" color="primary" label="Sign in" icon="login" to="/signin" />
-      <q-btn v-if="!user" color="primary" label="Sign up" icon="person" to="/signup" />
       <q-btn v-if="user" color="primary" label="Sign Out" icon="logout" @click="callLogoutDialog" />
     </div>
 
     <div class="column q-mt-sm">App version: {{ appVersion }}</div>
-  </section>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -43,7 +41,7 @@ const callLogoutDialog = () => {
           type: 'positive',
           message: 'Sign out successfully',
         })
-        router.push('/welcome')
+        router.push({ name: 'Home' })
       })
       .finally(() => $q.loading.hide())
   })

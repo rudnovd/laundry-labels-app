@@ -1,34 +1,13 @@
 <template>
-  <q-layout container>
-    <q-header class="bg-light-green-5 text-white">
-      <q-toolbar>
-        <q-btn v-show="showBackButton" icon="arrow_back" flat no-wrap padding="0" :to="previousPageLink" replace />
-        <q-toolbar-title class="flex items-center justify-between">
-          <q-btn flat icon="sell" label="Laundry Labels" to="/" :ripple="false" padding="0" />
-          <q-btn flat icon="person" to="/profile" :ripple="false" padding="0" />
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
-    <q-page-container>
-      <q-page>
-        <router-view v-slot="{ Component }">
-          <KeepAlive :include="keepAliveComponents">
-            <component :is="Component" />
-          </KeepAlive>
-        </router-view>
-      </q-page>
-    </q-page-container>
-  </q-layout>
+  <router-view />
 </template>
 
 <script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
-import { computedWithControl, watchOnce } from '@vueuse/core'
+import { watchOnce } from '@vueuse/core'
 import { QSpinnerGears, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { computed, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onMounted, onUnmounted } from 'vue'
 import { useUserStore } from './store/user'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -40,11 +19,7 @@ let icons: { [key: string]: string } = {}
 laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.group}/${icon._id}.svg`))
 
 const $q = useQuasar()
-const router = useRouter()
-const route = useRoute()
 const userStore = useUserStore()
-const showBackButton = computed(() => ['/', '/welcome', '/signin', '/signup'].indexOf(route.path) === -1)
-const keepAliveComponents = ['HomePage']
 const isBrowser = window.matchMedia('(display-mode: browser)').matches
 
 $q.iconMapFn = (iconName) => {
@@ -54,14 +29,6 @@ $q.iconMapFn = (iconName) => {
 
 const { updateServiceWorker, needRefresh } = useRegisterSW({
   immediate: true,
-})
-
-const previousPageLink = computedWithControl(router.currentRoute, () => {
-  if (window.history.state.back === router.currentRoute.value.path) {
-    return '/'
-  } else {
-    return window.history.state.back || '/'
-  }
 })
 
 onMounted(() => {

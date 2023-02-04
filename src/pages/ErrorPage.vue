@@ -1,8 +1,8 @@
 <template>
-  <section class="error-page">
+  <q-page class="error-page">
     <span>Page not found</span>
-    <router-link to="/"> Return to Home page </router-link>
-  </section>
+    <router-link :to="{ name: 'Home' }"> Return to Home page </router-link>
+  </q-page>
 </template>
 
 <style lang="scss" scoped>

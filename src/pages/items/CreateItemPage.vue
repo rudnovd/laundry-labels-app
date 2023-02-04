@@ -1,5 +1,5 @@
 <template>
-  <section class="create-item-page q-pa-sm">
+  <q-page class="create-item-page q-pa-sm">
     <section class="info-container">
       <UploadItemImage
         :images="newItem.images"
@@ -23,7 +23,7 @@
     </section>
 
     <q-btn color="positive" class="submit-button" label="Create" @click="onSubmit" />
-  </section>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -51,7 +51,7 @@ const newItem = reactive<ItemBlank>({
 const onSubmit = () => {
   loading.show()
   createItem({ item: newItem })
-    .then(() => router.push('/'))
+    .then(() => router.push({ name: 'Items' }))
     .finally(() => loading.hide())
 }
 </script>

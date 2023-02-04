@@ -1,5 +1,5 @@
 <template>
-  <section class="item-page q-pb-md">
+  <q-page class="item-page q-pb-md">
     <template v-if="currentItem">
       <q-img
         v-if="currentItem.images.length"
@@ -33,11 +33,16 @@
 
         <section class="flex justify-between">
           <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
-          <q-btn color="primary" label="Edit item" icon="edit" @click="router.push(`/item/edit/${currentItem?._id}`)" />
+          <q-btn
+            color="primary"
+            label="Edit item"
+            icon="edit"
+            @click="router.push(`/items/edit/${currentItem?._id}`)"
+          />
         </section>
       </section>
     </template>
-  </section>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -76,7 +81,7 @@ const callDeleteDialog = () => {
     loading.show()
     itemsStore
       .deleteItem({ _id: route.params.id as string })
-      .then(() => router.push('/'))
+      .then(() => router.push({ name: 'Items' }))
       .finally(() => loading.hide())
   })
 }

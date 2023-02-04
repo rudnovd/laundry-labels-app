@@ -1,5 +1,5 @@
 <template>
-  <q-card class="laundry-card" flat bordered @click="router.push(`/item/${item._id}`)">
+  <q-card class="laundry-card" flat bordered @click="router.push(`/items/${item._id}`)">
     <q-card-section horizontal class="full-height">
       <q-img v-if="item.images.length" class="col-4" :src="item.images[0]" />
 

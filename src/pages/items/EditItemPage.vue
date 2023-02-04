@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!loading.isActive" class="create-item-page q-pa-md">
+  <q-page v-if="!loading.isActive" class="create-item-page q-pa-md">
     <section class="info-container">
       <q-img v-if="editingItem.images.length" class="q-mb-sm" height="200px" />
 
@@ -20,7 +20,7 @@
     </section>
 
     <q-btn color="positive" class="submit-button" label="Save" @click="onSubmit" />
-  </section>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -82,7 +82,7 @@ const onSubmit = () => {
   loading.show()
   itemsStore
     .editItem({ item: { ...editingItem, _id: route.params.id as string } })
-    .then(() => router.push('/'))
+    .then(() => router.push({ name: 'Items' }))
     .finally(() => loading.hide())
 }
 </script>

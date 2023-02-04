@@ -1,5 +1,5 @@
 <template>
-  <section class="registration-page q-pa-sm">
+  <q-page class="registration-page q-pa-sm">
     <h1 class="text-h6">Sign up</h1>
 
     <q-form
@@ -36,25 +36,21 @@
       <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
     </q-form>
     <div class="row q-mt-lg">
-      <div class="col-xs-12">Already registered? <router-link to="/signin">Sign in</router-link></div>
+      <div class="col-xs-12">Already registered? <router-link :to="{ name: 'Sign in' }">Sign in</router-link></div>
     </div>
-  </section>
+  </q-page>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
-import { computed, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { notify, loading } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
-
-const user = computed(() => userStore.user)
-if (user.value?._id) router.push('/')
-watch(user, () => user.value?._id && router.push('/'))
 
 const email = ref('')
 const password = ref('')
@@ -88,7 +84,7 @@ const onSubmit = throttle(() => {
         type: 'positive',
         message: 'Sign up successfully',
       })
-      router.push('/')
+      router.push({ name: 'Items' })
     })
     .catch(() => captchaForm.value?.reset())
     .finally(() => loading.hide())

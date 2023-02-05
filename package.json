@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "https": "PORT=4444 REINSTALL=true serve dist",
     "lint": "eslint --ext .ts,.vue src",
-    "lint:fix": "eslint --ext .ts,.vue src --fix"
+    "stylelint": "stylelint '**/*{.scss,.vue}'"
   },
   "dependencies": {
     "@hcaptcha/vue3-hcaptcha": "^1.0.1",
@@ -37,9 +37,13 @@
     "https-localhost": "^4.7.1",
     "husky": "^8.0.3",
     "prettier": "^2.8.3",
-    "sass": "^1.57.1",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.4",
+    "stylelint": "^14.16.1",
+    "stylelint-config-prettier": "^9.0.4",
+    "stylelint-config-recess-order": "^3.1.0",
+    "stylelint-config-recommended-scss": "^8.0.0",
+    "stylelint-config-recommended-vue": "^1.4.0",
+    "stylelint-prettier": "^2.0.0",
+    "stylelint-scss": "^4.3.0",
     "vite-plugin-pwa": "^0.14.1",
     "vue-eslint-parser": "^9.1.0",
     "vue-tsc": "^1.0.24",

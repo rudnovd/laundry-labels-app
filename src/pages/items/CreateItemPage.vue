@@ -58,24 +58,24 @@ const onSubmit = () => {
 
 <style lang="scss" scoped>
 .create-item-page {
-  max-width: 1920px;
-  margin: auto;
   display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: auto;
   grid-template-areas:
     'info'
     'icons'
     'submit';
+  grid-template-rows: auto;
+  grid-template-columns: 100%;
 
   gap: 1.5rem;
+  max-width: 1920px;
+  margin: auto;
 
   @include media-medium {
-    grid-template-columns: 2fr 5fr;
-    grid-template-rows: auto auto;
     grid-template-areas:
       'info icons'
       '. submit';
+    grid-template-rows: auto auto;
+    grid-template-columns: 2fr 5fr;
   }
 }
 
@@ -93,13 +93,13 @@ const onSubmit = () => {
 
 .washing-icons-container {
   display: grid;
-  gap: 1rem;
   grid-area: icons;
+  gap: 1rem;
   margin-bottom: 16px;
 }
 
 .submit-button {
-  width: 100%;
   grid-area: submit;
+  width: 100%;
 }
 </style>

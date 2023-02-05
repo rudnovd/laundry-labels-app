@@ -107,8 +107,8 @@ const onRemove = (scope: QUploader, file: any) => {
 <style lang="scss" scoped>
 .delete-icon {
   position: absolute;
+  right: 0;
   z-index: 1;
   transform: translate(-5px, -10px);
-  right: 0;
 }
 </style>

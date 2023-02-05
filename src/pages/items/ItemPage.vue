@@ -89,13 +89,13 @@ const callDeleteDialog = () => {
 
 <style lang="scss" scoped>
 .item-page {
-  margin: auto;
   max-width: 1280px;
+  margin: auto;
 }
 
 .item-image {
-  max-height: 300px;
   max-width: 600px;
+  max-height: 300px;
 
   @include media-medium {
     max-width: 100%;
@@ -129,12 +129,12 @@ const callDeleteDialog = () => {
 }
 
 .icon-chip {
-  display: grid;
   position: relative;
-  padding: 0.25rem;
+  display: grid;
   grid-template-columns: 64px auto;
   gap: 0.5rem;
   align-items: center;
+  padding: 0.25rem;
   border: 1px solid $grey-4;
   border-radius: 8px;
 
@@ -144,11 +144,11 @@ const callDeleteDialog = () => {
 
   & span:nth-child(2) {
     display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
+    overflow: hidden;
     text-overflow: ellipsis;
     overflow-wrap: break-word;
-    overflow: hidden;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
   }
 }
 </style>

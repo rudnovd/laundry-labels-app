@@ -8,8 +8,8 @@
 <style lang="scss" scoped>
 .buttons-section {
   display: grid;
-  justify-content: center;
   gap: 1rem;
+  justify-content: center;
 
   button,
   a {

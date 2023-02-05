@@ -21,50 +21,50 @@
 
 <style lang="scss" scoped>
 .laundry-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: 150px;
+  grid-template-columns: 3fr 4fr;
+  width: 100%;
+  max-width: 500px;
+  user-select: none;
   background: rgb(255, 255, 255);
   border-radius: 4px;
   box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%);
-  position: relative;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 3fr 4fr;
-  grid-template-rows: 150px;
-  user-select: none;
-  max-width: 500px;
 }
 
 .laundry-card-body {
-  padding: 8px;
   display: grid;
   grid-template-rows: 1rem auto;
   gap: 12px;
+  padding: 8px;
 
   span:first-child {
     display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    overflow: hidden;
     text-overflow: ellipsis;
     overflow-wrap: break-word;
-    overflow: hidden;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
   }
 
   ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 32px 32px;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
   }
 
   li {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 32px;
     border: 1px solid $grey-6;
     border-radius: 4px;
-    height: 32px;
   }
 
   li img {
@@ -79,8 +79,8 @@
 
   div:first-child {
     display: flex;
-    align-items: center;
     gap: 4px;
+    align-items: center;
   }
 
   .item-type {

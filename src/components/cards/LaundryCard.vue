@@ -50,17 +50,17 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
 <style lang="scss" scoped>
 .laundry-card {
   width: 100%;
-  user-select: none;
   max-width: 500px;
   height: 180px;
   cursor: pointer;
+  user-select: none;
 }
 
 .item-name {
   height: 1.2em;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
 }
 
 .laundry-card-body {
@@ -68,27 +68,27 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
 }
 
 .icons {
-  overflow: hidden;
   max-height: 80px;
+  overflow: hidden;
 
   ul {
-    width: 100%;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
     display: grid;
     grid-template: repeat(2, 1fr) / repeat(3, minmax(36px, 1fr));
     gap: 0.5rem;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
   }
 
   li {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid $grey-6;
-    border-radius: 4px;
     height: 36px;
     cursor: help;
+    border: 1px solid $grey-6;
+    border-radius: 4px;
   }
 }
 

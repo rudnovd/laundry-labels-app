@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.5](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.4...v0.0.0-alpha.5) (2023-02-05)
+
+
+### Features
+
+* add disabled dark mode for future release ([8e4c58c](https://github.com/rudnovd/laundry-labels-app/commit/8e4c58cff15dcb062f21989e81ce2c6d15bcb098))
+* add install PWA install button ([7745ae2](https://github.com/rudnovd/laundry-labels-app/commit/7745ae2a4c676d02709601d119c5290879d22038))
+* **HomePage:** update styles ([d5ddd4b](https://github.com/rudnovd/laundry-labels-app/commit/d5ddd4ba19b20fa9381f82d2ee34a9295e6287ef))
+* **icons:** add new laundry icons ([7ff98d2](https://github.com/rudnovd/laundry-labels-app/commit/7ff98d242e900ce3c26a72765887ae4fbe115f50))
+* **index.html:** add new meta tags ([d51769d](https://github.com/rudnovd/laundry-labels-app/commit/d51769d15e2f7a707cd4db9a3ae2cc20ec72a734))
+* **ItemPage:** update component styles ([8b3f399](https://github.com/rudnovd/laundry-labels-app/commit/8b3f399453bbfc1411ae506655a3551f55c3254a))
+* **ProfilePage:** update styles ([3253f33](https://github.com/rudnovd/laundry-labels-app/commit/3253f3358edcbe8ffa3e40a2e1a5fc3a40e0e4ca))
+* **SignInPage:** update styles ([d959ae8](https://github.com/rudnovd/laundry-labels-app/commit/d959ae8c11ca458749d5f91d13f267fe658601a1))
+* **SignUpPage:** update styles ([13ecbab](https://github.com/rudnovd/laundry-labels-app/commit/13ecbab4189004e35334b158711f8d4ca064af0d))
+* update router ([b89fb54](https://github.com/rudnovd/laundry-labels-app/commit/b89fb5408dc8e955e65bcddcf0b34f0b51887c0c))
+
+
+### Bug Fixes
+
+* **EditItemPage:** displaying image ([5a1ea3e](https://github.com/rudnovd/laundry-labels-app/commit/5a1ea3e5bd5a92eb84014292ad5029185820280d))
+* **router:** disable redirect for offline users ([8004c6f](https://github.com/rudnovd/laundry-labels-app/commit/8004c6f15f35e80e978d4bba9869bf06d8b9cc79))
+* **UserLayout:** change back icon class, fix KeepAlive ([fbb0466](https://github.com/rudnovd/laundry-labels-app/commit/fbb0466b5d20b188eca02fb7dcf1221892cc2ab9))
+
 ## [0.0.0-alpha.4](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.3...v0.0.0-alpha.4) (2023-01-28)
 
 

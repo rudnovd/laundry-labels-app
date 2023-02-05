@@ -1,42 +1,35 @@
 <template>
-  <q-page class="login-page q-pa-sm">
-    <h1 class="text-h6">Sign in</h1>
-    <q-form
-      class="login-form"
-      autocorrect="off"
-      autocapitalize="off"
-      autocomplete="off"
-      spellcheck="false"
-      @submit="onSubmit"
-    >
-      <q-input
-        v-model="email"
-        type="email"
-        label="Email"
-        maxlength="320"
-        filled
-        dense
-        lazy-rules
-        :rules="[(v) => (v && v.length) || 'The email field is not filled']"
-      />
-      <q-input
-        v-model="password"
-        type="password"
-        label="Password"
-        maxlength="64"
-        hide-hint
-        filled
-        dense
-        lazy-rules
-        :rules="[(v) => (v && v.length) || 'The password field is not filled']"
-      />
+  <q-page class="sign-in-page bg-positive text-weight-bold">
+    <section>
+      <h1 class="text-h4">Sign in</h1>
+      <q-form autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @submit="onSubmit">
+        <q-input
+          v-model="email"
+          type="email"
+          label="Email"
+          maxlength="320"
+          filled
+          dense
+          lazy-rules
+          :rules="[(v) => (v && v.length) || 'The email field is not filled']"
+        />
+        <q-input
+          v-model="password"
+          type="password"
+          label="Password"
+          maxlength="64"
+          hide-hint
+          filled
+          dense
+          lazy-rules
+          :rules="[(v) => (v && v.length) || 'The password field is not filled']"
+        />
+        <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+        <q-btn label="Sign in" type="submit" color="primary" />
+      </q-form>
 
-      <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
-      <q-btn label="Sign in" type="submit" color="primary" />
-    </q-form>
-    <div class="row q-mt-lg">
-      <div class="col-xs-12">Don't have an account? <router-link :to="{ name: 'Sign up' }">Sign up</router-link></div>
-    </div>
+      <div>Don't have an account? <router-link :to="{ name: 'Sign up' }">Sign up</router-link></div>
+    </section>
   </q-page>
 </template>
 
@@ -89,17 +82,26 @@ const isLocal = import.meta.env.VITE_APP_IS_LOCAL
 </script>
 
 <style lang="scss" scoped>
-.login-page {
-  display: grid;
-  place-items: center;
-  height: 100%;
-}
+.sign-in-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.login-form {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-auto-flow: row;
-  gap: 0.5rem;
-  width: 300px;
+  & > section:first-child {
+    display: grid;
+    gap: 1rem;
+    justify-content: center;
+
+    h1,
+    div {
+      text-align: center;
+    }
+
+    form {
+      display: grid;
+      gap: 0.5rem;
+      width: 300px;
+    }
+  }
 }
 </style>

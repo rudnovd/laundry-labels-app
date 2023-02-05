@@ -3,7 +3,7 @@
     <q-header class="bg-light-green-5 text-white">
       <q-toolbar>
         <q-btn
-          v-show="route.name !== 'Items'"
+          :class="{ invisible: route.name === 'Items' }"
           icon="arrow_back"
           flat
           no-wrap
@@ -32,7 +32,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const keepAliveComponents = ['HomePage']
+const keepAliveComponents = ['ItemsPage']
 
 const router = useRouter()
 const route = useRoute()

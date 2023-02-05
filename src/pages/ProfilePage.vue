@@ -1,6 +1,6 @@
 <template>
-  <q-page class="q-pa-sm column flex-center">
-    <div class="column q-gutter-y-sm">
+  <q-page class="profile-page q-pa-sm">
+    <section class="actions">
       <q-btn
         v-if="userStore.settings.installApp?.show"
         color="primary"
@@ -12,9 +12,9 @@
       <!-- <q-toggle :model-value="dark.isActive" label="Dark mode" @update:model-value="dark.toggle()" /> -->
 
       <q-btn v-if="user" color="primary" label="Sign Out" icon="logout" @click="callLogoutDialog" />
-    </div>
+    </section>
 
-    <div class="column q-mt-sm">App version: {{ appVersion }}</div>
+    App version: {{ appVersion }}
   </q-page>
 </template>
 
@@ -52,3 +52,17 @@ const callLogoutDialog = () => {
 
 const appVersion = import.meta.env.__APP_VERSION__
 </script>
+
+<style lang="scss" scoped>
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.actions {
+  display: grid;
+  gap: 1rem;
+}
+</style>

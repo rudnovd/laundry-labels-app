@@ -10,7 +10,7 @@
         height="100%"
       />
 
-      <section class="q-px-sm">
+      <section class="q-px-sm" :class="{ 'q-pt-sm': !currentItem.images.length }">
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
             <template v-if="!laundryIconsMap[icon]">

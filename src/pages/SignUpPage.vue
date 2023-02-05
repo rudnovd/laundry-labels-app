@@ -105,8 +105,8 @@ const isLocal = import.meta.env.VITE_APP_IS_LOCAL
 .registration-form {
   display: grid;
   grid-template-columns: 100%;
-  gap: 0.5rem;
   grid-auto-flow: row;
+  gap: 0.5rem;
   width: 300px;
 }
 </style>

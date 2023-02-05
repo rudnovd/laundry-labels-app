@@ -64,10 +64,10 @@ const onClickIcon = (icon: LaundryIcon) => {
   gap: 0.25rem;
 
   & > span:first-child {
-    text-transform: capitalize;
     font-size: 1.125rem;
     font-weight: 500;
     text-align: center;
+    text-transform: capitalize;
   }
 }
 
@@ -82,37 +82,37 @@ const onClickIcon = (icon: LaundryIcon) => {
   }
 
   & > button {
-    display: grid;
     position: relative;
-    padding: 0.25rem;
+    display: grid;
     grid-template-columns: 64px auto;
     gap: 0.5rem;
     align-items: center;
+    padding: 0.25rem;
+    cursor: pointer;
+    background: white;
     border: 1px solid $grey-4;
     border-radius: 8px;
-    background: white;
-    cursor: pointer;
 
     & span:nth-child(2) {
       display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
+      overflow: hidden;
       text-overflow: ellipsis;
       overflow-wrap: break-word;
-      overflow: hidden;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
     }
 
     &.selected {
-      transition: border 0.25s linear, background-color 0.25s linear;
-      background-color: rgba($grey-6, 0.3);
       font-weight: 500;
+      background-color: rgba($grey-6, 0.3);
       border: 1px solid $grey-6;
+      transition: border 0.25s linear, background-color 0.25s linear;
     }
 
     &.icon-transparent {
       & > span {
-        transition: opacity 0.25s linear;
         opacity: 0.3;
+        transition: opacity 0.25s linear;
       }
     }
   }

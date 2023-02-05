@@ -29,6 +29,31 @@ module.exports = {
   ],
   rules: {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'vue/block-tag-newline': [
+      'error',
+      {
+        singleline: 'always',
+        multiline: 'always',
+      },
+    ],
+    'vue/custom-event-name-casing': ['error', 'kebab-case'],
+    'vue/html-comment-content-spacing': [process.env.NODE_ENV === 'production' ? 'error' : 'warn', 'always'],
+    'vue/no-reserved-component-names': [
+      'error',
+      {
+        disallowVueBuiltInComponents: true,
+        disallowVue3BuiltInComponents: true,
+      },
+    ],
+    'vue/padding-line-between-blocks': [process.env.NODE_ENV === 'production' ? 'error' : 'warn', 'always'],
+    'vue/v-on-function-call': [
+      'error',
+      'never',
+      {
+        ignoreIncludesComment: false,
+      },
+    ],
+    'vue/arrow-spacing': ['error'],
   },
   overrides: [
     {

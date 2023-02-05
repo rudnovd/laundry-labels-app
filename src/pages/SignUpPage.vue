@@ -1,43 +1,42 @@
 <template>
-  <q-page class="registration-page q-pa-sm">
-    <h1 class="text-h6">Sign up</h1>
+  <q-page class="sign-up-page bg-positive text-weight-bold">
+    <section>
+      <h1 class="text-h4">Sign up</h1>
+      <q-form
+        class="registration-form"
+        autocorrect="off"
+        autocapitalize="off"
+        autocomplete="off"
+        spellcheck="false"
+        @submit="onSubmit"
+      >
+        <q-input
+          v-model="email"
+          type="email"
+          label="Email"
+          maxlength="320"
+          filled
+          dense
+          lazy-rules
+          :rules="[(v) => (v && v.length) || 'The email field is not filled']"
+        />
+        <q-input
+          v-model="password"
+          type="password"
+          label="Password"
+          maxlength="64"
+          hide-hint
+          filled
+          dense
+          lazy-rules
+          :rules="[(v) => (v && v.length >= 6) || 'Please use minimum 6 characters']"
+        />
 
-    <q-form
-      class="registration-form"
-      autocorrect="off"
-      autocapitalize="off"
-      autocomplete="off"
-      spellcheck="false"
-      @submit="onSubmit"
-    >
-      <q-input
-        v-model="email"
-        type="email"
-        label="Email"
-        maxlength="320"
-        filled
-        dense
-        lazy-rules
-        :rules="[(v) => (v && v.length) || 'The email field is not filled']"
-      />
-      <q-input
-        v-model="password"
-        type="password"
-        label="Password"
-        maxlength="64"
-        hide-hint
-        filled
-        dense
-        lazy-rules
-        :rules="[(v) => (v && v.length >= 6) || 'Please use minimum 6 characters']"
-      />
-
-      <q-btn label="Sign up" type="submit" color="primary" />
-      <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
-    </q-form>
-    <div class="row q-mt-lg">
-      <div class="col-xs-12">Already registered? <router-link :to="{ name: 'Sign in' }">Sign in</router-link></div>
-    </div>
+        <q-btn label="Sign up" type="submit" color="primary" />
+        <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+      </q-form>
+      <div>Already registered? <router-link :to="{ name: 'Sign in' }">Sign in</router-link></div>
+    </section>
   </q-page>
 </template>
 
@@ -96,17 +95,26 @@ const isLocal = import.meta.env.VITE_APP_IS_LOCAL
 </script>
 
 <style lang="scss" scoped>
-.registration-page {
-  display: grid;
-  place-items: center;
-  height: 100%;
-}
+.sign-up-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.registration-form {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-auto-flow: row;
-  gap: 0.5rem;
-  width: 300px;
+  & > section:first-child {
+    display: grid;
+    gap: 1rem;
+    justify-content: center;
+
+    h1,
+    div {
+      text-align: center;
+    }
+
+    form {
+      display: grid;
+      gap: 0.5rem;
+      width: 300px;
+    }
+  }
 }
 </style>

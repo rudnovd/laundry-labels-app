@@ -8,6 +8,9 @@
         icon="install_mobile"
         @click="userStore.settings.installApp?.event.prompt()"
       />
+
+      <!-- <q-toggle :model-value="dark.isActive" label="Dark mode" @update:model-value="dark.toggle()" /> -->
+
       <q-btn v-if="user" color="primary" label="Sign Out" icon="logout" @click="callLogoutDialog" />
     </div>
 
@@ -21,29 +24,29 @@ import { useQuasar } from 'quasar'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
-const $q = useQuasar()
+const { loading, dialog, notify } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
 
 const user = computed(() => userStore.user)
 
 const callLogoutDialog = () => {
-  $q.dialog({
+  dialog({
     title: 'Logout',
     message: 'Would you like to sign out?',
     cancel: true,
   }).onOk(() => {
-    $q.loading.show()
+    loading.show()
     userStore
       .signOut()
       .then(() => {
-        $q.notify({
+        notify({
           type: 'positive',
           message: 'Sign out successfully',
         })
         router.push({ name: 'Home' })
       })
-      .finally(() => $q.loading.hide())
+      .finally(() => loading.hide())
   })
 }
 

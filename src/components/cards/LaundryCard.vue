@@ -9,7 +9,7 @@
       >
         <div class="item-name q-mb-sm">{{ item.name }}</div>
 
-        <div class="icons row full-width q-mb-sm" :class="!item.images.length && 'no-image'">
+        <div class="icons row full-width q-mb-sm">
           <ul>
             <li
               v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)"
@@ -17,7 +17,7 @@
               @click="(e) => e.stopPropagation()"
             >
               <q-icon tag="svg" :name="icon._id" size="2.6em">
-                <q-tooltip :anchor="'top middle'" :offset="[0, 36]">
+                <q-tooltip :anchor="'top middle'" :offset="[0, 42]">
                   {{ icon.description }}
                 </q-tooltip>
               </q-icon>
@@ -25,7 +25,7 @@
           </ul>
         </div>
 
-        <div v-if="item.tags.length" class="row no-wrap overflow-auto overflow-hidden-y full-width q-pb-sm">
+        <div v-if="item.tags.length" class="row no-wrap overflow-auto overflow-hidden-y full-width q-pb-sm item-tags">
           <q-chip v-for="tag in item.tags" :key="tag">{{ tag }}</q-chip>
         </div>
       </q-card-section>
@@ -64,7 +64,7 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
 }
 
 .laundry-card-body {
-  flex-wrap: nowrap;
+  display: grid;
 }
 
 .icons {
@@ -92,10 +92,8 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
   }
 }
 
-.icons.no-image {
-  ul {
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-  }
+.item-tags {
+  align-items: flex-end;
 }
 
 :deep(.q-icon > img) {

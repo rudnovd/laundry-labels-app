@@ -1,6 +1,6 @@
 {
   "name": "laundry-labels-app",
-  "version": "0.0.0-alpha.5",
+  "version": "0.0.0-alpha.6",
   "private": true,
   "description": "Store data on the care of your clothes",
   "homepage": "https://laundrylabels.netlify.app/",

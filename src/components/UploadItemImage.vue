@@ -65,7 +65,10 @@ const props = withDefaults(
     images: () => [],
   }
 )
-const emit = defineEmits(['uploaded', 'remove'])
+const emit = defineEmits<{
+  (e: 'uploaded', url: string): void
+  (e: 'remove', url: string): void
+}>()
 
 const { notify } = useQuasar()
 

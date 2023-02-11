@@ -1,7 +1,7 @@
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
-import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -18,32 +18,68 @@ cleanupOutdatedCaches()
 // to allow work offline
 registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')), new CacheFirst())
 
-// cache images
+// Return cached items object when user is offline
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/upload/items'),
-  new StaleWhileRevalidate({
-    cacheName: 'upload-items-images-cache',
-    fetchOptions: {
-      method: 'get',
-    },
+  ({ url }) => url.pathname === '/api/items',
+  new NetworkFirst({
+    cacheName: 'items',
     plugins: [
       new CacheableResponsePlugin({
         statuses: [200],
       }),
     ],
-  })
+  }),
+  'GET'
 )
 
+// Cache all uploaded user images
 registerRoute(
-  ({ url }) => url.pathname.startsWith('res.cloudinary.com'),
+  ({ url }) => url.pathname.startsWith('/upload/items'),
   new StaleWhileRevalidate({
-    cacheName: 'cloudinary-items-images-cache',
-    fetchOptions: {
-      method: 'get',
-    },
+    cacheName: 'upload-items-images',
     plugins: [
       new CacheableResponsePlugin({
         statuses: [200],
+      }),
+    ],
+  }),
+  'GET'
+)
+
+// Cache all uploaded user images
+registerRoute(
+  ({ url }) => url.pathname.startsWith('res.cloudinary.com'),
+  new StaleWhileRevalidate({
+    cacheName: 'cloudinary-items-images',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [200],
+      }),
+    ],
+  }),
+  'GET'
+)
+
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/icons'),
+  new CacheFirst({
+    cacheName: 'icons',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+    ],
+  }),
+  'GET'
+)
+
+registerRoute(
+  ({ request }) => request.destination === 'font',
+  new CacheFirst({
+    cacheName: 'fonts',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
       }),
     ],
   })

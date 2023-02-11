@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.6](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.5...v0.0.0-alpha.6) (2023-02-11)
+
+
+### Features
+
+* **ProfilePage:** update component ([c663bb3](https://github.com/rudnovd/laundry-labels-app/commit/c663bb31d4b6d6f01201c205e813490c04c7c99a))
+* **router:** add redirect from 'Home' page ([3444b3c](https://github.com/rudnovd/laundry-labels-app/commit/3444b3cdade30a3e416268a6694ba244db7087aa))
+* **service-worker:** add new caches ([83ed00e](https://github.com/rudnovd/laundry-labels-app/commit/83ed00e6f50d61b1a5f8c173d5e7c321ca754373))
+
 ## [0.0.0-alpha.5](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.4...v0.0.0-alpha.5) (2023-02-05)
 
 

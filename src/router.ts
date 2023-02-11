@@ -15,6 +15,23 @@ function isUserSignedIn() {
   return !!userStore.user?._id || isAccessTokenValid() || (hasRefreshToken && !window.navigator.onLine) || false
 }
 
+async function trySignIn() {
+  const userStore = useUserStore()
+  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
+
+  if (!window.navigator.onLine) {
+    return null
+  } else if (isAccessTokenValid()) {
+    const auth = userStore.signInFromAccessToken()
+    return auth.user
+  } else if (hasRefreshToken) {
+    const auth = await userStore.signInFromRefreshToken()
+    return auth.user
+  } else {
+    return null
+  }
+}
+
 function redirectIfSignedIn(_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) {
   isUserSignedIn() ? next({ name: 'Redirect' }) : next()
 }
@@ -24,6 +41,13 @@ const publicRoutes: Array<RouteRecordRaw> = [
     path: '',
     name: 'Home',
     component: () => import('@/pages/HomePage.vue'),
+    beforeEnter: async (_from, _to, next) => {
+      if (isUserSignedIn() || (await trySignIn())) {
+        next({ name: 'Items' })
+      } else {
+        next()
+      }
+    },
   },
   {
     path: 'sign-in',

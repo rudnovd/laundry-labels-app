@@ -8,7 +8,7 @@
     use-input
     multiple
     new-value-mode="add-unique"
-    placeholder="Input or select tag from list"
+    placeholder="Enter or select up to 10 tags from the list"
     :max-values="10"
     :options="standardTags"
     use-chips
@@ -17,7 +17,14 @@
     @input-value="onInputValue"
   >
     <template #append>
-      <q-btn v-show="showAddValueButton" round color="positive" size="xs" icon="check" @click="onAddTag" />
+      <q-btn
+        v-show="showAddValueButton && modelValue.length < 10"
+        round
+        color="positive"
+        size="xs"
+        icon="check"
+        @click="onAddTag"
+      />
     </template>
   </q-select>
 </template>
@@ -31,7 +38,9 @@ withDefaults(
   }>(),
   {}
 )
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', tags: Array<string>): void
+}>()
 
 const select = ref()
 const showAddValueButton = ref(false)

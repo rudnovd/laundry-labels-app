@@ -2,7 +2,7 @@
   <q-page class="profile-page q-pa-sm">
     <section class="actions">
       <q-btn
-        v-if="userStore.settings.installApp?.show"
+        v-if="isOnline && userStore.settings.installApp?.show"
         color="primary"
         label="Install app"
         icon="install_mobile"
@@ -11,24 +11,36 @@
 
       <!-- <q-toggle :model-value="dark.isActive" label="Dark mode" @update:model-value="dark.toggle()" /> -->
 
-      <q-btn v-if="user" color="primary" label="Sign Out" icon="logout" @click="callLogoutDialog" />
+      <q-btn
+        v-if="isOnline && userStore.user?._id"
+        color="primary"
+        label="Sign Out"
+        icon="logout"
+        @click="callLogoutDialog"
+      />
     </section>
 
-    App version: {{ appVersion }}
+    <section class="app-version">
+      App version: {{ appVersion }}
+      <a href="https://github.com/rudnovd/laundry-labels-app" rel="noopener" target="_blank">
+        <img src="/icons/social/github-mark.svg" width="16" />
+      </a>
+    </section>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
+import { useOnline } from '@vueuse/core'
 import { useQuasar } from 'quasar'
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+
+const appVersion = import.meta.env.__APP_VERSION__
 
 const { loading, dialog, notify } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
-
-const user = computed(() => userStore.user)
+const isOnline = useOnline()
 
 const callLogoutDialog = () => {
   dialog({
@@ -49,8 +61,6 @@ const callLogoutDialog = () => {
       .finally(() => loading.hide())
   })
 }
-
-const appVersion = import.meta.env.__APP_VERSION__
 </script>
 
 <style lang="scss" scoped>
@@ -64,5 +74,15 @@ const appVersion = import.meta.env.__APP_VERSION__
 .actions {
   display: grid;
   gap: 1rem;
+}
+
+.app-version {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  & > a {
+    display: flex;
+  }
 }
 </style>

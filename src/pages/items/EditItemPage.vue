@@ -5,7 +5,7 @@
 
       <SelectItemTags v-model="editingItem.tags" />
 
-      <q-input v-model="editingItem.name" filled label="Item name" />
+      <q-input v-model="editingItem.name" filled label="Name" />
     </section>
 
     <section class="washing-icons-container">

@@ -9,21 +9,14 @@
       >
         <div class="item-name q-mb-sm">{{ item.name }}</div>
 
-        <div class="icons row full-width q-mb-sm">
-          <ul>
-            <li
-              v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)"
-              :key="icon._id"
-              @click="(e) => e.stopPropagation()"
-            >
-              <q-icon tag="svg" :name="icon._id" size="2.6em">
-                <q-tooltip :anchor="'top middle'" :offset="[0, 42]">
-                  {{ icon.description }}
-                </q-tooltip>
-              </q-icon>
-            </li>
-          </ul>
-        </div>
+        <ul class="row full-width q-mb-sm icons">
+          <li v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)" :key="icon._id" @click.stop>
+            <q-icon tag="svg" :name="icon._id" size="2.6em" />
+            <q-tooltip :anchor="'top middle'" :offset="[0, 42]">
+              {{ icon.description }}
+            </q-tooltip>
+          </li>
+        </ul>
 
         <div v-if="item.tags.length" class="row no-wrap overflow-auto overflow-hidden-y full-width q-pb-sm item-tags">
           <q-chip v-for="tag in item.tags" :key="tag">{{ tag }}</q-chip>
@@ -70,17 +63,13 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
 .icons {
   max-height: 80px;
   overflow: hidden;
-
-  ul {
-    display: grid;
-    grid-template: repeat(2, 1fr) / repeat(3, minmax(36px, 1fr));
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-  }
-
+  display: grid;
+  grid-template: repeat(2, 1fr) / repeat(3, minmax(36px, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
   li {
     display: flex;
     align-items: center;

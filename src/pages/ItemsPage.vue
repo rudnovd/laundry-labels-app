@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-sm">
-    <section class="actions">
-      <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">Add item</q-btn>
+    <section v-if="items.length" class="actions">
+      <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">Add</q-btn>
 
       <q-input
         v-model="search"
@@ -38,8 +38,8 @@
       </template>
 
       <div v-else-if="!items.length && !foundItems.length" class="flex column items-center">
-        No items added yet
-        <q-btn color="primary" :to="{ name: 'Create item' }">Add first item</q-btn>
+        <span class="text-h6">No items added yet</span>
+        <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">Add first item</q-btn>
       </div>
 
       <template v-else-if="foundItems.length">

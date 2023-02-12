@@ -76,7 +76,8 @@ if (!item) {
 
 const callDeleteDialog = () => {
   dialog({
-    message: `Delete item?`,
+    title: `Delete item?`,
+    message: currentItem.value?.name,
     cancel: true,
   }).onOk(() => {
     loading.show()

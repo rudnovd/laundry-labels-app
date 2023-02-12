@@ -11,6 +11,8 @@
       />
 
       <section class="q-px-sm" :class="{ 'q-pt-sm': !currentItem.images.length }">
+        <h1 v-if="currentItem.name" class="text-h5">{{ currentItem.name }}</h1>
+
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
             <template v-if="!laundryIconsMap[icon]">
@@ -24,18 +26,16 @@
           </div>
         </section>
 
-        <section v-if="currentItem.name" class="q-mb-md">Name: {{ currentItem.name }}</section>
-
         <section v-if="currentItem.tags.length" class="item-tags q-mb-md">
-          Tags:
           <q-chip v-for="tag in currentItem.tags" :key="tag">{{ tag }}</q-chip>
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="negative" label="Delete item" icon="delete" @click="callDeleteDialog" />
+          <q-btn color="negative" outline label="Delete" icon="delete" @click="callDeleteDialog" />
           <q-btn
             color="primary"
-            label="Edit item"
+            outline
+            label="Edit"
             icon="edit"
             @click="router.push(`/items/edit/${currentItem?._id}`)"
           />

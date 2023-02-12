@@ -9,7 +9,7 @@
 
       <SelectItemTags v-model="newItem.tags" />
 
-      <q-input v-model="newItem.name" filled label="Item name" />
+      <q-input v-model="newItem.name" filled label="Name" />
     </section>
 
     <section class="washing-icons-container">

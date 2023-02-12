@@ -4,7 +4,7 @@
     :model-value="modelValue"
     class="q-mb-md"
     outlined
-    label="Item tags"
+    label="Tags"
     use-input
     multiple
     new-value-mode="add-unique"

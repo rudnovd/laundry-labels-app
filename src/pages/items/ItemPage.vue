@@ -6,6 +6,7 @@
         class="item-image q-mb-md"
         :src="currentItem.images[0]"
         loading="lazy"
+        fit="contain"
         decoding="async"
         height="100%"
       />

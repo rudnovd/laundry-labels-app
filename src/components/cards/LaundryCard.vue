@@ -7,7 +7,7 @@
         :class="item.images.length ? 'col-8' : 'col-12'"
         class="q-px-sm q-pt-sm q-pb-none column laundry-card-body"
       >
-        <div class="item-name q-mb-sm">{{ item.name }}</div>
+        <div class="q-mb-sm ellipsis text-h6">{{ item.name }}</div>
 
         <ul class="row full-width q-mb-sm icons">
           <li v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)" :key="icon._id" @click.stop>
@@ -47,13 +47,6 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
   height: 180px;
   cursor: pointer;
   user-select: none;
-}
-
-.item-name {
-  height: 1.2em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .laundry-card-body {

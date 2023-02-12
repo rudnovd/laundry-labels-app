@@ -1,36 +1,33 @@
 <template>
   <!-- TODO: v-ripple error (https://github.com/quasarframework/quasar/issues/13154)  -->
-  <div class="laundry-card">
-    <q-skeleton height="100%" square />
+  <q-card class="laundry-card" flat bordered>
+    <q-card-section horizontal class="full-height">
+      <q-skeleton class="col-4" height="100%" square />
 
-    <section class="laundry-card-body">
-      <q-skeleton type="text" />
+      <q-card-section class="col-8 column laundry-card-body">
+        <q-skeleton type="rect" />
 
-      <ul>
-        <li v-for="i in 6" :key="`skeleton-icon-${i}`">
-          <q-skeleton width="16px" height="16px" type="rect" />
-        </li>
-      </ul>
+        <ul class="icons">
+          <li v-for="i in 6" :key="`skeleton-icon-${i}`">
+            <q-skeleton width="16px" height="16px" type="rect" />
+          </li>
+        </ul>
 
-      <div class="laundry-card-body-footer">
-        <q-skeleton type="QBtn" height="16px" />
-      </div>
-    </section>
-  </div>
+        <div class="laundry-card-body-footer">
+          <q-skeleton type="QChip" />
+        </div>
+      </q-card-section>
+    </q-card-section>
+  </q-card>
 </template>
 
 <style lang="scss" scoped>
 .laundry-card {
-  position: relative;
-  display: grid;
-  grid-template-rows: 150px;
-  grid-template-columns: 3fr 4fr;
   width: 100%;
   max-width: 500px;
+  height: 180px;
+  cursor: pointer;
   user-select: none;
-  background: rgb(255, 255, 255);
-  border-radius: 4px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%);
 }
 
 .laundry-card-body {
@@ -62,7 +59,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 32px;
+    height: 36px;
     border: 1px solid $grey-6;
     border-radius: 4px;
   }

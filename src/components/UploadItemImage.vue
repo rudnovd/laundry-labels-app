@@ -42,6 +42,7 @@
               :src="file.__img.src"
               height="200px"
               width="200px"
+              fit="contain"
               class="rounded-borders"
             />
 

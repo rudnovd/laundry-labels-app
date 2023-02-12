@@ -1,7 +1,13 @@
 <template>
   <q-page v-if="!loading.isActive" class="create-item-page q-pa-md">
     <section class="info-container">
-      <q-img v-if="editingItem.images.length" class="q-mb-sm" height="200px" :src="editingItem.images[0]" />
+      <q-img
+        v-if="editingItem.images.length"
+        class="q-mb-sm"
+        height="200px"
+        fit="contain"
+        :src="editingItem.images[0]"
+      />
 
       <SelectItemTags v-model="editingItem.tags" />
 

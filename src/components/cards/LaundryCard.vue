@@ -1,7 +1,7 @@
 <template>
   <q-card class="laundry-card" flat bordered @click="router.push(`/items/${item._id}`)">
     <q-card-section horizontal class="full-height">
-      <q-img v-if="item.images.length" class="col-4" :src="item.images[0]" />
+      <q-img v-if="item.images.length" class="col-4" fit="contain" :src="item.images[0]" />
 
       <q-card-section
         :class="item.images.length ? 'col-8' : 'col-12'"

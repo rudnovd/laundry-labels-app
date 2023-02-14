@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.7](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.6...v0.0.0-alpha.7) (2023-02-14)
+
+
+### Features
+
+* **ItemsPage:** add clear tags, refactor searching ([488c2e2](https://github.com/rudnovd/laundry-labels-app/commit/488c2e22fe094546f00534a8d9b4d26775d12060))
+* **ItemsPage:** add searching by tags ([623e9b7](https://github.com/rudnovd/laundry-labels-app/commit/623e9b7937e9b9142ed41c097782b8752e884f63))
+
 ## [0.0.0-alpha.6](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.5...v0.0.0-alpha.6) (2023-02-11)
 
 

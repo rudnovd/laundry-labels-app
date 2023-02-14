@@ -3,21 +3,28 @@
     <section class="actions">
       <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">Add item</q-btn>
 
-      <q-input v-model="search" rounded outlined label="Search tags" dense>
+      <q-input
+        v-model="search"
+        rounded
+        outlined
+        label="Search tags"
+        dense
+        :maxlength="32"
+        @keyup.enter="onAddSearchTag"
+      >
         <template #append>
           <q-icon :class="{ invisible: !search }" name="check" @click="onAddSearchTag" />
         </template>
       </q-input>
     </section>
 
-    <section v-if="searchTags.length" class="q-mb-sm">
-      <q-chip
-        v-for="tag in searchTags"
-        :key="tag"
-        removable
-        @remove="searchTags = searchTags.filter((searchTag) => searchTag !== tag)"
-      >
-        {{ tag }}
+    <section v-if="searchTags.length" class="search-tags">
+      <q-chip class="text-white" color="negative" clickable @click="searchTags = []">
+        <q-icon class="q-mr-xs" name="delete" size="16px" />
+        clear
+      </q-chip>
+      <q-chip v-for="tag in searchTags" :key="tag" removable @remove="onRemoveSearchTag(tag)">
+        <span class="ellipsis">{{ tag }}</span>
       </q-chip>
     </section>
 
@@ -26,20 +33,20 @@
         <LaundryCardSkeleton v-for="skeleton in 4" :key="skeleton" />
       </template>
 
-      <template v-else-if="!loading.isActive && items.length && !searchTags.length">
+      <template v-else-if="items.length && !searchTags.length">
         <LaundryCard v-for="item in items" :key="item._id" :item="item" />
       </template>
 
-      <div v-else-if="!loading.isActive && !items.length && !foundItems.length" class="flex column items-center">
+      <div v-else-if="!items.length && !foundItems.length" class="flex column items-center">
         No items added yet
         <q-btn color="primary" :to="{ name: 'Create item' }">Add first item</q-btn>
       </div>
 
-      <template v-else-if="!loading.isActive && foundItems.length">
+      <template v-else-if="foundItems.length">
         <LaundryCard v-for="item in foundItems" :key="item._id" :item="item" />
       </template>
 
-      <div v-else-if="!loading.isActive && searchTags.length && !foundItems.length" class="flex column items-center">
+      <div v-else-if="searchTags.length && !foundItems.length" class="flex column items-center">
         No items with selected tags
       </div>
     </section>
@@ -77,8 +84,15 @@ const foundItems = computed(() => {
 })
 
 const onAddSearchTag = () => {
+  if (!search.value.trim()) {
+    return
+  }
   searchTags.value.push(search.value.trim())
   search.value = ''
+}
+
+const onRemoveSearchTag = (tag: string) => {
+  searchTags.value = searchTags.value.filter((searchTag) => searchTag !== tag)
 }
 </script>
 
@@ -98,5 +112,12 @@ const onAddSearchTag = () => {
   grid-template-columns: auto 160px;
   justify-content: space-between;
   margin-bottom: 1rem;
+}
+
+.search-tags {
+  max-height: 215px;
+  margin-bottom: 0.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 </style>

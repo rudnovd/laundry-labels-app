@@ -6,10 +6,8 @@
         @uploaded="newItem.images.push($event)"
         @remove="newItem.images = newItem.images.filter((url) => url !== $event)"
       />
-
-      <SelectItemTags v-model="newItem.tags" />
-
-      <q-input v-model="newItem.name" filled label="Name" />
+      <q-input v-model="newItem.name" class="q-mb-md" outlined label="Name" />
+      <InputItemTags v-model="newItem.tags" />
     </section>
 
     <section class="washing-icons-container">
@@ -22,14 +20,14 @@
       />
     </section>
 
-    <q-btn color="positive" class="submit-button" label="Create" @click="onSubmit" />
+    <q-btn color="positive" class="submit-button" label="Create" :disable="loading.isActive" @click="onSubmit" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { laundryIconsByGroup } from '@/assets/laundryIcons'
+import InputItemTags from '@/components/InputItemTags.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
-import SelectItemTags from '@/components/SelectItemTags.vue'
 import UploadItemImage from '@/components/UploadItemImage.vue'
 import type { ItemBlank } from '@/interfaces/item'
 import { useItemsStore } from '@/store/items'
@@ -63,32 +61,20 @@ const onSubmit = () => {
     'info'
     'icons'
     'submit';
-  grid-template-rows: auto;
-  grid-template-columns: 100%;
-
+  grid-template-columns: 1fr;
   gap: 1.5rem;
-  max-width: 1920px;
   margin: auto;
 
   @include media-medium {
     grid-template-areas:
       'info icons'
       '. submit';
-    grid-template-rows: auto auto;
     grid-template-columns: 2fr 5fr;
   }
 }
 
 .info-container {
   grid-area: info;
-}
-
-.item-image {
-  margin-bottom: 16px;
-}
-
-.no-image {
-  background: $grey-4;
 }
 
 .washing-icons-container {
@@ -100,6 +86,5 @@ const onSubmit = () => {
 
 .submit-button {
   grid-area: submit;
-  width: 100%;
 }
 </style>

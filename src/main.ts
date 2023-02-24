@@ -27,17 +27,3 @@ const quasarOptions: Partial<QuasarPluginOptions> = {
 
 const app = createApp(App)
 app.use(Quasar, quasarOptions).use(pinia).use(router).mount('#app')
-
-// if (process.env.VITE_APP_SENTRY_DSN) {
-//   Sentry.init({
-//     app,
-//     dsn: process.env.VITE_APP_SENTRY_DSN,
-//     integrations: [
-//       new Integrations.BrowserTracing({
-//         routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-//         tracingOrigins: ['localhost', /^\//],
-//       }),
-//     ],
-//     tracesSampleRate: 1.0,
-//   })
-// }

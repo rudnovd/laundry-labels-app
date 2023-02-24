@@ -12,6 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 interface UserState {
   user: User | null
   settings: {
+    appHasUpdate?: boolean
     installApp?: {
       event: BeforeInstallPromptEvent
       show: boolean

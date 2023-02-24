@@ -1,12 +1,22 @@
 <template>
   <q-page class="profile-page q-pa-sm">
     <section class="actions">
+      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" label="Update app automatically" />
+
       <q-btn
         v-if="isOnline && userStore.settings.installApp?.show"
         color="primary"
         label="Install app"
         icon="install_mobile"
         @click="userStore.settings.installApp?.event.prompt()"
+      />
+
+      <q-btn
+        v-if="isOnline && !userSettings.autoUpdateApp && userStore.settings.appHasUpdate"
+        color="primary"
+        label="Update app"
+        icon="upgrade"
+        @click="updateAppFromEvent"
       />
 
       <!-- <q-toggle :model-value="dark.isActive" label="Dark mode" @update:model-value="dark.toggle()" /> -->
@@ -30,8 +40,9 @@
 </template>
 
 <script setup lang="ts">
+import type { UserSettings } from '@/interfaces/types'
 import { useUserStore } from '@/store/user'
-import { useOnline } from '@vueuse/core'
+import { useLocalStorage, useOnline } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 
@@ -41,6 +52,7 @@ const { loading, dialog, notify } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
 const isOnline = useOnline()
+const userSettings = useLocalStorage('user-settings', {} as UserSettings)
 
 const callLogoutDialog = () => {
   dialog({
@@ -60,6 +72,10 @@ const callLogoutDialog = () => {
       })
       .finally(() => loading.hide())
   })
+}
+
+const updateAppFromEvent = () => {
+  window.dispatchEvent(new CustomEvent('update-app'))
 }
 </script>
 

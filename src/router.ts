@@ -40,6 +40,9 @@ const publicRoutes: Array<RouteRecordRaw> = [
   {
     path: '',
     name: 'Home',
+    meta: {
+      title: 'Laundry Labels App',
+    },
     component: () => import('@/pages/HomePage.vue'),
     beforeEnter: async (_from, _to, next) => {
       if (isUserSignedIn() || (await trySignIn())) {
@@ -160,7 +163,7 @@ router.beforeEach((to, _, next) => {
 })
 
 router.beforeResolve((to) => {
-  document.title = to.name ? to.name.toString() : 'Laundry Labels App'
+  document.title = (to.meta?.title as string) || to.name?.toString() || 'Laundry Labels App'
 })
 
 router.resolve({

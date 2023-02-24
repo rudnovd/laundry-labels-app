@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from 'url'
 import { defineConfig, loadEnv } from 'vite'
 import type { VitePWAOptions } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
+import svgLoader from 'vite-svg-loader'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   strategies: 'injectManifest',
@@ -64,6 +65,7 @@ export default defineConfig(({ mode }) => {
         sassVariables: 'src/styles/quasar-variables.scss',
       }),
       VitePWA(pwaOptions),
+      svgLoader({ svgo: false, defaultImport: 'component' }),
     ],
 
     server: {

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="sign-up-page bg-positive text-weight-bold">
+  <q-page class="sign-up-page">
     <section>
       <h1 class="text-h4">Sign up</h1>
       <q-form
@@ -15,6 +15,7 @@
           type="email"
           label="Email"
           maxlength="320"
+          bg-color="grey-1"
           filled
           dense
           lazy-rules
@@ -25,6 +26,7 @@
           type="password"
           label="Password"
           maxlength="64"
+          bg-color="grey-1"
           hide-hint
           filled
           dense
@@ -32,10 +34,14 @@
           :rules="[(v) => (v && v.length >= 6) || 'Please use minimum 6 characters']"
         />
 
-        <q-btn label="Sign up" type="submit" color="primary" />
+        <q-btn label="Sign up" type="submit" color="positive" />
         <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
       </q-form>
-      <div>Already registered? <router-link :to="{ name: 'Sign in' }">Sign in</router-link></div>
+
+      <section class="links">
+        <div>Already registered? <router-link class="link-light" :to="{ name: 'Sign in' }">Sign in</router-link></div>
+        <router-link :to="{ name: 'Home' }" class="link-light">Back to home page</router-link>
+      </section>
     </section>
   </q-page>
 </template>
@@ -99,21 +105,32 @@ const isLocal = import.meta.env.VITE_APP_IS_LOCAL
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  background: linear-gradient(135deg, rgba(9, 121, 46, 1) 0%, rgba(75, 8, 129, 1) 50%, rgba(9, 121, 46, 1) 100%);
 
-  & > section:first-child {
+  & > section {
     display: grid;
+    grid-template-columns: clamp(300px, 25vw, 600px);
     gap: 1rem;
     justify-content: center;
+    padding: 32px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
 
     h1,
-    div {
+    .links {
       text-align: center;
     }
 
     form {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 0.5rem;
-      width: 300px;
+      align-items: center;
+
+      & > * {
+        width: 100%;
+      }
     }
   }
 }

@@ -9,7 +9,7 @@
     auto-upload
     url="/api/upload/items"
     :headers="() => [{ name: 'Authorization', value: `bearer ${accessToken}` }]"
-    color="light-green-5"
+    color="brand"
     @uploaded="onUploaded"
     @failed="onFailed"
     @rejected="onRejected"
@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { LocalStorage, QUploader, useQuasar } from 'quasar'
+import { LocalStorage, QUploader, useQuasar, type QRejectedEntry } from 'quasar'
 import { onMounted, ref } from 'vue'
 
 const props = withDefaults(
@@ -93,11 +93,13 @@ const onFailed = (info: { files: Readonly<Array<File>>; xhr: Record<string, stri
   notify({ type: 'negative', message: response.error.message })
 }
 
-const onRejected = (errors: Array<{ failedPropValidation: string; file: File }>) => {
-  if (errors.find((error) => error.failedPropValidation === 'max-total-size')) {
-    notify({ type: 'negative', message: 'Max file size is 10 mb' })
-  } else if (errors.find((error) => error.failedPropValidation === 'accept')) {
-    notify({ type: 'negative', message: 'Wrong file type' })
+const onRejected = (rejectedEntries: Array<QRejectedEntry>) => {
+  for (const error of rejectedEntries) {
+    if (error.failedPropValidation === 'max-file-size') {
+      notify({ type: 'negative', message: 'Upload failed, the maximum size of the file is 15 MB' })
+    } else if (error.failedPropValidation === 'accept') {
+      notify({ type: 'negative', message: 'Wrong file type' })
+    }
   }
 }
 

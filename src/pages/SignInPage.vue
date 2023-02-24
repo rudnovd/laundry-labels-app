@@ -1,5 +1,5 @@
 <template>
-  <q-page class="sign-in-page bg-positive text-weight-bold">
+  <q-page class="sign-in-page">
     <section>
       <h1 class="text-h4">Sign in</h1>
       <q-form autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @submit="onSubmit">
@@ -8,6 +8,7 @@
           type="email"
           label="Email"
           maxlength="320"
+          bg-color="grey-1"
           filled
           dense
           lazy-rules
@@ -18,6 +19,7 @@
           type="password"
           label="Password"
           maxlength="64"
+          bg-color="grey-1"
           hide-hint
           filled
           dense
@@ -25,10 +27,15 @@
           :rules="[(v) => (v && v.length) || 'The password field is not filled']"
         />
         <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
-        <q-btn label="Sign in" type="submit" color="primary" />
+        <q-btn label="Sign in" type="submit" color="positive" />
       </q-form>
 
-      <div>Don't have an account? <router-link :to="{ name: 'Sign up' }">Sign up</router-link></div>
+      <section class="links">
+        <div>
+          Don't have an account? <router-link class="link-light" :to="{ name: 'Sign up' }">Sign up</router-link>
+        </div>
+        <router-link :to="{ name: 'Home' }" class="link-light">Back to home page</router-link>
+      </section>
     </section>
   </q-page>
 </template>
@@ -86,21 +93,32 @@ const isLocal = import.meta.env.VITE_APP_IS_LOCAL
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  background: linear-gradient(135deg, rgba(9, 121, 46, 1) 0%, rgba(75, 8, 129, 1) 50%, rgba(9, 121, 46, 1) 100%);
 
-  & > section:first-child {
+  & > section {
     display: grid;
+    grid-template-columns: clamp(300px, 25vw, 600px);
     gap: 1rem;
     justify-content: center;
+    padding: 32px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
 
     h1,
-    div {
+    .links {
       text-align: center;
     }
 
     form {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 0.5rem;
-      width: 300px;
+      align-items: center;
+
+      & > * {
+        width: 100%;
+      }
     }
   }
 }

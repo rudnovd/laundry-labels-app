@@ -1,6 +1,6 @@
 <template>
   <q-layout container>
-    <q-header class="header">
+    <q-header>
       <q-toolbar>
         <q-btn
           :class="{ invisible: route.name === 'Items' }"
@@ -16,12 +16,14 @@
             <l-icon icon="logo" width="32px" height="32px" />
             <span class="q-mt-sm">aundry Labels</span>
           </q-btn>
-          <q-btn flat icon="person" :to="{ name: 'Profile' }" :ripple="false" padding="0" />
+          <q-btn flat icon="person" padding="0" :to="{ name: 'Profile' }" :ripple="false">
+            <q-badge v-if="userStore.settings.appHasUpdate" floating rounded color="red" />
+          </q-btn>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
-    <q-page-container class="page-container">
+    <q-page-container>
       <router-view v-slot="{ Component }">
         <KeepAlive :include="keepAliveComponents">
           <component :is="Component" />
@@ -33,6 +35,7 @@
 
 <script setup lang="ts">
 import LIcon from '@/components/LIcon.vue'
+import { useUserStore } from '@/store/user'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -40,6 +43,7 @@ const keepAliveComponents = ['ItemsPage']
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 
 const previousPageLink = computed(() => {
   if (window.history.state.back === router.currentRoute.value.path) {
@@ -54,5 +58,9 @@ const previousPageLink = computed(() => {
 header {
   color: black;
   background-color: $brand;
+
+  .q-toolbar__title:last-child {
+    padding-right: 4px;
+  }
 }
 </style>

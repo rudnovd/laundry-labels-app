@@ -12,18 +12,19 @@ const pwaOptions: Partial<VitePWAOptions> = {
   manifest: {
     name: 'Laundry Labels App',
     short_name: 'Laundry Labels',
-    description: 'Store washing data for your clothes',
+    description: 'Save data on how to take care of your clothes',
     orientation: 'portrait-primary',
-    theme_color: '#9ccc65',
+    theme_color: '#7cc6ff',
+    background_color: '#7cc6ff',
     id: '/',
     icons: [
       {
-        src: '/favicon-192.png',
+        src: 'favicon-192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/favicon-512.png',
+        src: 'favicon-512.png',
         sizes: '512x512',
         type: 'image/png',
       },

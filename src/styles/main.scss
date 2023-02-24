@@ -8,3 +8,11 @@ body {
   min-width: 320px;
   max-width: 1920px;
 }
+
+.text-brand {
+  color: $brand !important;
+}
+
+.bg-brand {
+  background: $brand !important;
+}

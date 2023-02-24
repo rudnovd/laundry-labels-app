@@ -9,6 +9,8 @@ $negative: #c10015;
 $info: #31ccec;
 $warning: #f2c037;
 
+$brand: #7cc6ff;
+
 @mixin media-small {
   @media (min-width: $breakpoint-sm-min) {
     @content;

@@ -1,6 +1,6 @@
 <template>
   <q-layout container>
-    <q-header class="bg-light-green-5 text-white">
+    <q-header class="header">
       <q-toolbar>
         <q-btn
           :class="{ invisible: route.name === 'Items' }"
@@ -12,13 +12,16 @@
           replace
         />
         <q-toolbar-title class="flex items-center justify-between">
-          <q-btn flat icon="sell" label="Laundry Labels" :to="{ name: 'Items' }" :ripple="false" padding="0" />
+          <q-btn flat :to="{ name: 'Items' }" :ripple="false" padding="0">
+            <l-icon icon="logo" width="32px" height="32px" />
+            <span class="q-mt-sm">aundry Labels</span>
+          </q-btn>
           <q-btn flat icon="person" :to="{ name: 'Profile' }" :ripple="false" padding="0" />
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="page-container">
       <router-view v-slot="{ Component }">
         <KeepAlive :include="keepAliveComponents">
           <component :is="Component" />
@@ -29,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import LIcon from '@/components/LIcon.vue'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -45,3 +49,10 @@ const previousPageLink = computed(() => {
   }
 })
 </script>
+
+<style lang="scss" scoped>
+header {
+  color: black;
+  background-color: $brand;
+}
+</style>

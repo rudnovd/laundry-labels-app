@@ -16,3 +16,11 @@ body {
 .bg-brand {
   background: $brand !important;
 }
+
+.link-light:link {
+  color: rgb(255, 255, 255);
+}
+
+.link-light:visited {
+  color: rgb(255, 255, 255);
+}

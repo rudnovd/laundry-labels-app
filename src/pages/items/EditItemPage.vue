@@ -8,10 +8,8 @@
         fit="contain"
         :src="editingItem.images[0]"
       />
-
-      <SelectItemTags v-model="editingItem.tags" />
-
-      <q-input v-model="editingItem.name" filled label="Name" />
+      <q-input v-model="editingItem.name" class="q-mb-md" filled label="Name" />
+      <InputItemTags v-model="editingItem.tags" />
     </section>
 
     <section class="washing-icons-container">
@@ -25,19 +23,19 @@
       />
     </section>
 
-    <q-btn color="positive" class="submit-button" label="Save" @click="onSubmit" />
+    <q-btn color="positive" class="submit-button" label="Save" :disable="loading.isActive" @click="onSubmit" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { laundryIconsByGroup, laundryIconsMap } from '@/assets/laundryIcons'
+import InputItemTags from '@/components/InputItemTags.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
-import SelectItemTags from '@/components/SelectItemTags.vue'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { LaundryIcon } from '@/interfaces/laundryIcon'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
-import { computed, reactive } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { loading } = useQuasar()
@@ -47,38 +45,43 @@ const itemsStore = useItemsStore()
 
 const userItems = computed(() => itemsStore.items)
 
-const editingItem = reactive<ItemBlank>({
+const editingItem = ref<ItemBlank>({
   name: '',
   icons: [],
   images: [],
   tags: [],
 })
 
-// Get item data if this doesn't exist in store
-if (!userItems.value.find((userItem: Item) => userItem._id === route.params.id)) {
+const currentItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
+if (!currentItem) {
   loading.show()
   itemsStore
     .getItemById({ _id: route.params.id as string })
     .then((item) => {
-      editingItem.name = item.name
-      editingItem.icons = item.icons
-      editingItem.images = item.images
-      editingItem.tags = item.tags
+      const { name, icons, images, tags } = item
+      editingItem.value = {
+        ...editingItem.value,
+        name,
+        icons,
+        images,
+        tags,
+      }
     })
     .finally(() => loading.hide())
 } else {
-  const currentUserItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
-  if (currentUserItem) {
-    editingItem.name = currentUserItem.name
-    editingItem.icons = currentUserItem.icons
-    editingItem.images = currentUserItem.images
-    editingItem.tags = currentUserItem.tags
+  const { name, icons, images, tags } = currentItem
+  editingItem.value = {
+    ...editingItem.value,
+    name,
+    icons,
+    images,
+    tags,
   }
 }
 
 const selectedLaundryIcons = computed(() => {
   const groups: Record<string, LaundryIcon> = {}
-  editingItem.icons.forEach((icon) => {
+  editingItem.value.icons.forEach((icon) => {
     groups[laundryIconsMap[icon].group] = laundryIconsMap[icon]
   })
   return groups
@@ -87,7 +90,7 @@ const selectedLaundryIcons = computed(() => {
 const onSubmit = () => {
   loading.show()
   itemsStore
-    .editItem({ item: { ...editingItem, _id: route.params.id as string } })
+    .editItem({ item: { ...editingItem.value, _id: route.params.id as string } })
     .then(() => router.push({ name: 'Items' }))
     .finally(() => loading.hide())
 }
@@ -100,18 +103,14 @@ const onSubmit = () => {
     'info'
     'icons'
     'submit';
-  grid-template-rows: auto;
-  grid-template-columns: 100%;
-
+  grid-template-columns: 1fr;
   gap: 1.5rem;
-  max-width: 1920px;
   margin: auto;
 
   @include media-medium {
     grid-template-areas:
       'info icons'
       '. submit';
-    grid-template-rows: auto auto;
     grid-template-columns: 2fr 5fr;
   }
 }
@@ -129,6 +128,5 @@ const onSubmit = () => {
 
 .submit-button {
   grid-area: submit;
-  width: 100%;
 }
 </style>

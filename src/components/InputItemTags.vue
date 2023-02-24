@@ -78,7 +78,9 @@ const onAddTag = () => {
   if (!newTag) {
     return
   }
-  standardTags.value.unshift(newTag)
+  if (!standardTags.value.includes(newTag)) {
+    standardTags.value.unshift(newTag)
+  }
   emit('update:modelValue', [...props.modelValue, newTag])
 }
 

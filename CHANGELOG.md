@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.8](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.7...v0.0.0-alpha.8) (2023-02-25)
+
+
+### Features
+
+* add 'brand' color ([744cb81](https://github.com/rudnovd/laundry-labels-app/commit/744cb81b64dba45505fbae0db7cfb963698837e3))
+* add component for svg icons ([d0d5c53](https://github.com/rudnovd/laundry-labels-app/commit/d0d5c53680b78929b48f4b1fc44323fb3e394b06))
+* add new component for tags selecting ([138b823](https://github.com/rudnovd/laundry-labels-app/commit/138b82373859d30b5b5d08bdacea71c2db6570e3))
+* allow disable auto update app ([e7d9408](https://github.com/rudnovd/laundry-labels-app/commit/e7d94083d5da5a2c9ee485a0ef34c1e348140048))
+* **CreateItemPage:** use new tags component, refactor ([4416d2c](https://github.com/rudnovd/laundry-labels-app/commit/4416d2cf3d2045662beb7a96c1adf59835c13a76))
+* **EditItemPage:** use new tags component, refactor ([bbc7a8e](https://github.com/rudnovd/laundry-labels-app/commit/bbc7a8e05c51f431dc5664b918db57717e1ea9ea))
+* **HomePage:** update home page ([215fa2a](https://github.com/rudnovd/laundry-labels-app/commit/215fa2a3c218204fb538af84f4e6c2d708ded170))
+* **router:** add title for Home page ([b456a17](https://github.com/rudnovd/laundry-labels-app/commit/b456a17cd9c3bf2bd29ea6e06c66d8e79e726e37))
+* **SignInPage:** update page styles ([1bd7cda](https://github.com/rudnovd/laundry-labels-app/commit/1bd7cda9583c9d05665b21486e336d44c7bbfa18))
+* **SignUpPage:** update page styles ([406c287](https://github.com/rudnovd/laundry-labels-app/commit/406c2878a29f013b0c983a08a6b58d60ab7e6b05))
+* **UserLayout:** update layout styles ([c6852e0](https://github.com/rudnovd/laundry-labels-app/commit/c6852e0a7386d7290a988fe5e8d64ffac6e801f8))
+
+
+### Bug Fixes
+
+* **img:** use fit contain instead of cover ([fc0b74a](https://github.com/rudnovd/laundry-labels-app/commit/fc0b74aa9a2dfe7b21d475558c1ec1b047ae29cf))
+* **InputItemTags:** fix tags duplications from input ([a85939f](https://github.com/rudnovd/laundry-labels-app/commit/a85939f4400f08f7794c8124f32ecbc454cc6cd2))
+* **ItemPage:** add item name to delete dialog ([b1dc693](https://github.com/rudnovd/laundry-labels-app/commit/b1dc69382c55bdc01c2babc6c7b3a4d705f0eece))
+* **ItemPage:** move item name to the top, add outline prop to buttons ([6631ca9](https://github.com/rudnovd/laundry-labels-app/commit/6631ca9802ea97bb0660a40d005baa50fc75973b))
+* **Items Page:** hide add item button if list is empty, update empty list text ([44a0e37](https://github.com/rudnovd/laundry-labels-app/commit/44a0e37be082f733efa31d6e6fd78ad2651ad8f4))
+* **LaundryCard:** refactor, fix tooltip ([ea2eeef](https://github.com/rudnovd/laundry-labels-app/commit/ea2eeefceb8c4a20085f545b901d1339c5f048f6))
+* **LaundryCardSkeleton:** update styles to look more like populated card ([1838781](https://github.com/rudnovd/laundry-labels-app/commit/183878187f49d4b4321c90e8d2fcdc811bb3decd))
+* remove 'Item' from texts ([19ffd9f](https://github.com/rudnovd/laundry-labels-app/commit/19ffd9fef866a620a9a9316fecbc4552cbf92ffa))
+* **UploadItemImage:** fix errors handling ([aa23a9d](https://github.com/rudnovd/laundry-labels-app/commit/aa23a9d376394f503d15623551a7116f5c189568))
+
 ## [0.0.0-alpha.7](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.6...v0.0.0-alpha.7) (2023-02-14)
 
 

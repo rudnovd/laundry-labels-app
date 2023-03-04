@@ -15,6 +15,7 @@ const i18n = createI18n({
   legacy: false,
   locale: 'ru',
   fallbackLocale: 'en',
+  messages,
 })
 
 const quasarOptions: Partial<QuasarPluginOptions> = {

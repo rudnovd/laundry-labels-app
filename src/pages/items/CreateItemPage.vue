@@ -6,7 +6,7 @@
         @uploaded="newItem.images.push($event)"
         @remove="newItem.images = newItem.images.filter((url) => url !== $event)"
       />
-      <q-input v-model="newItem.name" class="q-mb-md" outlined label="Name" />
+      <q-input v-model="newItem.name" class="q-mb-md" outlined :label="t('name')" />
       <InputItemTags v-model="newItem.tags" />
     </section>
 
@@ -20,7 +20,7 @@
       />
     </section>
 
-    <q-btn color="positive" class="submit-button" label="Create" :disable="loading.isActive" @click="onSubmit" />
+    <q-btn color="positive" class="submit-button" :label="t('create')" :disable="loading.isActive" @click="onSubmit" />
   </q-page>
 </template>
 
@@ -33,9 +33,11 @@ import type { ItemBlank } from '@/interfaces/item'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const { t } = useI18n()
 const { loading } = useQuasar()
 const { createItem } = useItemsStore()
 

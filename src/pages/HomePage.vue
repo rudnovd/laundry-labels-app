@@ -3,18 +3,22 @@
     <header>
       <l-icon icon="logo" width="clamp(50px, 3vw, 80px)" height="clamp(50px, 3vw, 80px)" />
       <nav>
-        <q-btn :to="{ name: 'Sign in' }" label="Sign in" flat />
-        <q-btn :to="{ name: 'Sign up' }" label="Sign up" flat />
-        <q-btn icon="share" title="share" flat @click="share" />
+        <q-btn :to="{ name: 'Sign in' }" :label="t('landing.signIn')" flat />
+        <q-btn :to="{ name: 'Sign up' }" :label="t('landing.signUp')" flat />
+        <q-btn icon="share" :title="t('landing.share')" flat @click="share" />
       </nav>
     </header>
 
     <section class="main-data">
       <article>
-        <h1>Laundry Labels App</h1>
-        <h2>Save data on how to take care of your clothes</h2>
+        <h1>{{ t('landing.appName') }}</h1>
+        <h2>{{ t('landing.subtitle') }}</h2>
         <section class="app-buttons">
-          <q-btn :to="{ name: 'Sign up' }" color="positive" :label="isBrowser ? 'Try in browser' : 'Continue'" />
+          <q-btn
+            :to="{ name: 'Sign up' }"
+            color="positive"
+            :label="isBrowser ? t('landing.tryInBrowser') : t('landing.continue')"
+          />
           <a disabled>
             <l-icon icon="get-on-google-play" width="100%" height="100%" />
           </a>
@@ -30,6 +34,9 @@
 
 <script setup lang="ts">
 import LIcon from '@/components/LIcon.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isBrowser = window.matchMedia('(display-mode: browser)').matches
 

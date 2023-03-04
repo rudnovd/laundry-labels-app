@@ -16,7 +16,7 @@
   >
     <template #header>
       <div class="row items-center justify-between q-pa-sm">
-        Upload photo
+        {{ t('uploadPhoto') }}
         <q-btn type="a" icon="add_box" round dense flat>
           <q-uploader-add-trigger />
         </q-btn>
@@ -57,6 +57,9 @@
 <script setup lang="ts">
 import { LocalStorage, QUploader, useQuasar, type QRejectedEntry } from 'quasar'
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = withDefaults(
   defineProps<{
@@ -96,9 +99,9 @@ const onFailed = (info: { files: Readonly<Array<File>>; xhr: Record<string, stri
 const onRejected = (rejectedEntries: Array<QRejectedEntry>) => {
   for (const error of rejectedEntries) {
     if (error.failedPropValidation === 'max-file-size') {
-      notify({ type: 'negative', message: 'Upload failed, the maximum size of the file is 15 MB' })
+      notify({ type: 'negative', message: t('notification.sizeError') })
     } else if (error.failedPropValidation === 'accept') {
-      notify({ type: 'negative', message: 'Wrong file type' })
+      notify({ type: 'negative', message: t('notification.typeError') })
     }
   }
 }

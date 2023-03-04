@@ -18,11 +18,11 @@
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
             <template v-if="!laundryIconsMap[icon]">
               <q-icon name="clear" size="5em" />
-              <span>Icon updated, please re-create item</span>
+              <span>{{ t('noIconData') }}</span>
             </template>
             <template v-else>
               <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
-              <span>{{ laundryIconsMap[icon].description }}</span>
+              <span>{{ t(laundryIconsMap[icon].description) }}</span>
             </template>
           </div>
         </section>
@@ -32,11 +32,11 @@
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="negative" outline label="Delete" icon="delete" @click="callDeleteDialog" />
+          <q-btn color="negative" outline :label="t('delete')" icon="delete" @click="callDeleteDialog" />
           <q-btn
             color="primary"
             outline
-            label="Edit"
+            :label="t('edit')"
             icon="edit"
             @click="router.push(`/items/edit/${currentItem?._id}`)"
           />
@@ -52,10 +52,12 @@ import type { Item } from '@/interfaces/item'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 const { loading, dialog } = useQuasar()
 const router = useRouter()
+const { t } = useI18n()
 const route = useRoute()
 const itemsStore = useItemsStore()
 
@@ -76,9 +78,9 @@ if (!item) {
 
 const callDeleteDialog = () => {
   dialog({
-    title: `Delete item?`,
+    title: t('dialog.deleteItem'),
     message: currentItem.value?.name,
-    cancel: true,
+    cancel: t('dialog.cancel'),
   }).onOk(() => {
     loading.show()
     itemsStore

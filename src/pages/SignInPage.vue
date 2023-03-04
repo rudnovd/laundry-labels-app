@@ -1,7 +1,7 @@
 <template>
   <q-page class="sign-in-page">
     <section>
-      <h1 class="text-h3 q-mt-none">Sign in</h1>
+      <h1 class="text-h3 q-mt-none">{{ t('signIn.title') }}</h1>
       <q-form
         class="q-mb-md"
         autocorrect="off"
@@ -14,7 +14,7 @@
           v-model="payload.email"
           class="q-mb-md"
           type="email"
-          label="Email"
+          :label="t('signIn.email')"
           maxlength="320"
           bg-color="grey-1"
           :dark="false"
@@ -26,7 +26,7 @@
           v-model="payload.password"
           class="q-mb-md"
           type="password"
-          label="Password"
+          :label="t('signIn.password')"
           maxlength="64"
           bg-color="grey-1"
           :dark="false"
@@ -45,7 +45,7 @@
         />
         <q-btn
           class="full-width"
-          label="Sign in"
+          :label="t('signIn.action')"
           :disable="!payload.email || !payload.password || (showCaptcha && !payload.token)"
           type="submit"
           color="positive"
@@ -54,9 +54,10 @@
 
       <section class="links">
         <div>
-          Don't have an account? <router-link class="link-light" :to="{ name: 'Sign up' }">Sign up</router-link>
+          {{ t('signIn.noAccount') }}
+          <router-link class="link-light" :to="{ name: 'Sign up' }">{{ t('signIn.signUp') }}</router-link>
         </div>
-        <router-link :to="{ name: 'Home' }" class="link-light">Back to home page</router-link>
+        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('signIn.back') }}</router-link>
       </section>
     </section>
   </q-page>
@@ -65,6 +66,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import { useI18n } from 'vue-i18n'
 
 import { throttle, useQuasar } from 'quasar'
 import { reactive, ref } from 'vue'
@@ -75,6 +77,7 @@ const showCaptcha = import.meta.env.PROD && !import.meta.env.VITE_APP_IS_LOCAL
 const FIVE_SECONDS = 5000
 
 const { notify, loading } = useQuasar()
+const { t } = useI18n()
 const userStore = useUserStore()
 const router = useRouter()
 
@@ -98,7 +101,7 @@ const signIn = throttle(async () => {
   if (showCaptcha) {
     return notify({
       type: 'negative',
-      message: 'Captcha required',
+      message: t('notification.captchaError'),
     })
   }
 
@@ -107,7 +110,7 @@ const signIn = throttle(async () => {
     await userStore.signIn(payload)
     notify({
       type: 'positive',
-      message: 'Sign in successfully',
+      message: t('notification.signInSuccess'),
     })
     router.push({ name: 'Items' })
   } finally {

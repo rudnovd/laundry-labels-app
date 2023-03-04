@@ -1,7 +1,7 @@
 <template>
   <q-page class="profile-page q-pa-sm">
     <section class="actions">
-      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" label="Update app automatically" />
+      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('meta.autoUpdateApp')" />
 
       <q-btn
         v-if="isOnline && userStore.settings.installApp?.show"
@@ -14,7 +14,7 @@
       <q-btn
         v-if="isOnline && !userSettings.autoUpdateApp && userStore.settings.appHasUpdate"
         color="primary"
-        label="Update app"
+        :label="t('meta.updateApp')"
         icon="upgrade"
         @click="updateAppFromEvent"
       />
@@ -24,14 +24,14 @@
       <q-btn
         v-if="isOnline && userStore.user?._id"
         color="primary"
-        label="Sign Out"
+        :label="t('signOut')"
         icon="logout"
         @click="callLogoutDialog"
       />
     </section>
 
     <section class="app-version">
-      App version: {{ appVersion }}
+      {{ t('meta.appVersion') }}: {{ appVersion }}
       <a href="https://github.com/rudnovd/laundry-labels-app" rel="noopener" target="_blank">
         <img src="/icons/social/github-mark.svg" width="16" />
       </a>
@@ -44,6 +44,7 @@ import type { UserSettings } from '@/interfaces/types'
 import { useUserStore } from '@/store/user'
 import { useLocalStorage, useOnline } from '@vueuse/core'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const appVersion = import.meta.env.__APP_VERSION__
@@ -51,14 +52,15 @@ const appVersion = import.meta.env.__APP_VERSION__
 const { loading, dialog, notify } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
+const { t } = useI18n()
 const isOnline = useOnline()
 const userSettings = useLocalStorage('user-settings', {} as UserSettings)
 
 const callLogoutDialog = () => {
   dialog({
-    title: 'Logout',
-    message: 'Would you like to sign out?',
-    cancel: true,
+    title: t('dialog.logout'),
+    message: t('dialog.signOut'),
+    cancel: t('dialog.cancel'),
   }).onOk(() => {
     loading.show()
     userStore
@@ -66,7 +68,7 @@ const callLogoutDialog = () => {
       .then(() => {
         notify({
           type: 'positive',
-          message: 'Sign out successfully',
+          message: t('notification.signOutSuccess'),
         })
         router.push({ name: 'Home' })
       })

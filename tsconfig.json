@@ -4,7 +4,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "baseUrl": ".",
-    "types": ["node", "vite/client", "vite-plugin-pwa/client"],
+    "types": ["node", "vite/client", "vite-plugin-pwa/client", "@intlify/unplugin-vue-i18n/messages"],
     "typeRoots": ["./src/global.d.ts"],
     "paths": {
       "@/*": ["./src/*"]

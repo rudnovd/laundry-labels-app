@@ -1,41 +1,55 @@
 <template>
   <q-page class="sign-up-page">
     <section>
-      <h1 class="text-h4">{{ t('signUp.title') }}</h1>
+      <h1 class="text-h3 q-mt-none">{{ t('signUp.title') }}</h1>
       <q-form
-        class="registration-form"
+        class="q-mb-md"
         autocorrect="off"
         autocapitalize="off"
         autocomplete="off"
         spellcheck="false"
-        @submit="onSubmit"
+        @submit="signUp"
       >
         <q-input
-          v-model="email"
+          v-model="payload.email"
+          class="q-mb-md"
           type="email"
           :label="t('signUp.email')"
           maxlength="320"
           bg-color="grey-1"
+          :dark="false"
           filled
-          dense
           lazy-rules
-          :rules="[(v) => (v && v.length) || 'The email field is not filled']"
+          :rules="[(v) => v?.length || 'The email field is not filled']"
         />
         <q-input
-          v-model="password"
+          v-model="payload.password"
+          class="q-mb-md"
           type="password"
           :label="t('signUp.password')"
           maxlength="64"
           bg-color="grey-1"
-          hide-hint
+          :dark="false"
           filled
-          dense
           lazy-rules
-          :rules="[(v) => (v && v.length >= 6) || 'Please use minimum 6 characters']"
+          :rules="[(v) => v?.length >= 6 || 'Please use minimum 6 characters']"
         />
-
-        <q-btn :label="t('signUp.action')" type="submit" color="positive" />
-        <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
+        <VueHcaptcha
+          v-if="showCaptcha"
+          ref="captchaForm"
+          class="q-mb-md full-width"
+          :sitekey="sitekey"
+          @verify="verifyCaptcha"
+          @expired="resetCaptcha"
+          @challenge-expired="resetCaptcha"
+        />
+        <q-btn
+          class="full-width"
+          :label="t('signUp.action')"
+          :disable="!payload.email || !payload.password || (showCaptcha && !payload.token)"
+          type="submit"
+          color="positive"
+        />
       </q-form>
 
       <section class="links">
@@ -52,29 +66,38 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
-import { throttle, useQuasar } from 'quasar'
-import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { throttle, useQuasar } from 'quasar'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
+const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
+const showCaptcha = import.meta.env.PROD && !import.meta.env.VITE_APP_IS_LOCAL
+const FIVE_SECONDS = 5000
 
 const { notify, loading } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
 const { t } = useI18n()
 
-const email = ref('')
-const password = ref('')
-const captchaForm = ref()
-const captchaIsVerified = ref(false)
-const captchaVerificationToken = ref('')
+const captchaForm = ref<VueHcaptcha>()
+const payload = reactive({
+  email: '',
+  password: '',
+  token: '',
+})
 
-const onVerifyCaptcha = (token: string) => {
-  captchaIsVerified.value = true
-  captchaVerificationToken.value = token
+const verifyCaptcha = (token: string) => {
+  payload.token = token
 }
 
-const onSubmit = throttle(() => {
-  if (import.meta.env.PROD && !isLocal && !captchaIsVerified.value) {
+const resetCaptcha = () => {
+  payload.token = ''
+  captchaForm.value?.reset()
+}
+
+const signUp = throttle(async () => {
+  if (showCaptcha) {
     return notify({
       type: 'negative',
       message: t('notification.captchaError'),
@@ -83,59 +106,45 @@ const onSubmit = throttle(() => {
   }
 
   loading.show()
-  userStore
-    .signUp({
-      email: email.value,
-      password: password.value,
-      token: captchaVerificationToken.value,
+  try {
+    await userStore.signUp(payload)
+    notify({
+       message: t('notification.signUpSuccess'),
     })
-    .then(() => {
-      notify({
-        type: 'positive',
-        message: t('notification.signUpSuccess'),
-      })
-      router.push({ name: 'Items' })
-    })
-    .catch(() => captchaForm.value?.reset())
-    .finally(() => loading.hide())
-}, 5000)
-
-const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
-const showCaptcha = import.meta.env.PROD
-const isLocal = import.meta.env.VITE_APP_IS_LOCAL
+    router.push({ name: 'Items' })
+  } finally {
+    loading.hide()
+  }
+}, FIVE_SECONDS)
 </script>
 
 <style lang="scss" scoped>
 .sign-up-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  background: linear-gradient(135deg, rgba(9, 121, 46, 1) 0%, rgba(75, 8, 129, 1) 50%, rgba(9, 121, 46, 1) 100%);
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+  place-content: center;
+  color: $grey-1;
+  text-align: center;
+  background: linear-gradient(135deg, rgb(9, 121, 46) 0%, rgb(75, 8, 129) 50%, rgb(9, 121, 46) 100%);
+
+  @include media-small {
+    grid-template-rows: initial;
+    grid-template-columns: calc($breakpoint-sm-min - 8px);
+    padding: 8px;
+  }
 
   & > section {
     display: grid;
-    grid-template-columns: clamp(300px, 25vw, 600px);
-    gap: 1rem;
-    justify-content: center;
+    grid-template-columns: 1fr;
+    place-content: center;
     padding: 32px;
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
+    transition: padding 0.5s linear;
 
-    h1,
-    .links {
-      text-align: center;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: center;
-
-      & > * {
-        width: 100%;
-      }
+    @include media-small {
+      padding: 64px;
+      border-radius: 8px;
     }
   }
 }

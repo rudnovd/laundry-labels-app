@@ -97,7 +97,7 @@ const resetCaptcha = () => {
 }
 
 const signUp = throttle(async () => {
-  if (showCaptcha) {
+  if (showCaptcha && !payload.token) {
     return notify({
       type: 'negative',
       message: t('notification.captchaError'),

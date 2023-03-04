@@ -28,6 +28,18 @@
         icon="logout"
         @click="callLogoutDialog"
       />
+
+      <q-select
+        v-model="lang.nativeName"
+        :options="langOptions"
+        label="Language"
+        dense
+        borderless
+        emit-value
+        map-options
+        options-dense
+        @update:model-value="locale = $event"
+      />
     </section>
 
     <section class="app-version">
@@ -40,21 +52,29 @@
 </template>
 
 <script setup lang="ts">
+import { availableLocales, useLocale } from '@/i18n'
 import type { UserSettings } from '@/interfaces/types'
 import { useUserStore } from '@/store/user'
 import { useLocalStorage, useOnline } from '@vueuse/core'
 import { useQuasar } from 'quasar'
+import languages from 'quasar/lang/index.json'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const appVersion = import.meta.env.__APP_VERSION__
+const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName))
+const langOptions = appLanguages.map((lang) => ({
+  label: lang.nativeName,
+  value: lang.isoName,
+}))
 
-const { loading, dialog, notify } = useQuasar()
+const { loading, dialog, notify, lang } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
 const { t } = useI18n()
 const isOnline = useOnline()
 const userSettings = useLocalStorage('user-settings', {} as UserSettings)
+const locale = useLocale()
 
 const callLogoutDialog = () => {
   dialog({

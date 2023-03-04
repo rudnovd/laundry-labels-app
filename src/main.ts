@@ -1,4 +1,5 @@
 import App from '@/App.vue'
+import i18n from '@/i18n'
 import router from '@/router'
 import pinia from '@/store'
 import '@/styles/main.scss'
@@ -8,15 +9,6 @@ import type { QuasarPluginOptions } from 'quasar'
 import { Dark, Dialog, Loading, LocalStorage, Notify, Quasar } from 'quasar'
 import 'quasar/src/css/index.sass'
 import { createApp } from 'vue'
-import { createI18n } from 'vue-i18n'
-import messages from '@/services/i18n'
-
-const i18n = createI18n({
-  legacy: false,
-  locale: 'ru',
-  fallbackLocale: 'en',
-  messages,
-})
 
 const quasarOptions: Partial<QuasarPluginOptions> = {
   plugins: {

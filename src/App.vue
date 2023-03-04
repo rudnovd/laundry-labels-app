@@ -10,6 +10,7 @@ import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { useLocale } from './i18n'
 import type { UserSettings } from './interfaces/types'
 import { useUserStore } from './store/user'
 
@@ -27,10 +28,11 @@ const isBrowser = window.matchMedia('(display-mode: browser)').matches
 const userSettings = useLocalStorage<UserSettings>('user-settings', {
   autoUpdateApp: true,
 })
-
 const { updateServiceWorker, needRefresh } = useRegisterSW({
   immediate: true,
 })
+useLocale()
+
 $q.iconMapFn = (iconName) => {
   const icon = icons[iconName]
   if (icon !== void 0) return { icon }

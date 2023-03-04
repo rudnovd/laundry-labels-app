@@ -1,5 +1,7 @@
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
+import { dirname, resolve } from 'path'
 import { fileURLToPath, URL } from 'url'
 import { defineConfig, loadEnv } from 'vite'
 import type { VitePWAOptions } from 'vite-plugin-pwa'
@@ -46,7 +48,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
-        'vue-i18n': 'vue-i18n/dist/vue-i18n.cjs.js',
       },
     },
     css: {
@@ -67,6 +68,7 @@ export default defineConfig(({ mode }) => {
       }),
       VitePWA(pwaOptions),
       svgLoader({ svgo: false, defaultImport: 'component' }),
+      VueI18nPlugin({ include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**') }),
     ],
 
     server: {

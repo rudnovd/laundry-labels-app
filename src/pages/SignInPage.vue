@@ -1,12 +1,12 @@
 <template>
   <q-page class="sign-in-page">
     <section>
-      <h1 class="text-h4">Sign in</h1>
+      <h1 class="text-h4">{{ t('signIn.title') }}</h1>
       <q-form autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" @submit="onSubmit">
         <q-input
           v-model="email"
           type="email"
-          label="Email"
+          :label="t('signIn.email')"
           maxlength="320"
           bg-color="grey-1"
           filled
@@ -17,7 +17,7 @@
         <q-input
           v-model="password"
           type="password"
-          label="Password"
+          :label="t('signIn.password')"
           maxlength="64"
           bg-color="grey-1"
           hide-hint
@@ -27,14 +27,15 @@
           :rules="[(v) => (v && v.length) || 'The password field is not filled']"
         />
         <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
-        <q-btn label="Sign in" type="submit" color="positive" />
+        <q-btn :label="t('signIn.action')" type="submit" color="positive" />
       </q-form>
 
       <section class="links">
         <div>
-          Don't have an account? <router-link class="link-light" :to="{ name: 'Sign up' }">Sign up</router-link>
+          {{ t('signIn.noAccount') }}
+          <router-link class="link-light" :to="{ name: 'Sign up' }">{{ t('signIn.signUp') }}</router-link>
         </div>
-        <router-link :to="{ name: 'Home' }" class="link-light">Back to home page</router-link>
+        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('signIn.back') }}</router-link>
       </section>
     </section>
   </q-page>
@@ -46,8 +47,10 @@ import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const { loading, notify } = useQuasar()
+const { t } = useI18n()
 const userStore = useUserStore()
 
 const email = ref('')
@@ -65,7 +68,7 @@ const onSubmit = throttle(() => {
   if (import.meta.env.PROD && !isLocal && !captchaIsVerified.value) {
     return notify({
       type: 'negative',
-      message: 'Captcha required',
+      message: t('notification.captchaError'),
     })
   }
 
@@ -75,7 +78,7 @@ const onSubmit = throttle(() => {
     .then(() => {
       notify({
         type: 'positive',
-        message: 'Sign in successfully',
+        message: t('notification.signInSuccess'),
       })
       router.push({ name: 'Items' })
     })

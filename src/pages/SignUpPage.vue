@@ -1,7 +1,7 @@
 <template>
   <q-page class="sign-up-page">
     <section>
-      <h1 class="text-h4">Sign up</h1>
+      <h1 class="text-h4">{{ t('signUp.title') }}</h1>
       <q-form
         class="registration-form"
         autocorrect="off"
@@ -13,7 +13,7 @@
         <q-input
           v-model="email"
           type="email"
-          label="Email"
+          :label="t('signUp.email')"
           maxlength="320"
           bg-color="grey-1"
           filled
@@ -24,7 +24,7 @@
         <q-input
           v-model="password"
           type="password"
-          label="Password"
+          :label="t('signUp.password')"
           maxlength="64"
           bg-color="grey-1"
           hide-hint
@@ -34,13 +34,16 @@
           :rules="[(v) => (v && v.length >= 6) || 'Please use minimum 6 characters']"
         />
 
-        <q-btn label="Sign up" type="submit" color="positive" />
+        <q-btn :label="t('signUp.action')" type="submit" color="positive" />
         <VueHcaptcha v-if="showCaptcha && !isLocal" ref="captchaForm" :sitekey="sitekey" @verify="onVerifyCaptcha" />
       </q-form>
 
       <section class="links">
-        <div>Already registered? <router-link class="link-light" :to="{ name: 'Sign in' }">Sign in</router-link></div>
-        <router-link :to="{ name: 'Home' }" class="link-light">Back to home page</router-link>
+        <div>
+          {{ t('signUp.alreadyRegistered') }}
+          <router-link class="link-light" :to="{ name: 'Sign in' }">{{ t('signUp.signIn') }}</router-link>
+        </div>
+        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('signUp.back') }}</router-link>
       </section>
     </section>
   </q-page>
@@ -51,11 +54,13 @@ import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const { notify, loading } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
+const { t } = useI18n()
 
 const email = ref('')
 const password = ref('')
@@ -72,7 +77,7 @@ const onSubmit = throttle(() => {
   if (import.meta.env.PROD && !isLocal && !captchaIsVerified.value) {
     return notify({
       type: 'negative',
-      message: 'Captcha required',
+      message: t('notification.captchaError'),
       timeout: 5000,
     })
   }
@@ -87,7 +92,7 @@ const onSubmit = throttle(() => {
     .then(() => {
       notify({
         type: 'positive',
-        message: 'Sign up successfully',
+        message: t('notification.signUpSuccess'),
       })
       router.push({ name: 'Items' })
     })

@@ -1,13 +1,15 @@
 <template>
   <q-page class="q-pa-sm">
     <section v-if="items.length" class="actions">
-      <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">Add</q-btn>
+      <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">
+        {{ t('add') }}
+      </q-btn>
 
       <q-input
         v-model="search"
         rounded
         outlined
-        label="Search tags"
+        :label="t('searchTags')"
         dense
         :maxlength="32"
         @keyup.enter="onAddSearchTag"
@@ -59,8 +61,10 @@ import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { computed, onBeforeMount, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const { loading } = useQuasar()
+const { t } = useI18n()
 const itemsStore = useItemsStore()
 
 const search = ref('')

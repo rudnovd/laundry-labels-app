@@ -1,9 +1,15 @@
 <template>
   <q-page class="error-page">
-    <span>Page not found</span>
-    <router-link :to="{ name: 'Home' }"> Return to Home page </router-link>
+    <span>{{ t('meta.pageNotFound') }}</span>
+    <router-link :to="{ name: 'Home' }">{{ t('meta.back') }}</router-link>
   </q-page>
 </template>
+
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+</script>
 
 <style lang="scss" scoped>
 .error-page {

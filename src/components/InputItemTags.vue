@@ -1,5 +1,5 @@
 <template>
-  <q-input v-model="tag" class="q-mb-sm" outlined label="Enter or select tags" :maxlength="32" @keyup.enter="onAddTag">
+  <q-input v-model="tag" class="q-mb-sm" outlined :label="t('tagsInput')" :maxlength="32" @keyup.enter="onAddTag">
     <template #append>
       <q-icon :class="{ invisible: !tag }" name="check" @click="onAddTag" />
     </template>
@@ -20,6 +20,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = withDefaults(
   defineProps<{

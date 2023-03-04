@@ -13,7 +13,7 @@
           <li v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)" :key="icon._id" @click.stop>
             <q-icon tag="svg" :name="icon._id" size="2.6em" />
             <q-tooltip :anchor="'top middle'" :offset="[0, 42]">
-              {{ icon.description }}
+              {{ t(icon.description) }}
             </q-tooltip>
           </li>
         </ul>
@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { laundryIcons } from '@/assets/laundryIcons'
 import type { Item } from '@/interfaces/item'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const props = defineProps<{
@@ -36,6 +37,7 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const { t } = useI18n()
 
 const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon._id) !== -1)
 </script>

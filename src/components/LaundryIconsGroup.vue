@@ -1,6 +1,6 @@
 <template>
   <section class="laundry-icon-group">
-    <span>{{ group.name.replace('-', ' ') }}</span>
+    <span>{{ t(`groups.${group.name}`) }}</span>
 
     <div class="group-icons">
       <button
@@ -14,7 +14,7 @@
         @click="onClickIcon(icon)"
       >
         <q-icon :name="`${icon._id}`" tag="svg" size="5em" />
-        <span>{{ icon.description }}</span>
+        <span>{{ t(icon.description) }}</span>
       </button>
     </div>
   </section>
@@ -23,6 +23,9 @@
 <script setup lang="ts">
 import type { LaundryIcon } from '@/interfaces/laundryIcon'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = withDefaults(
   defineProps<{

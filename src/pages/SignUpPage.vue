@@ -1,7 +1,7 @@
 <template>
   <q-page class="sign-up-page">
     <section>
-      <h1 class="text-h3 q-mt-none">Sign up</h1>
+      <h1 class="text-h3 q-mt-none">{{ t('signUp.title') }}</h1>
       <q-form
         class="q-mb-md"
         autocorrect="off"
@@ -14,7 +14,7 @@
           v-model="payload.email"
           class="q-mb-md"
           type="email"
-          label="Email"
+          :label="t('signUp.email')"
           maxlength="320"
           bg-color="grey-1"
           :dark="false"
@@ -26,7 +26,7 @@
           v-model="payload.password"
           class="q-mb-md"
           type="password"
-          label="Password"
+          :label="t('signUp.password')"
           maxlength="64"
           bg-color="grey-1"
           :dark="false"
@@ -45,7 +45,7 @@
         />
         <q-btn
           class="full-width"
-          label="Sign up"
+          :label="t('signUp.action')"
           :disable="!payload.email || !payload.password || (showCaptcha && !payload.token)"
           type="submit"
           color="positive"
@@ -53,8 +53,11 @@
       </q-form>
 
       <section class="links">
-        <div>Already registered? <router-link class="link-light" :to="{ name: 'Sign in' }">Sign in</router-link></div>
-        <router-link :to="{ name: 'Home' }" class="link-light">Back to home page</router-link>
+        <div>
+          {{ t('signUp.alreadyRegistered') }}
+          <router-link class="link-light" :to="{ name: 'Sign in' }">{{ t('signUp.signIn') }}</router-link>
+        </div>
+        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('signUp.back') }}</router-link>
       </section>
     </section>
   </q-page>
@@ -63,7 +66,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
-
+import { useI18n } from 'vue-i18n'
 import { throttle, useQuasar } from 'quasar'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -75,6 +78,7 @@ const FIVE_SECONDS = 5000
 const { notify, loading } = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
+const { t } = useI18n()
 
 const captchaForm = ref<VueHcaptcha>()
 const payload = reactive({
@@ -96,7 +100,8 @@ const signUp = throttle(async () => {
   if (showCaptcha) {
     return notify({
       type: 'negative',
-      message: 'Captcha required',
+      message: t('notification.captchaError'),
+      timeout: 5000,
     })
   }
 
@@ -104,8 +109,7 @@ const signUp = throttle(async () => {
   try {
     await userStore.signUp(payload)
     notify({
-      type: 'positive',
-      message: 'Sign up successfully',
+       message: t('notification.signUpSuccess'),
     })
     router.push({ name: 'Items' })
   } finally {

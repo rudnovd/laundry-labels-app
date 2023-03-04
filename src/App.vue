@@ -8,6 +8,7 @@ import { useLocalStorage, watchOnce } from '@vueuse/core'
 import { QSpinnerGears, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import type { UserSettings } from './interfaces/types'
 import { useUserStore } from './store/user'
@@ -67,8 +68,9 @@ const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
   }
 }
 
+const { t } = useI18n()
 const onAppInstalled = () => {
-  $q.notify({ type: 'positive', message: 'App installed' })
+  $q.notify({ type: 'positive', message: t('notification.appInstalled') })
   delete userStore.settings.installApp
 }
 

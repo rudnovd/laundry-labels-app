@@ -8,7 +8,7 @@
         fit="contain"
         :src="editingItem.images[0]"
       />
-      <q-input v-model="editingItem.name" class="q-mb-md" filled label="Name" />
+      <q-input v-model="editingItem.name" class="q-mb-md" filled :label="t('name')" />
       <InputItemTags v-model="editingItem.tags" />
     </section>
 
@@ -23,7 +23,7 @@
       />
     </section>
 
-    <q-btn color="positive" class="submit-button" label="Save" :disable="loading.isActive" @click="onSubmit" />
+    <q-btn color="positive" class="submit-button" :label="t('save')" :disable="loading.isActive" @click="onSubmit" />
   </q-page>
 </template>
 
@@ -36,11 +36,13 @@ import type { LaundryIcon } from '@/interfaces/laundryIcon'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 const { loading } = useQuasar()
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const itemsStore = useItemsStore()
 
 const userItems = computed(() => itemsStore.items)

@@ -106,6 +106,7 @@ const onRejected = (rejectedEntries: Array<QRejectedEntry>) => {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const onRemove = (scope: QUploader, file: any) => {
   scope.removeFile(file)
   const response = JSON.parse(file.xhr.response)

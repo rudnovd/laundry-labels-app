@@ -56,14 +56,14 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
 }
 
 .icons {
-  max-height: 80px;
-  overflow: hidden;
   display: grid;
   grid-template: repeat(2, 1fr) / repeat(3, minmax(36px, 1fr));
   gap: 0.5rem;
   width: 100%;
+  max-height: 80px;
   padding: 0;
   margin: 0;
+  overflow: hidden;
   list-style-type: none;
   li {
     display: flex;

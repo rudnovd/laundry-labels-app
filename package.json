@@ -10,12 +10,15 @@
   "repository": "github:rudnovd/laundry-labels-app",
   "scripts": {
     "start": "vite",
-    "build": "cross-env NODE_ENV=production npm run lint && vue-tsc --noEmit && vite build",
+    "build": "cross-env NODE_ENV=production npm run lint:all && vite build",
     "preview": "vite preview",
     "https": "PORT=4444 REINSTALL=true serve dist",
     "lint": "eslint --ext .ts,.vue src",
-    "lint:fix": "eslint --ext .ts,.vue src --fix",
-    "stylelint": "stylelint '**/*{.scss,.vue}'",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:ts": "vue-tsc --noEmit",
+    "lint:css": "stylelint **/*{.scss,.vue}",
+    "lint:css:fix": "npm run lint:css -- --fix",
+    "lint:all": "npm run lint && npm run lint:ts && npm run lint:css",
     "localazy:upload": "localazy upload -k localazy.keys.json",
     "localazy:download": "localazy download -k localazy.keys.json"
   },

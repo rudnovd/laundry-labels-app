@@ -13,6 +13,4 @@ jobs:
         with:
           node-version: "18"
       - run: npm ci --no-fund
-      - run: npm run lint
-      - run: npm run lint:ts
-      - run: npm run stylelint
+      - run: npm run lint:all

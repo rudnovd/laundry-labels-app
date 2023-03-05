@@ -16,6 +16,7 @@
     "lint": "eslint --ext .ts,.vue src",
     "lint:fix": "eslint --ext .ts,.vue src --fix",
     "stylelint": "stylelint '**/*{.scss,.vue}'",
+    "lint:ts": "vue-tsc --noEmit",
     "localazy:upload": "localazy upload -k localazy.keys.json",
     "localazy:download": "localazy download -k localazy.keys.json"
   },

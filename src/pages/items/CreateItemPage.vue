@@ -26,9 +26,9 @@
 
 <script setup lang="ts">
 import { laundryIconsByGroup } from '@/assets/laundryIcons'
-import InputItemTags from '@/components/InputItemTags.vue'
+import InputItemTags from '@/components/item/InputItemTags.vue'
+import UploadItemImage from '@/components/item/UploadItemImage.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
-import UploadItemImage from '@/components/UploadItemImage.vue'
 import type { ItemBlank } from '@/interfaces/item'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'

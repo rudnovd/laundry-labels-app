@@ -22,8 +22,6 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
-
 const props = withDefaults(
   defineProps<{
     modelValue: Array<string>
@@ -33,6 +31,8 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: 'update:modelValue', tags: Array<string>): void
 }>()
+
+const { t } = useI18n()
 
 const tag = ref('')
 const standardTags = ref([

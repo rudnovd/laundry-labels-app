@@ -16,14 +16,8 @@
 
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
-            <template v-if="!laundryIconsMap[icon]">
-              <q-icon name="clear" size="5em" />
-              <span>{{ t('noIconData') }}</span>
-            </template>
-            <template v-else>
-              <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
-              <span>{{ t(laundryIconsMap[icon].description) }}</span>
-            </template>
+            <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
+            <span>{{ t(laundryIconsMap[icon].description) }}</span>
           </div>
         </section>
 

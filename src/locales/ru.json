@@ -82,7 +82,6 @@
     "updateApp": "Обновить приложение"
   },
   "name": "Название",
-  "noIconData": "Иконка обновилась, пожалуйста, пересоздайте предмет",
   "notification": {
     "appInstalled": "Приложение установлено",
     "captchaError": "Введите Captcha",

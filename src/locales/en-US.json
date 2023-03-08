@@ -50,7 +50,6 @@
     "dry-cleaning": "Dry Cleaning",
     "wet-cleaning": "Wet Cleaning"
   },
-  "noIconData": "Icon updated, please re-create item",
   "icons": {
     "wash": "Machine wash",
     "mild-wash": "Mild machine wash",

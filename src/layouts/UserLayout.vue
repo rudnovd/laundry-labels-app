@@ -59,6 +59,7 @@ header {
   color: black;
   background-color: $brand;
 
+  /* stylelint-disable-next-line selector-class-pattern */
   .q-toolbar__title:last-child {
     padding-right: 4px;
   }

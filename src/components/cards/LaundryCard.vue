@@ -65,6 +65,7 @@ const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon.
   margin: 0;
   overflow: hidden;
   list-style-type: none;
+
   li {
     display: flex;
     align-items: center;

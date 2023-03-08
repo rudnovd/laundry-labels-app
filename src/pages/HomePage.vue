@@ -54,8 +54,8 @@ const share = () => {
   display: grid;
   grid-template-rows: auto 1fr;
   padding-top: 40px;
-  color: rgb(255, 255, 255);
-  background: linear-gradient(135deg, rgba(9, 121, 46, 1) 0%, rgba(75, 8, 129, 1) 50%, rgba(9, 121, 46, 1) 100%);
+  color: rgb(255 255 255);
+  background: linear-gradient(135deg, rgb(9 121 46 / 100%) 0%, rgb(75 8 129 / 100%) 50%, rgb(9 121 46 / 100%) 100%);
 }
 
 header {

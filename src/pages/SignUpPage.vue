@@ -124,7 +124,7 @@ const signUp = throttle(async () => {
   place-content: center;
   color: $grey-1;
   text-align: center;
-  background: linear-gradient(135deg, rgb(9, 121, 46) 0%, rgb(75, 8, 129) 50%, rgb(9, 121, 46) 100%);
+  background: linear-gradient(135deg, rgb(9 121 46) 0%, rgb(75 8 129) 50%, rgb(9 121 46) 100%);
 
   @include media-small {
     grid-template-rows: initial;
@@ -137,7 +137,7 @@ const signUp = throttle(async () => {
     grid-template-columns: 1fr;
     place-content: center;
     padding: 32px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgb(0 0 0 / 30%);
     transition: padding 0.5s linear;
 
     @include media-small {

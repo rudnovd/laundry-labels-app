@@ -1,12 +1,10 @@
 <template>
   <q-page v-if="!loading.isActive" class="create-item-page q-pa-md">
     <section class="info-container">
-      <q-img
-        v-if="editingItem.images.length"
-        class="q-mb-sm"
-        height="200px"
-        fit="contain"
-        :src="editingItem.images[0]"
+      <UploadItemImage
+        :images="editingItem.images"
+        @uploaded="editingItem.images.push($event)"
+        @remove="editingItem.images = editingItem.images.filter((url) => url !== $event)"
       />
       <q-input v-model="editingItem.name" class="q-mb-md" filled :label="t('name')" />
       <InputItemTags v-model="editingItem.tags" />
@@ -30,6 +28,7 @@
 <script setup lang="ts">
 import { laundryIconsByGroup, laundryIconsMap } from '@/assets/laundryIcons'
 import InputItemTags from '@/components/item/InputItemTags.vue'
+import UploadItemImage from '@/components/item/UploadItemImage.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { LaundryIcon } from '@/interfaces/laundryIcon'

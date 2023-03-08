@@ -19,8 +19,6 @@
         @click="updateAppFromEvent"
       />
 
-      <!-- <q-toggle :model-value="dark.isActive" label="Dark mode" @update:model-value="dark.toggle()" /> -->
-
       <q-btn
         v-if="isOnline && userStore.user?._id"
         color="primary"

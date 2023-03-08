@@ -17,7 +17,6 @@
           :label="t('signIn.email')"
           maxlength="320"
           bg-color="grey-1"
-          :dark="false"
           filled
           lazy-rules
           :rules="[(v) => v?.length || 'The email field is not filled']"
@@ -29,7 +28,6 @@
           :label="t('signIn.password')"
           maxlength="64"
           bg-color="grey-1"
-          :dark="false"
           filled
           lazy-rules
           :rules="[(v) => v?.length || 'The password field is not filled']"

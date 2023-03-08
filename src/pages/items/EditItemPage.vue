@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { laundryIconsByGroup, laundryIconsMap } from '@/assets/laundryIcons'
-import InputItemTags from '@/components/InputItemTags.vue'
+import InputItemTags from '@/components/item/InputItemTags.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { LaundryIcon } from '@/interfaces/laundryIcon'

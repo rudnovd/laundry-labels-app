@@ -17,7 +17,7 @@
     <template #header>
       <div class="row items-center justify-between q-pa-sm">
         {{ t('uploadPhoto') }}
-        <q-btn type="a" icon="add_box" round dense flat>
+        <q-btn v-if="!images.length" type="a" icon="add_box" round dense flat>
           <q-uploader-add-trigger />
         </q-btn>
       </div>
@@ -25,30 +25,40 @@
 
     <template #list="scope">
       <div class="row justify-lg-center">
-        <q-item v-for="file in scope.files" :key="file">
-          <div thumbnail class="col">
-            <q-btn
-              v-if="file.__status === 'uploaded'"
-              icon="close"
-              round
-              color="black"
-              size="xs"
-              class="delete-icon"
-              @click="onRemove(scope, file)"
-            />
+        <template v-if="scope.files.length">
+          <q-item v-for="file in scope.files" :key="file">
+            <div thumbnail class="col">
+              <q-btn
+                v-if="file.__status === 'uploaded'"
+                icon="close"
+                round
+                color="black"
+                size="xs"
+                class="delete-icon"
+                @click="onRemove(scope, file)"
+              />
 
-            <q-img
-              v-if="file.__status === 'uploaded'"
-              :src="file.__img.src"
-              height="200px"
-              width="200px"
-              fit="contain"
-              class="rounded-borders"
-            />
+              <q-img
+                v-if="file.__status === 'uploaded'"
+                :src="file.__img.src"
+                height="200px"
+                width="200px"
+                fit="contain"
+                class="rounded-borders"
+              />
 
-            <q-spinner v-else-if="file.__status === 'uploading'" color="primary" size="3em" />
-          </div>
-        </q-item>
+              <q-spinner v-else-if="file.__status === 'uploading'" color="primary" size="3em" />
+            </div>
+          </q-item>
+        </template>
+        <template v-else>
+          <q-item v-for="file in images" :key="file">
+            <div thumbnail class="col">
+              <q-btn icon="close" round color="black" size="xs" class="delete-icon" @click="emit('remove', file)" />
+              <q-img :src="file" height="200px" width="200px" fit="contain" class="rounded-borders" />
+            </div>
+          </q-item>
+        </template>
       </div>
     </template>
   </q-uploader>
@@ -56,12 +66,13 @@
 
 <script setup lang="ts">
 import { LocalStorage, QUploader, useQuasar, type QRejectedEntry } from 'quasar'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const FIFTEEN_MEGABYTES = 15728640
+const accessToken = LocalStorage.getItem('accessToken')?.toString()
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     images: Array<string>
   }>(),
@@ -74,17 +85,10 @@ const emit = defineEmits<{
   (e: 'remove', url: string): void
 }>()
 
+const { t } = useI18n()
 const { notify } = useQuasar()
 
-const FIFTEEN_MEGABYTES = 15728640
-
-const accessToken = LocalStorage.getItem('accessToken')?.toString()
-
 const uploadImageRef = ref<QUploader>()
-
-onMounted(() => {
-  uploadImageRef.value?.addFiles(props.images)
-})
 
 const onUploaded = (info: { files: Readonly<Array<File>>; xhr: Record<string, string> }) => {
   const response: Record<string, string> = JSON.parse(info.xhr.response)

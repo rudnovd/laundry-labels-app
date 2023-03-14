@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.9](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.8...v0.0.0-alpha.9) (2023-03-14)
+
+
+### Features
+
+* add i18n lib ([1f4ce23](https://github.com/rudnovd/laundry-labels-app/commit/1f4ce2366e32821713eacb4d279df6d1ed779d5d))
+* add Localazy ([acf1ff7](https://github.com/rudnovd/laundry-labels-app/commit/acf1ff7c27e13c63e5b431ce3f80651a6087a668))
+* **EditItemPage:** add image editing for items ([1168d38](https://github.com/rudnovd/laundry-labels-app/commit/1168d38299f8317654e064555fe77a23f3e2edf3))
+* **i18n:** add tokens, locale files ([a964154](https://github.com/rudnovd/laundry-labels-app/commit/a9641548fef847c05850691b3fc8ff141d9c5f79))
+* **i18n:** update i18n ([e109b10](https://github.com/rudnovd/laundry-labels-app/commit/e109b10dbf3183c6ee4ddff75ef805b0ffd21684))
+* **laundry-icons:** divide 'drying' group to 'dry cleaning' and 'natural drying' ([bd202e4](https://github.com/rudnovd/laundry-labels-app/commit/bd202e48dd400cb2ddfc8e8b42881806842adf70))
+
+
+### Bug Fixes
+
+* **eslint:** fix errors ([23853a8](https://github.com/rudnovd/laundry-labels-app/commit/23853a886425d934de6f492cb0379aa7bd33f25d))
+* fix validation in SignIn/SignUp pages ([dcdfdfd](https://github.com/rudnovd/laundry-labels-app/commit/dcdfdfdda45469e7b2e625960b165ca8cafbcfe3))
+* **stylelint:** fix errors ([5edebeb](https://github.com/rudnovd/laundry-labels-app/commit/5edebeb2dea17f520eb0334a1d353c8e9e5fb321))
+
 ## [0.0.0-alpha.8](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.7...v0.0.0-alpha.8) (2023-02-25)
 
 

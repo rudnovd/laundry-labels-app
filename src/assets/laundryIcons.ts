@@ -138,38 +138,68 @@ export const laundryIcons: Array<LaundryIcon> = [
   },
   {
     _id: 'tumble-dry',
-    group: 'drying',
+    group: 'tumble-drying',
     description: 'icons.tumble-dry',
   },
   {
     _id: 'do-not-tumble-dry',
-    group: 'drying',
+    group: 'tumble-drying',
     description: 'icons.do-not-tumble-dry',
   },
   {
     _id: 'tumble-dry-low-heat',
-    group: 'drying',
+    group: 'tumble-drying',
     description: 'icons.tumble-dry-low-heat',
   },
   {
     _id: 'tumble-dry-medium-heat',
-    group: 'drying',
+    group: 'tumble-drying',
     description: 'icons.tumble-dry-medium-heat',
   },
   {
     _id: 'tumble-dry-high-heat',
-    group: 'drying',
+    group: 'tumble-drying',
     description: 'icons.tumble-dry-high-heat',
   },
   {
+    _id: 'dry',
+    group: 'natural-drying',
+    description: 'icons.dry',
+  },
+  {
+    _id: 'dry-in-shade',
+    group: 'natural-drying',
+    description: 'icons.dry-in-shade',
+  },
+  {
+    _id: 'line-dry',
+    group: 'natural-drying',
+    description: 'icons.line-dry',
+  },
+  {
+    _id: 'line-dry-in-shade',
+    group: 'natural-drying',
+    description: 'icons.line-dry-in-shade',
+  },
+  {
     _id: 'drip-dry',
-    group: 'drying',
+    group: 'natural-drying',
     description: 'icons.drip-dry',
   },
   {
+    _id: 'drip-dry-in-shade',
+    group: 'natural-drying',
+    description: 'icons.drip-dry-in-shade',
+  },
+  {
     _id: 'dry-flat',
-    group: 'drying',
+    group: 'natural-drying',
     description: 'icons.dry-flat',
+  },
+  {
+    _id: 'dry-flat-in-shade',
+    group: 'natural-drying',
+    description: 'icons.dry-flat-in-shade',
   },
   {
     _id: 'dry-clean',
@@ -241,7 +271,8 @@ export const laundryIconsByGroup: { [key: string]: Array<LaundryIcon> } = {
   washing: [],
   bleaching: [],
   ironing: [],
-  drying: [],
+  'tumble-drying': [],
+  'natural-drying': [],
   'dry-cleaning': [],
   'wet-cleaning': [],
 }

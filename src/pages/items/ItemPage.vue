@@ -45,7 +45,7 @@ import { laundryIconsMap } from '@/assets/laundryIcons'
 import type { Item } from '@/interfaces/item'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -57,18 +57,28 @@ const itemsStore = useItemsStore()
 
 const currentItem = ref<Item>()
 
-const item = itemsStore.items.find((_item) => _item._id === route.params.id)
-if (!item) {
+onBeforeMount(async () => {
+  const item = itemsStore.items.find((item) => item._id === route.params.id)
+  if (item) {
+    currentItem.value = item
+    return
+  }
+
   loading.show()
-  itemsStore
-    .getItemById({ _id: route.params.id as string })
-    .then((item) => {
-      currentItem.value = item
-    })
-    .finally(() => loading.hide())
-} else {
-  currentItem.value = item
-}
+  try {
+    if (window.navigator.onLine) {
+      currentItem.value = await itemsStore.getItemById({ _id: route.params.id as string })
+    } else {
+      const items = await itemsStore.getItems()
+      const item = items.find((_item) => _item._id === route.params.id)
+      if (item) {
+        currentItem.value = item
+      }
+    }
+  } finally {
+    loading.hide()
+  }
+})
 
 const showDeleteDialog = () => {
   dialog({

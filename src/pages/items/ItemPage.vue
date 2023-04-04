@@ -12,7 +12,7 @@
       />
 
       <section class="q-px-sm" :class="{ 'q-pt-sm': !currentItem.images.length }">
-        <h1 v-if="currentItem.name" class="text-h5">{{ currentItem.name }}</h1>
+        <h1 v-if="currentItem.name" class="text-h5 ellipsis">{{ currentItem.name }}</h1>
 
         <section class="item-icons q-mb-md">
           <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">

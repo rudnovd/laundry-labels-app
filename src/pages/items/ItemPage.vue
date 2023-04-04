@@ -26,7 +26,7 @@
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="negative" outline :label="t('delete')" icon="delete" @click="callDeleteDialog" />
+          <q-btn color="negative" outline :label="t('delete')" icon="delete" @click="showDeleteDialog" />
           <q-btn
             color="primary"
             outline
@@ -70,7 +70,7 @@ if (!item) {
   currentItem.value = item
 }
 
-const callDeleteDialog = () => {
+const showDeleteDialog = () => {
   dialog({
     title: t('dialog.deleteItem'),
     message: currentItem.value?.name,

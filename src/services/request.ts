@@ -50,7 +50,7 @@ const request = ky.create({
           const isRouteMethodAllowed = publicRoute.methods ? publicRoute.methods.includes(request.method) : true
           return isMatchUrl && isRouteMethodAllowed
         })
-        if (isPublicRoute) return
+        if (isPublicRoute || !window.navigator.onLine) return
 
         const accessToken = await getAccessToken()
         request.headers.set('Authorization', `Bearer ${accessToken}`)

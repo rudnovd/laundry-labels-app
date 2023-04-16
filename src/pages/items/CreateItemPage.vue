@@ -6,7 +6,7 @@
         @uploaded="newItem.images.push($event)"
         @remove="newItem.images = newItem.images.filter((url) => url !== $event)"
       />
-      <q-input v-model="newItem.name" class="q-mb-md" outlined :label="t('name')" />
+      <q-input v-model="newItem.name" class="q-mb-md" outlined :label="t('common.name')" />
       <InputItemTags v-model="newItem.tags" />
     </section>
 
@@ -20,7 +20,13 @@
       />
     </section>
 
-    <q-btn color="positive" class="submit-button" :label="t('create')" :disable="loading.isActive" @click="onSubmit" />
+    <q-btn
+      color="positive"
+      class="submit-button"
+      :label="t('common.create')"
+      :disable="loading.isActive"
+      @click="onSubmit"
+    />
   </q-page>
 </template>
 

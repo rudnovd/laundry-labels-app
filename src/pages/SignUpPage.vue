@@ -1,7 +1,7 @@
 <template>
   <q-page class="sign-up-page">
     <section>
-      <h1 class="text-h3 q-mt-none">{{ t('signUp.title') }}</h1>
+      <h1 class="text-h3 q-mt-none">{{ t('common.signUp') }}</h1>
       <q-form
         class="q-mb-md"
         autocorrect="off"
@@ -14,23 +14,23 @@
           v-model="payload.email"
           class="q-mb-md"
           type="email"
-          :label="t('signUp.email')"
+          :label="t('common.email')"
           maxlength="320"
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length || 'The email field is not filled']"
+          :rules="[(v) => v?.length || t('pages.signUp.validation.email')]"
         />
         <q-input
           v-model="payload.password"
           class="q-mb-md"
           type="password"
-          :label="t('signUp.password')"
+          :label="t('common.password')"
           maxlength="64"
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length >= 6 || 'Please use minimum 6 characters']"
+          :rules="[(v) => v?.length >= 6 || t('pages.signUp.validation.email')]"
         />
         <VueHcaptcha
           v-if="showCaptcha"
@@ -43,7 +43,7 @@
         />
         <q-btn
           class="full-width"
-          :label="t('signUp.action')"
+          :label="t('common.signUp')"
           :disable="!payload.email || !payload.password || (showCaptcha && !payload.token)"
           type="submit"
           color="positive"
@@ -52,10 +52,10 @@
 
       <section class="links">
         <div>
-          {{ t('signUp.alreadyRegistered') }}
-          <router-link class="link-light" :to="{ name: 'Sign in' }">{{ t('signUp.signIn') }}</router-link>
+          {{ t('pages.signUp.alreadyRegistered') }}
+          <router-link class="link-light" :to="{ name: 'Sign in' }">{{ t('common.signIn') }}</router-link>
         </div>
-        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('signUp.back') }}</router-link>
+        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signUp.backToHomePage') }}</router-link>
       </section>
     </section>
   </q-page>
@@ -98,7 +98,7 @@ const signUp = throttle(async () => {
   if (showCaptcha && !payload.token) {
     return notify({
       type: 'negative',
-      message: t('notification.captchaError'),
+      message: t('notifications.captchaError'),
       timeout: 5000,
     })
   }
@@ -107,7 +107,7 @@ const signUp = throttle(async () => {
   try {
     await userStore.signUp(payload)
     notify({
-      message: t('notification.signUpSuccess'),
+      message: t('notifications.signUpSuccess'),
     })
     router.push({ name: 'Items' })
   } finally {

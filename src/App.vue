@@ -72,7 +72,7 @@ const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
 
 const { t } = useI18n()
 const onAppInstalled = () => {
-  $q.notify({ type: 'positive', message: t('notification.appInstalled') })
+  $q.notify({ type: 'positive', message: t('notifications.appInstalled') })
   delete userStore.settings.installApp
 }
 

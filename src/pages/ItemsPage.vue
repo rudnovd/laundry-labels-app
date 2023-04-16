@@ -2,14 +2,14 @@
   <q-page class="q-pa-sm">
     <section v-if="items.length" class="actions">
       <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">
-        {{ t('add') }}
+        {{ t('common.add') }}
       </q-btn>
 
       <q-input
         v-model="search"
         rounded
         outlined
-        :label="t('searchTags')"
+        :label="t('pages.items.searchTags')"
         dense
         :maxlength="32"
         @keyup.enter="onAddSearchTag"
@@ -21,9 +21,9 @@
     </section>
 
     <section v-if="searchTags.length" class="search-tags">
-      <q-chip class="text-white" color="negative" clickable @click="searchTags = []">
+      <q-chip class="text-white text-lowercase" color="negative" clickable @click="searchTags = []">
         <q-icon class="q-mr-xs" name="delete" size="16px" />
-        clear
+        {{ t('common.clear') }}
       </q-chip>
       <q-chip v-for="tag in searchTags" :key="tag" removable @remove="onRemoveSearchTag(tag)">
         <span class="ellipsis">{{ tag }}</span>
@@ -40,8 +40,8 @@
       </template>
 
       <div v-else-if="!items.length && !foundItems.length" class="flex column items-center">
-        <span class="text-h6">No items added yet</span>
-        <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">Add first item</q-btn>
+        <span class="text-h6">{{ t('pages.items.noItemsAdded') }}</span>
+        <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">{{ t('pages.items.addFirstItem') }}</q-btn>
       </div>
 
       <template v-else-if="foundItems.length">
@@ -49,7 +49,7 @@
       </template>
 
       <div v-else-if="searchTags.length && !foundItems.length" class="flex column items-center">
-        No items with selected tags
+        {{ t('pages.items.noItemsWithSelectedTags') }}
       </div>
     </section>
   </q-page>

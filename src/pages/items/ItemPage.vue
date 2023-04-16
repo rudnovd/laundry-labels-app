@@ -26,11 +26,11 @@
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="negative" outline :label="t('delete')" icon="delete" @click="showDeleteDialog" />
+          <q-btn color="negative" outline :label="t('common.delete')" icon="delete" @click="showDeleteDialog" />
           <q-btn
             color="primary"
             outline
-            :label="t('edit')"
+            :label="t('common.edit')"
             icon="edit"
             @click="router.push(`/items/edit/${currentItem?._id}`)"
           />
@@ -82,9 +82,9 @@ onBeforeMount(async () => {
 
 const showDeleteDialog = () => {
   dialog({
-    title: t('dialog.deleteItem'),
+    title: t('pages.item.deleteItem'),
     message: currentItem.value?.name,
-    cancel: t('dialog.cancel'),
+    cancel: t('common.cancel'),
   }).onOk(() => {
     loading.show()
     itemsStore

@@ -1,22 +1,81 @@
 {
-  "add": "Добавить",
-  "create": "Создать",
-  "delete": "Удалить",
-  "dialog": {
-    "cancel": "Отмена",
-    "deleteItem": "Удалить предмет?",
-    "logout": "Выход",
-    "signOut": "Хотите выйти?"
+  "common": {
+    "signIn": "Вход",
+    "signUp": "Регистрация",
+    "signOut": "Выйти",
+    "email": "Email",
+    "password": "Пароль",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "add": "Добавить",
+    "create": "Создать",
+    "edit": "Изменить",
+    "name": "Название",
+    "cancel": "Отменить",
+    "clear": "Очистить",
+    "continue": "Продолжить"
   },
-  "edit": "Изменить",
-  "groups": {
-    "bleaching": "Отбеливание",
-    "dry-cleaning": "Сухая чистка (химчистка)",
-    "drying": "Сушка",
-    "ironing": "Глажка",
-    "natural-drying": "Естественная сушка",
-    "tumble-drying": "Барабанная сушка",
+  "components": {
+    "item": {
+      "inputItemTags": {
+        "tagsInput": "Введите или выберите теги"
+      }
+    },
+    "uploadItemImage": {
+      "uploadPhoto": "Загрузить фото"
+    }
+  },
+  "pages": {
+    "signIn": {
+      "noAccount": "Нет аккаунта?",
+      "backToHomePage": "Назад на домашнюю страницу",
+      "validation": {
+        "email": "Email не заполнен",
+        "password": "Пароль не заполнен"
+      }
+    },
+    "signUp": {
+      "alreadyRegistered": "Уже зарегистрированы?",
+      "backToHomePage": "Назад на домашнюю страницу",
+      "validation": {
+        "email": "Email не заполнен",
+        "password": "Пожалуйста, используйте пароль от 6 символов"
+      }
+    },
+    "home": {
+      "share": "Поделиться",
+      "subtitle": "Сохраняйте данные о том, как ухаживать за одеждой",
+      "tryInBrowser": "Попробовать в браузере"
+    },
+    "profile": {
+      "installApp": "Установить приложение",
+      "updateApp": "Обновить приложение",
+      "appVersion": "Версия приложения",
+      "autoUpdateApp": "Автоматически обновлять приложение",
+      "signOut": "Хотите выйти?",
+      "language": "Язык"
+    },
+    "item": {
+      "deleteItem": "Удалить предмет?"
+    },
+    "items": {
+      "searchTags": "Поиск по тегам",
+      "noItemsAdded": "Пока не добавлено ни одного предмета",
+      "addFirstItem": "Добавить первый предмет",
+      "noItemsWithSelectedTags": "Нет предметов с указанными тегами"
+    },
+    "error": {
+      "pageNotFound": "Страница не найдена",
+      "backToHomePage": "Назад на домашнюю страницу"
+    }
+  },
+  "iconsGroups": {
     "washing": "Стирка",
+    "bleaching": "Отбеливание",
+    "ironing": "Глажка",
+    "tumble-drying": "Барабанная сушка",
+    "natural-drying": "Естественная сушка",
+    "dry-cleaning": "Сухая чистка (химчистка)",
     "wet-cleaning": "Влажная чистка"
   },
   "icons": {
@@ -73,53 +132,13 @@
     "wash-warm": "Стирка при температуре не выше 40°C",
     "wet-clean": "Влажная чистка"
   },
-  "landing": {
-    "appName": "Laundry Labels App",
-    "continue": "Продолжить",
-    "share": "Поделиться",
-    "signIn": "Вход",
-    "signUp": "Регистрация",
-    "subtitle": "Сохраняйте данные о том, как ухаживать за одеждой",
-    "tryInBrowser": "Попробовать в браузере"
-  },
-  "meta": {
-    "appVersion": "Версия приложения",
-    "autoUpdateApp": "Автоматически обновлять приложение",
-    "back": "Вернуться на Домашнюю страницу",
-    "pageNotFound": "Страница не найдена",
-    "updateApp": "Обновить приложение"
-  },
-  "name": "Название",
-  "notification": {
+  "notifications": {
     "appInstalled": "Приложение установлено",
-    "captchaError": "Введите Captcha",
+    "signUpSuccess": "Успешная регистрация",
     "signInSuccess": "Успешный вход",
     "signOutSuccess": "Успешный выход",
-    "signUpSuccess": "Успешная регистрация",
     "sizeError": "Ошибка загрузки, максимальный размер файла 15 МБ",
-    "typeError": "Неверный тип файла"
-  },
-  "save": "Сохранить",
-  "searchTags": "Поиск по тегам",
-  "signIn": {
-    "action": "Вход",
-    "back": "Назад на домашнюю страницу",
-    "email": "Email",
-    "noAccount": "Нет аккаунта?",
-    "password": "Пароль",
-    "signUp": "Регистрация",
-    "title": "Вход"
-  },
-  "signOut": "Выйти",
-  "signUp": {
-    "action": "Регистрация",
-    "alreadyRegistered": "Уже зарегистрированы?",
-    "back": "Назад на домашнюю страницу",
-    "email": "Email",
-    "password": "Пароль",
-    "signIn": "Вход",
-    "title": "Регистрация"
-  },
-  "tagsInput": "Введите или выберите теги",
-  "uploadPhoto": "Загрузить фото"
+    "typeError": "Неверный тип файла",
+    "captchaError": "Введите Captcha"
+  }
 }

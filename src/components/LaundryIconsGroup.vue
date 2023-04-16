@@ -1,6 +1,6 @@
 <template>
   <section class="laundry-icon-group">
-    <span>{{ t(`groups.${group.name}`) }}</span>
+    <span>{{ t(`iconsGroups.${group.name}`) }}</span>
 
     <div class="group-icons">
       <button

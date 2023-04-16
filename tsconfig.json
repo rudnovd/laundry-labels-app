@@ -10,7 +10,6 @@
       "@/*": ["./src/*"]
     },
 
-    "importsNotUsedAsValues": "error",
     "noImplicitThis": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -21,8 +20,7 @@
     // Required in Vue projects
     "jsx": "preserve",
 
-    // For `<script setup>`
-    "preserveValueImports": true,
+    "verbatimModuleSyntax": true,
 
     // Vite recommended (https://vitejs.dev/guide/features.html#typescript-compiler-options=)
     "isolatedModules": true,

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.10](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.9...v0.0.0-alpha.10) (2023-04-16)
+
+
+### Features
+
+* **ItemPage:** load item in offline ([a615c6c](https://github.com/rudnovd/laundry-labels-app/commit/a615c6cafec0e66dcf918230cc6c145cc6d35f26))
+* **SignUpPage:** sign in if email already registered ([698be36](https://github.com/rudnovd/laundry-labels-app/commit/698be36bf624ce22fc0f130e776b8222cb85ff7b))
+
+
+### Bug Fixes
+
+* **ItemPage:** fix text-overflow ([36bd572](https://github.com/rudnovd/laundry-labels-app/commit/36bd57269a100fcc0c28d46788f7924bf72016b8))
+* **request:** stop update access token in offline ([f23c189](https://github.com/rudnovd/laundry-labels-app/commit/f23c18972c2b32313ecbc41366880a82441e40e2))
+
 ## [0.0.0-alpha.9](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.8...v0.0.0-alpha.9) (2023-03-14)
 
 

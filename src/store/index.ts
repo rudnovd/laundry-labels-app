@@ -26,7 +26,7 @@ pinia.use(({ store }) => {
         message: error.message,
         timeout: 5000,
       })
-      throw new Error(error.message)
+      throw error
     })
   })
 })

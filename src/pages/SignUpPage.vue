@@ -110,6 +110,19 @@ const signUp = throttle(async () => {
       message: t('notifications.signUpSuccess'),
     })
     router.push({ name: 'Items' })
+  } catch (throwedError) {
+    const error = throwedError as {
+      name: string
+      message: string
+    }
+    if (error.name === 'ERR_AUTH_REGISTRATION_EMAIL_ALREADY_REGISTERED') {
+      await userStore.signIn(payload)
+      notify({
+        type: 'positive',
+        message: t('notifications.signInSuccess'),
+      })
+      router.push({ name: 'Items' })
+    }
   } finally {
     loading.hide()
   }

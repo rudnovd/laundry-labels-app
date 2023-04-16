@@ -45,7 +45,7 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
-const previousPageLink = computed(() => {
+const previousPageLink = computed<string>(() => {
   if (window.history.state.back === router.currentRoute.value.path) {
     return '/items'
   } else {

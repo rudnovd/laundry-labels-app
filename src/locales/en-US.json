@@ -1,48 +1,75 @@
 {
-  "save": "Save",
-  "delete": "Delete",
-  "add": "Add",
-  "create": "Create",
-  "edit": "Edit",
-  "searchTags": "Search tags",
-  "uploadPhoto": "Upload photo",
-  "name": "Name",
-  "tagsInput": "Enter or input tags",
-  "signOut": "Sign Out",
-  "landing": {
+  "common": {
     "signIn": "Sign in",
     "signUp": "Sign up",
-    "share": "Share",
-    "appName": "Laundry Labels App",
-    "subtitle": "Save data on how to take care of your clothes",
-    "tryInBrowser": "Try in browser",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "save": "Save",
+    "delete": "Delete",
+    "add": "Add",
+    "create": "Create",
+    "edit": "Edit",
+    "name": "Name",
+    "cancel": "Cancel",
+    "clear": "Clear",
     "continue": "Continue"
   },
-  "signUp": {
-    "title": "Sign up",
-    "email": "Email",
-    "password": "Password",
-    "action": "Sign Up",
-    "alreadyRegistered": "Already registered?",
-    "signIn": "Sign in",
-    "back": "Back to home page"
+  "components": {
+    "item": {
+      "inputItemTags": {
+        "tagsInput": "Enter or input tags"
+      }
+    },
+    "uploadItemImage": {
+      "uploadPhoto": "Upload photo"
+    }
   },
-  "signIn": {
-    "title": "Sign in",
-    "email": "Email",
-    "password": "Password",
-    "action": "Sign In",
-    "noAccount": "Don't have an account?",
-    "signUp": "Sign up",
-    "back": "Back to home page"
+  "pages": {
+    "signIn": {
+      "noAccount": "Don't have an account?",
+      "backToHomePage": "Back to home page",
+      "validation": {
+        "email": "The email field is not filled",
+        "password": "The password field is not filled"
+      }
+    },
+    "signUp": {
+      "alreadyRegistered": "Already registered?",
+      "backToHomePage": "Back to home page",
+      "validation": {
+        "email": "The email field is not filled",
+        "password": "Please use minimum 6 characters"
+      }
+    },
+    "home": {
+      "share": "Share",
+      "subtitle": "Save data on how to take care of your clothes",
+      "tryInBrowser": "Try in browser"
+    },
+    "profile": {
+      "installApp": "Install app",
+      "updateApp": "Update app",
+      "appVersion": "App Version",
+      "autoUpdateApp": "Update app automatically",
+      "signOut": "Would you like to sign out?",
+      "language": "Language"
+    },
+    "item": {
+      "deleteItem": "Delete item?"
+    },
+    "items": {
+      "searchTags": "Search tags",
+      "noItemsAdded": "No items added yet",
+      "addFirstItem": "Add first item",
+      "noItemsWithSelectedTags": "No items with selected tags"
+    },
+    "error": {
+      "pageNotFound": "Page not found",
+      "backToHomePage": "Back to home page"
+    }
   },
-  "dialog": {
-    "deleteItem": "Delete item?",
-    "signOut": "Would you like to sign out?",
-    "logout": "Logout",
-    "cancel": "Cancel"
-  },
-  "groups": {
+  "iconsGroups": {
     "washing": "Washing",
     "bleaching": "Bleaching",
     "ironing": "Ironing",
@@ -105,7 +132,7 @@
     "gentle-wet-clean": "Gentle wet clean",
     "very-gentle-wet-clean": "Very gentle wet clean"
   },
-  "notification": {
+  "notifications": {
     "appInstalled": "App installed",
     "signUpSuccess": "Sign up successfully",
     "signInSuccess": "Sign in successfully",
@@ -113,12 +140,5 @@
     "sizeError": "Upload failed, the maximum size of the file is 15 MB",
     "typeError": "Wrong file type",
     "captchaError": "Captcha required"
-  },
-  "meta": {
-    "updateApp": "Update app",
-    "autoUpdateApp": "Update app automatically",
-    "appVersion": "App Version",
-    "pageNotFound": "Page not found",
-    "back": "Return to Home page"
   }
 }

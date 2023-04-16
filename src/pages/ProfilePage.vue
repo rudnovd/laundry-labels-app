@@ -1,12 +1,12 @@
 <template>
   <q-page class="profile-page q-pa-sm">
     <section class="actions">
-      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('meta.autoUpdateApp')" />
+      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('pages.profile.autoUpdateApp')" />
 
       <q-btn
         v-if="isOnline && userStore.settings.installApp?.show"
         color="primary"
-        label="Install app"
+        :label="t('pages.profile.installApp')"
         icon="install_mobile"
         @click="userStore.settings.installApp?.event.prompt()"
       />
@@ -14,7 +14,7 @@
       <q-btn
         v-if="isOnline && !userSettings.autoUpdateApp && userStore.settings.appHasUpdate"
         color="primary"
-        :label="t('meta.updateApp')"
+        :label="t('pages.profile.updateApp')"
         icon="upgrade"
         @click="updateAppFromEvent"
       />
@@ -22,7 +22,7 @@
       <q-btn
         v-if="isOnline && userStore.user?._id"
         color="primary"
-        :label="t('signOut')"
+        :label="t('common.signOut')"
         icon="logout"
         @click="callLogoutDialog"
       />
@@ -30,7 +30,7 @@
       <q-select
         v-model="lang.nativeName"
         :options="langOptions"
-        label="Language"
+        :label="t('pages.profile.language')"
         dense
         borderless
         emit-value
@@ -41,7 +41,7 @@
     </section>
 
     <section class="app-version">
-      {{ t('meta.appVersion') }}: {{ appVersion }}
+      {{ t('pages.profile.appVersion') }}: {{ appVersion }}
       <a href="https://github.com/rudnovd/laundry-labels-app" rel="noopener" target="_blank">
         <img src="/icons/social/github-mark.svg" width="16" />
       </a>
@@ -76,9 +76,9 @@ const locale = useLocale()
 
 const callLogoutDialog = () => {
   dialog({
-    title: t('dialog.logout'),
-    message: t('dialog.signOut'),
-    cancel: t('dialog.cancel'),
+    title: t('common.signOut'),
+    message: t('pages.profile.signOut'),
+    cancel: t('common.cancel'),
   }).onOk(() => {
     loading.show()
     userStore
@@ -86,7 +86,7 @@ const callLogoutDialog = () => {
       .then(() => {
         notify({
           type: 'positive',
-          message: t('notification.signOutSuccess'),
+          message: t('notifications.signOutSuccess'),
         })
         router.push({ name: 'Home' })
       })

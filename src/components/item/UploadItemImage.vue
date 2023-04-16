@@ -16,7 +16,7 @@
   >
     <template #header>
       <div class="row items-center justify-between q-pa-sm">
-        {{ t('uploadPhoto') }}
+        {{ t('components.uploadItemImage.uploadPhoto') }}
         <q-btn v-if="!images.length" type="a" icon="add_box" round dense flat>
           <q-uploader-add-trigger />
         </q-btn>
@@ -103,9 +103,9 @@ const onFailed = (info: { files: Readonly<Array<File>>; xhr: Record<string, stri
 const onRejected = (rejectedEntries: Array<QRejectedEntry>) => {
   for (const error of rejectedEntries) {
     if (error.failedPropValidation === 'max-file-size') {
-      notify({ type: 'negative', message: t('notification.sizeError') })
+      notify({ type: 'negative', message: t('notifications.sizeError') })
     } else if (error.failedPropValidation === 'accept') {
-      notify({ type: 'negative', message: t('notification.typeError') })
+      notify({ type: 'negative', message: t('notifications.typeError') })
     }
   }
 }

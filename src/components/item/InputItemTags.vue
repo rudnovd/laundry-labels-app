@@ -1,5 +1,12 @@
 <template>
-  <q-input v-model="tag" class="q-mb-sm" outlined :label="t('tagsInput')" :maxlength="32" @keyup.enter="onAddTag">
+  <q-input
+    v-model="tag"
+    class="q-mb-sm"
+    outlined
+    :label="t('components.item.inputItemTags.tagsInput')"
+    :maxlength="32"
+    @keyup.enter="onAddTag"
+  >
     <template #append>
       <q-icon :class="{ invisible: !tag }" name="check" @click="onAddTag" />
     </template>

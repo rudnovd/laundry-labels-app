@@ -37,5 +37,15 @@ export const useItemsStore = defineStore('items', {
       this.items.splice(itemForDeleteIndex, 1)
       return this.items
     },
+    async uploadImage(payload: File) {
+      const formData = new FormData()
+      formData.append('files', payload)
+      const SIXTY_SECONDS = 60000
+      const url = await request
+        .extend({ timeout: SIXTY_SECONDS })
+        .post('/api/upload/items', { body: formData })
+        .json<{ url: string }>()
+      return url
+    },
   },
 })

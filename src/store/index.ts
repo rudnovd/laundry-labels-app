@@ -1,12 +1,8 @@
+import type { ErrorResponse } from '@/interfaces/types'
 import { createPinia } from 'pinia'
 import { Notify } from 'quasar'
 
 const pinia = createPinia()
-
-interface ErrorResponse {
-  name: string
-  message: string
-}
 
 pinia.use(({ store }) => {
   store.$onAction(({ name, args, onError }) => {

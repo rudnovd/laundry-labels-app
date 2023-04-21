@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { type ErrorResponse } from '@/interfaces/types'
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
@@ -110,18 +111,19 @@ const signUp = throttle(async () => {
       message: t('notifications.signUpSuccess'),
     })
     router.push({ name: 'Items' })
-  } catch (throwedError) {
-    const error = throwedError as {
-      name: string
-      message: string
-    }
+  } catch (e) {
+    const error = e as ErrorResponse
     if (error.name === 'ERR_AUTH_REGISTRATION_EMAIL_ALREADY_REGISTERED') {
-      await userStore.signIn(payload)
-      notify({
-        type: 'positive',
-        message: t('notifications.signInSuccess'),
-      })
-      router.push({ name: 'Items' })
+      try {
+        await userStore.signIn(payload)
+        notify({
+          type: 'positive',
+          message: t('notifications.signInSuccess'),
+        })
+        router.push({ name: 'Items' })
+      } finally {
+        loading.hide()
+      }
     }
   } finally {
     loading.hide()

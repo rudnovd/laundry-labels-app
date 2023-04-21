@@ -22,7 +22,8 @@
       }
     },
     "uploadItemImage": {
-      "uploadPhoto": "Загрузить фото"
+      "uploadPhoto": "Загрузить фото",
+      "removePhoto": "Удалить фото"
     }
   },
   "pages": {

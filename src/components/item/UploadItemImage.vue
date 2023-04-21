@@ -1,78 +1,34 @@
 <template>
-  <q-uploader
-    ref="uploadImageRef"
-    class="full-width q-mb-sm"
-    :max-file-size="FIFTEEN_MEGABYTES"
-    :max-files="1"
-    accept="image/jpg, image/jpeg, image/png, image/webp, image/avif"
-    multiple
-    auto-upload
-    url="/api/upload/items"
-    :headers="() => [{ name: 'Authorization', value: `bearer ${accessToken}` }]"
-    color="brand"
-    @uploaded="onUploaded"
-    @failed="onFailed"
-    @rejected="onRejected"
-  >
-    <template #header>
-      <div class="row items-center justify-between q-pa-sm">
-        {{ t('components.uploadItemImage.uploadPhoto') }}
-        <q-btn v-if="!images.length" type="a" icon="add_box" round dense flat>
-          <q-uploader-add-trigger />
-        </q-btn>
-      </div>
-    </template>
+  <q-btn v-if="!images.length" class="full-width q-mb-sm" color="brand" :disable="isLoading" @click="() => open()">
+    {{ t('components.uploadItemImage.uploadPhoto') }}
+  </q-btn>
+  <q-btn v-else class="full-width q-mb-sm" color="negative" @click="onRemoveImage">
+    {{ t('components.uploadItemImage.removePhoto') }}
+  </q-btn>
 
-    <template #list="scope">
-      <div class="row justify-lg-center">
-        <template v-if="scope.files.length">
-          <q-item v-for="file in scope.files" :key="file">
-            <div thumbnail class="col">
-              <q-btn
-                v-if="file.__status === 'uploaded'"
-                icon="close"
-                round
-                color="black"
-                size="xs"
-                class="delete-icon"
-                @click="onRemove(scope, file)"
-              />
-
-              <q-img
-                v-if="file.__status === 'uploaded'"
-                :src="file.__img.src"
-                height="200px"
-                width="200px"
-                fit="contain"
-                class="rounded-borders"
-              />
-
-              <q-spinner v-else-if="file.__status === 'uploading'" color="primary" size="3em" />
-            </div>
-          </q-item>
-        </template>
-        <template v-else>
-          <q-item v-for="file in images" :key="file">
-            <div thumbnail class="col">
-              <q-btn icon="close" round color="black" size="xs" class="delete-icon" @click="emit('remove', file)" />
-              <q-img :src="file" height="200px" width="200px" fit="contain" class="rounded-borders" />
-            </div>
-          </q-item>
-        </template>
-      </div>
-    </template>
-  </q-uploader>
+  <div class="flex justify-center q-mb-md">
+    <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
+    <q-img
+      v-else-if="images?.length"
+      :src="images[0]"
+      height="200px"
+      width="200px"
+      fit="contain"
+      class="rounded-borders"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { LocalStorage, QUploader, useQuasar, type QRejectedEntry } from 'quasar'
+import { useItemsStore } from '@/store/items'
+import { useFileDialog } from '@vueuse/core'
+import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const FIFTEEN_MEGABYTES = 15728640
-const accessToken = LocalStorage.getItem('accessToken')?.toString()
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     images: Array<string>
   }>(),
@@ -87,42 +43,38 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { notify } = useQuasar()
+const { open, reset, onChange } = useFileDialog({ accept: 'image/*', multiple: false })
+const { uploadImage } = useItemsStore()
 
-const uploadImageRef = ref<QUploader>()
+const isLoading = ref(false)
 
-const onUploaded = (info: { files: Readonly<Array<File>>; xhr: Record<string, string> }) => {
-  const response: Record<string, string> = JSON.parse(info.xhr.response)
-  emit('uploaded', response.url)
+const onRemoveImage = () => {
+  emit('remove', props.images[0])
+  reset()
 }
 
-const onFailed = (info: { files: Readonly<Array<File>>; xhr: Record<string, string> }) => {
-  const response: Record<string, { name: string; message: string }> = JSON.parse(info.xhr.response)
-  notify({ type: 'negative', message: response.error.message })
-}
+onChange((files) => {
+  if (!files) return
+  const uploadPromises: Array<Promise<{ url: string }>> = []
+  isLoading.value = true
 
-const onRejected = (rejectedEntries: Array<QRejectedEntry>) => {
-  for (const error of rejectedEntries) {
-    if (error.failedPropValidation === 'max-file-size') {
-      notify({ type: 'negative', message: t('notifications.sizeError') })
-    } else if (error.failedPropValidation === 'accept') {
-      notify({ type: 'negative', message: t('notifications.typeError') })
+  for (const file of files) {
+    if (file.type.split('/')[0] !== 'image') {
+      return notify({ type: 'negative', message: t('notifications.typeError') })
+    } else if (file.size > FIFTEEN_MEGABYTES) {
+      return notify({ type: 'negative', message: t('notifications.sizeError') })
     }
+    uploadPromises.push(uploadImage(file))
   }
-}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const onRemove = (scope: QUploader, file: any) => {
-  scope.removeFile(file)
-  const response = JSON.parse(file.xhr.response)
-  emit('remove', response.url)
-}
+  Promise.allSettled(uploadPromises)
+    .then((result) => {
+      result.map((promiseResult) => {
+        if (promiseResult.status === 'fulfilled') {
+          emit('uploaded', promiseResult.value.url)
+        }
+      })
+    })
+    .finally(() => (isLoading.value = false))
+})
 </script>
-
-<style lang="scss" scoped>
-.delete-icon {
-  position: absolute;
-  right: 0;
-  z-index: 1;
-  transform: translate(-5px, -10px);
-}
-</style>

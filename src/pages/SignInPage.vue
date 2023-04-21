@@ -64,10 +64,9 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
-import { useI18n } from 'vue-i18n'
-
 import { throttle, useQuasar } from 'quasar'
 import { reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY

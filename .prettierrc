@@ -3,5 +3,13 @@
   "tabWidth": 2,
   "semi": false,
   "singleQuote": true,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": ["src/constants/**/*.ts", "src/locales/*.json"],
+      "options": {
+        "printWidth": 300
+      }
+    }
+  ]
 }

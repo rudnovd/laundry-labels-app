@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: v-ripple error (https://github.com/quasarframework/quasar/issues/13154)  -->
   <q-card class="laundry-card" flat bordered>
     <q-card-section horizontal class="full-height">
       <q-skeleton class="col-4" height="100%" square />

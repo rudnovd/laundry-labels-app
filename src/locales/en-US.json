@@ -18,7 +18,8 @@
   "components": {
     "item": {
       "inputItemTags": {
-        "tagsInput": "Enter or input tags"
+        "tagsInput": "Enter or input tags (up to 30)",
+        "custom": "Custom"
       }
     },
     "uploadItemImage": {

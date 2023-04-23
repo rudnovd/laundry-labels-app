@@ -1,33 +1,45 @@
 <template>
   <q-input
-    v-model="tag"
+    v-model.trim="newTag"
     class="q-mb-sm"
     outlined
     :label="t('components.item.inputItemTags.tagsInput')"
     :maxlength="32"
-    @keyup.enter="onAddTag"
+    @keyup.enter="onAddTag(newTag)"
   >
     <template #append>
-      <q-icon :class="{ invisible: !tag }" name="check" @click="onAddTag" />
+      <q-icon :class="{ invisible: !newTag }" name="check" @click="onAddTag(newTag)" />
     </template>
   </q-input>
 
   <section class="tags">
-    <q-chip
-      v-for="stdTag in standardTags"
-      :key="stdTag"
-      clickable
-      :class="{ 'selected-tag': modelValue.includes(stdTag) }"
-      @click="onClickTag(stdTag)"
-    >
-      <span class="ellipsis">{{ stdTag }}</span>
-    </q-chip>
+    <div v-for="group in tags" :key="group.group" class="group">
+      <span>{{ group.group }}</span>
+      <q-chip
+        v-for="stdTag in group.items"
+        :key="stdTag"
+        clickable
+        :disable="props.modelValue.length >= MAX_TAGS_COUNT && !props.modelValue.includes(stdTag)"
+        :class="{ 'selected-tag': modelValue.includes(stdTag) }"
+        @click="onClickTag(stdTag)"
+      >
+        <span class="ellipsis">{{ stdTag }}</span>
+      </q-chip>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useLocale } from '@/i18n'
+import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+interface CreatableItemTag {
+  readonly group: string
+  items: Array<string>
+}
+
+const MAX_TAGS_COUNT = 30
 
 const props = withDefaults(
   defineProps<{
@@ -40,58 +52,57 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const locale = useLocale()
 
-const tag = ref('')
-const standardTags = ref([
-  ...new Set([
-    ...props.modelValue,
-    'black',
-    'blue',
-    'brown',
-    'green',
-    'grey',
-    'orange',
-    'pink',
-    'purple',
-    'red',
-    'white',
-    'yellow',
-    'boots',
-    'cap',
-    'coat',
-    'dress',
-    'frock',
-    'fur coat',
-    'gloves',
-    'jacket',
-    'jeans',
-    'jumper',
-    'leggings',
-    'overalls',
-    'pyjamas',
-    'pants',
-    'scarf',
-    'shirt',
-    'shoes',
-    'skirt',
-    'socks',
-    'suit',
-    'sweater',
-    't-shirt',
-    'underwear',
-  ]),
-])
+const newTag = ref('')
+const tags = ref<Array<CreatableItemTag>>([])
+const standardTags = ref<Array<CreatableItemTag>>([])
+const standardTagsItems = computed(() => {
+  return standardTags.value.reduce<Array<string>>((acc, item) => {
+    acc.push(...item.items)
+    return acc
+  }, [])
+})
 
-const onAddTag = () => {
-  const newTag = tag.value.trim()
-  tag.value = ''
-  if (!newTag) {
+onBeforeMount(async () => {
+  standardTags.value = (await import(`../../constants/items/tags/${locale.value}.ts`)).default
+
+  const customTags: CreatableItemTag = {
+    group: t('components.item.inputItemTags.custom'),
+    items: [],
+  }
+
+  props.modelValue.forEach((modelValueTag) => {
+    if (!standardTagsItems.value.includes(modelValueTag)) {
+      customTags.items.push(modelValueTag)
+    }
+  })
+
+  if (customTags.items.length) {
+    tags.value.unshift(customTags)
+  }
+
+  tags.value.push(...standardTags.value)
+})
+
+const onAddTag = (tag: string) => {
+  if (!tag || props.modelValue.length >= MAX_TAGS_COUNT) {
     return
   }
-  if (!standardTags.value.includes(newTag)) {
-    standardTags.value.unshift(newTag)
+
+  if (!standardTagsItems.value.includes(tag)) {
+    if (tags.value[0].group === t('components.item.inputItemTags.custom') && !tags.value[0].items.includes(tag)) {
+      tags.value[0].items.push(tag)
+    } else if (tags.value[0].group !== t('components.item.inputItemTags.custom')) {
+      tags.value.unshift({ group: t('components.item.inputItemTags.custom'), items: [tag] })
+    }
   }
-  emit('update:modelValue', [...props.modelValue, newTag])
+
+  if (newTag.value) {
+    newTag.value = ''
+  }
+
+  emit('update:modelValue', [...props.modelValue, tag])
 }
 
 const onClickTag = (tag: string) => {
@@ -100,7 +111,7 @@ const onClickTag = (tag: string) => {
       'update:modelValue',
       props.modelValue.filter((itemTag) => itemTag !== tag)
     )
-  } else {
+  } else if (props.modelValue.length < MAX_TAGS_COUNT) {
     emit('update:modelValue', [...props.modelValue, tag])
   }
 }
@@ -108,12 +119,27 @@ const onClickTag = (tag: string) => {
 
 <style lang="scss" scoped>
 .tags {
-  max-height: 120px;
+  max-height: 170px;
   overflow-x: hidden;
   overflow-y: auto;
 
   @include media-medium {
-    max-height: 300px;
+    max-height: fit-content;
+  }
+}
+
+.group {
+  margin-bottom: 0.5rem;
+
+  > span {
+    display: block;
+    padding-left: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+
+    @include media-medium {
+      font-size: 1rem;
+    }
   }
 }
 

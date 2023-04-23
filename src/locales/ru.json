@@ -18,7 +18,8 @@
   "components": {
     "item": {
       "inputItemTags": {
-        "tagsInput": "Введите или выберите теги"
+        "tagsInput": "Введите или выберите теги (до 30)",
+        "custom": "Пользовательские"
       }
     },
     "uploadItemImage": {

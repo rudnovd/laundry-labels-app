@@ -6,7 +6,7 @@
         @uploaded="newItem.images.push($event)"
         @remove="newItem.images = newItem.images.filter((url) => url !== $event)"
       />
-      <q-input v-model="newItem.name" class="q-mb-md" outlined :label="t('common.name')" />
+      <q-input v-model="newItem.name" class="q-mb-lg" outlined :label="t('common.name')" />
       <InputItemTags v-model="newItem.tags" />
     </section>
 

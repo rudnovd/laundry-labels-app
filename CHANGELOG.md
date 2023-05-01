@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-alpha.11](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.10...v0.0.0-alpha.11) (2023-05-01)
+
+
+### Features
+
+* **constants:** move item tags in constants ([04da059](https://github.com/rudnovd/laundry-labels-app/commit/04da0597351977b8352c391cfb1b024c771f7237))
+* **InputItemTags:** update component ([2ba6564](https://github.com/rudnovd/laundry-labels-app/commit/2ba65647ae9aedc77d03b88f9ac3caacf9ae0a5d))
+* **ProfilePage:** add selecting language for items tags ([c3cdca1](https://github.com/rudnovd/laundry-labels-app/commit/c3cdca1a24f192a966bf21ba15867046e48db691))
+* **store:** add upload image function ([0c8c33a](https://github.com/rudnovd/laundry-labels-app/commit/0c8c33afccb72a7debac8358d05bdf5bdf29f0b9))
+* **UploadItemImage:** update component ([d43d621](https://github.com/rudnovd/laundry-labels-app/commit/d43d6213508dfcf6cf7193203bc8a7b4bc047b44))
+
+
+### Bug Fixes
+
+* **SignUpPage:** catch signIn function error ([c4613c7](https://github.com/rudnovd/laundry-labels-app/commit/c4613c7ed316a05f9778be22dd7e97e68b7b48f0))
+
 ## [0.0.0-alpha.10](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.9...v0.0.0-alpha.10) (2023-04-16)
 
 

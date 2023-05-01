@@ -25,9 +25,7 @@ const $q = useQuasar()
 const userStore = useUserStore()
 const router = useRouter()
 const isBrowser = window.matchMedia('(display-mode: browser)').matches
-const userSettings = useLocalStorage<UserSettings>('user-settings', {
-  autoUpdateApp: true,
-})
+const userSettings = useLocalStorage<Readonly<Partial<UserSettings>>>('user-settings', {})
 const { updateServiceWorker, needRefresh } = useRegisterSW({
   immediate: true,
 })

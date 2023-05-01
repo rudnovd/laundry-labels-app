@@ -31,6 +31,8 @@
 
 <script setup lang="ts">
 import { useLocale } from '@/i18n'
+import { type UserSettings } from '@/interfaces/types'
+import { useLocalStorage } from '@vueuse/core'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -53,6 +55,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const locale = useLocale()
+const userSettings = useLocalStorage<Readonly<Partial<UserSettings>>>('user-settings', {})
 
 const newTag = ref('')
 const tags = ref<Array<CreatableItemTag>>([])
@@ -65,7 +68,8 @@ const standardTagsItems = computed(() => {
 })
 
 onBeforeMount(async () => {
-  standardTags.value = (await import(`../../constants/items/tags/${locale.value}.ts`)).default
+  const standardTagsLocale = userSettings.value.items?.standardTagsLocale || locale.value
+  standardTags.value = (await import(`../../constants/items/tags/${standardTagsLocale}.ts`)).default
 
   const customTags: CreatableItemTag = {
     group: t('components.item.inputItemTags.custom'),

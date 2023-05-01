@@ -55,7 +55,9 @@
       "appVersion": "Версия приложения",
       "autoUpdateApp": "Автоматически обновлять приложение",
       "signOut": "Хотите выйти?",
-      "language": "Язык"
+      "languageSettings": "Языковые настройки",
+      "appLanguage": "Язык приложения",
+      "itemsTagsLanguage": "Язык тегов предметов"
     },
     "item": {
       "deleteItem": "Удалить предмет?"

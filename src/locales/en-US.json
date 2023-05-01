@@ -55,7 +55,9 @@
       "appVersion": "App Version",
       "autoUpdateApp": "Update app automatically",
       "signOut": "Would you like to sign out?",
-      "language": "Language"
+      "languageSettings": "Language settings",
+      "appLanguage": "App language",
+      "itemsTagsLanguage": "Items tags language"
     },
     "item": {
       "deleteItem": "Delete item?"

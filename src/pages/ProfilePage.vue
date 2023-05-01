@@ -12,6 +12,14 @@
       />
 
       <q-btn
+        color="primary"
+        :label="t('pages.profile.languageSettings')"
+        icon="translate"
+        @click="showLanguageOptions = true"
+      >
+      </q-btn>
+
+      <q-btn
         v-if="isOnline && !userSettings.autoUpdateApp && userStore.settings.appHasUpdate"
         color="primary"
         :label="t('pages.profile.updateApp')"
@@ -26,18 +34,6 @@
         icon="logout"
         @click="callLogoutDialog"
       />
-
-      <q-select
-        v-model="lang.nativeName"
-        :options="langOptions"
-        :label="t('pages.profile.language')"
-        dense
-        borderless
-        emit-value
-        map-options
-        options-dense
-        @update:model-value="locale = $event"
-      />
     </section>
 
     <section class="app-version">
@@ -46,6 +42,44 @@
         <img src="/icons/social/github-mark.svg" width="16" />
       </a>
     </section>
+
+    <teleport to="body">
+      <q-dialog v-model="showLanguageOptions">
+        <q-card class="language-settings-card">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
+            <q-space />
+            <q-btn v-close-popup icon="close" flat round dense />
+          </q-card-section>
+
+          <q-card-section>
+            <q-select
+              v-model="lang.nativeName"
+              class="q-mb-md"
+              :options="langOptions"
+              :label="t('pages.profile.appLanguage')"
+              dense
+              borderless
+              emit-value
+              map-options
+              options-dense
+              @update:model-value="locale = $event"
+            />
+
+            <q-select
+              v-model="userSettings.items.standardTagsLocale"
+              :options="langOptions"
+              :label="t('pages.profile.itemsTagsLanguage')"
+              dense
+              borderless
+              emit-value
+              map-options
+              options-dense
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </teleport>
   </q-page>
 </template>
 
@@ -56,6 +90,7 @@ import { useUserStore } from '@/store/user'
 import { useLocalStorage, useOnline } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 import languages from 'quasar/lang/index.json'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -71,8 +106,19 @@ const userStore = useUserStore()
 const router = useRouter()
 const { t } = useI18n()
 const isOnline = useOnline()
-const userSettings = useLocalStorage('user-settings', {} as UserSettings)
 const locale = useLocale()
+const userSettings = useLocalStorage<UserSettings>(
+  'user-settings',
+  {
+    autoUpdateApp: true,
+    items: {
+      standardTagsLocale: locale.value,
+    },
+  },
+  { mergeDefaults: true }
+)
+
+const showLanguageOptions = ref(false)
 
 const callLogoutDialog = () => {
   dialog({
@@ -120,5 +166,9 @@ const updateAppFromEvent = () => {
   & > a {
     display: flex;
   }
+}
+
+.language-settings-card {
+  width: clamp(300px, 30vw, 500px);
 }
 </style>

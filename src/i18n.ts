@@ -43,12 +43,14 @@ export const useLocale = () => {
     },
   })
 
-  // load initial locale messages
-  if (!Object.keys(i18n.global.getLocaleMessage(selectedLocale.value)).length) {
+  function initializeLocale() {
     locale.value = selectedLocale.value
   }
 
-  return locale
+  return {
+    locale,
+    initializeLocale,
+  }
 }
 
 export default i18n

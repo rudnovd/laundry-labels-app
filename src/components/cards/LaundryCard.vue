@@ -7,7 +7,11 @@
         :class="item.images.length ? 'col-8' : 'col-12'"
         class="q-px-sm q-pt-sm q-pb-none column laundry-card-body"
       >
-        <div class="q-mb-sm ellipsis text-h6">{{ item.name }}</div>
+        <div class="flex no-wrap justify-between ellipsis">
+          <div class="q-mb-sm ellipsis text-h6">{{ item.name }}</div>
+
+          <q-icon v-if="item._id.includes('offline-')" name="cloud_off" />
+        </div>
 
         <ul class="row full-width q-mb-sm icons">
           <li v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)" :key="icon._id" @click.stop>

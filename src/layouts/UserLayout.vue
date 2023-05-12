@@ -11,13 +11,29 @@
           :to="previousPageLink"
           replace
         />
-        <q-toolbar-title class="flex items-center justify-between">
+        <q-toolbar-title class="flex items-center">
           <q-btn flat :to="{ name: 'Items' }" :ripple="false" padding="0">
             <l-icon icon="logo" width="32px" height="32px" />
             <span class="q-mt-sm">aundry Labels</span>
           </q-btn>
+
+          <q-space />
+
+          <q-icon v-if="userSettings.offlineMode || !userStore.isOnline" class="q-mr-sm" name="cloud_off">
+            <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
+              <q-banner class="bg-white">
+                <q-toggle v-model="userSettings.offlineMode" color="brand" :label="t('pages.profile.offlineMode')" />
+                <q-btn icon="help" flat round dense size="12px">
+                  <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
+                    {{ t('pages.profile.offlineModeTooltip') }}
+                  </q-tooltip>
+                </q-btn>
+              </q-banner>
+            </q-popup-proxy>
+          </q-icon>
+
           <q-btn flat icon="person" padding="0" :to="{ name: 'Profile' }" :ripple="false">
-            <q-badge v-if="userStore.settings.appHasUpdate" floating rounded color="red" />
+            <q-badge v-if="appSettingsStore.appHasUpdate" floating rounded color="red" />
           </q-btn>
         </q-toolbar-title>
       </q-toolbar>
@@ -35,15 +51,24 @@
 
 <script setup lang="ts">
 import LIcon from '@/components/LIcon.vue'
+import type { UserSettings } from '@/interfaces/types'
+import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
+import { useLocalStorage } from '@vueuse/core'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 const keepAliveComponents = ['ItemsPage']
 
 const router = useRouter()
 const route = useRoute()
+const appSettingsStore = useAppSettingsStore()
+const { t } = useI18n()
 const userStore = useUserStore()
+const userSettings = useLocalStorage<Partial<UserSettings>>('user-settings', {
+  offlineMode: false,
+})
 
 const previousPageLink = computed<string>(() => {
   if (window.history.state.back === router.currentRoute.value.path) {

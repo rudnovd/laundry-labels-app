@@ -54,7 +54,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const locale = useLocale()
+const { locale } = useLocale()
 const userSettings = useLocalStorage<Readonly<Partial<UserSettings>>>('user-settings', {})
 
 const newTag = ref('')

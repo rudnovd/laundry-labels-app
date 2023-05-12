@@ -24,7 +24,7 @@
       color="positive"
       class="submit-button"
       :label="t('common.create')"
-      :disable="loading.isActive"
+      :disable="loading.isActive || !isOnline"
       @click="onSubmit"
     />
   </q-page>
@@ -35,8 +35,9 @@ import { laundryIconsByGroup } from '@/assets/laundryIcons'
 import InputItemTags from '@/components/item/InputItemTags.vue'
 import UploadItemImage from '@/components/item/UploadItemImage.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
+import useItems from '@/composables/useItems'
 import type { ItemBlank } from '@/interfaces/item'
-import { useItemsStore } from '@/store/items'
+import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -45,7 +46,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const { t } = useI18n()
 const { loading } = useQuasar()
-const { createItem } = useItemsStore()
+const { createItem } = useItems()
+const { isOnline } = useUserStore()
 
 const newItem = reactive<ItemBlank>({
   name: '',

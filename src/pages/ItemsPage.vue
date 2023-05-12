@@ -1,8 +1,15 @@
 <template>
   <q-page class="q-pa-sm">
     <section v-if="items.length" class="actions">
-      <q-btn color="primary" icon="add" :to="{ name: 'Create item' }" :disable="items.length >= 20">
-        {{ t('common.add') }}
+      <q-btn
+        color="primary"
+        class="disabled"
+        :size="isMaxItems ? 'sm' : undefined"
+        :icon="isMaxItems ? undefined : 'add'"
+        :to="{ name: 'Create item' }"
+        :disable="isMaxItems"
+      >
+        {{ t(isMaxItems ? 'pages.items.itemsLimitReached' : 'common.add') }}
       </q-btn>
 
       <q-input
@@ -58,6 +65,7 @@
 <script setup lang="ts">
 import LaundryCard from '@/components/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
+import useItems from '@/composables/useItems'
 import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { computed, onBeforeMount, ref } from 'vue'
@@ -65,6 +73,7 @@ import { useI18n } from 'vue-i18n'
 
 const { loading } = useQuasar()
 const { t } = useI18n()
+const { items, getItems } = useItems()
 const itemsStore = useItemsStore()
 
 const search = ref('')
@@ -72,10 +81,9 @@ const searchTags = ref<Array<string>>([])
 
 onBeforeMount(() => {
   loading.isActive = true
-  itemsStore.getItems().finally(() => (loading.isActive = false))
+  getItems().finally(() => (loading.isActive = false))
 })
 
-const items = computed(() => itemsStore.items)
 const foundItems = computed(() => {
   return items.value.filter((item) => {
     for (const searchTag of searchTags.value) {
@@ -86,6 +94,8 @@ const foundItems = computed(() => {
     return false
   })
 })
+
+const isMaxItems = computed(() => itemsStore.items.length >= 20)
 
 const onAddSearchTag = () => {
   if (!search.value.trim()) {

@@ -35,39 +35,61 @@
             @click="router.push(`/items/edit/${currentItem?._id}`)"
           />
         </section>
+
+        <section v-if="currentItem._id.includes('offline-')" class="q-mt-sm flex">
+          <q-btn
+            class="full-width"
+            color="primary"
+            outline
+            :label="t('pages.item.saveOnServer')"
+            icon="sync"
+            @click="showSaveOnServerDialog"
+          />
+        </section>
       </section>
     </template>
+    <template v-else-if="!currentItem && !loading"> Item not found </template>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { laundryIconsMap } from '@/assets/laundryIcons'
+import useItems from '@/composables/useItems'
+import { db } from '@/db'
 import type { Item } from '@/interfaces/item'
+import type { UserSettings } from '@/interfaces/types'
 import { useItemsStore } from '@/store/items'
+import { useUserStore } from '@/store/user'
+import { useLocalStorage } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 import { onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
-const { loading, dialog } = useQuasar()
+const { loading, dialog, notify } = useQuasar()
 const router = useRouter()
 const { t } = useI18n()
 const route = useRoute()
 const itemsStore = useItemsStore()
+const { isOnline } = useUserStore()
+const { items, deleteItem, getItemById, createItem, uploadImage } = useItems()
+const userSettings = useLocalStorage<Partial<UserSettings>>('user-settings', {
+  offlineMode: false,
+})
 
 const currentItem = ref<Item>()
 
 onBeforeMount(async () => {
-  const item = itemsStore.items.find((item) => item._id === route.params.id)
-  if (item) {
-    currentItem.value = item
+  currentItem.value = items.value.find((item) => item._id === route.params.id)
+
+  if (currentItem.value) {
     return
   }
 
   loading.show()
   try {
-    if (window.navigator.onLine) {
-      currentItem.value = await itemsStore.getItemById({ _id: route.params.id as string })
+    if (isOnline) {
+      currentItem.value = await getItemById({ _id: route.params.id as string })
     } else {
       const items = await itemsStore.getItems()
       const item = items.find((_item) => _item._id === route.params.id)
@@ -87,9 +109,55 @@ const showDeleteDialog = () => {
     cancel: t('common.cancel'),
   }).onOk(() => {
     loading.show()
-    itemsStore
-      .deleteItem({ _id: route.params.id as string })
+    deleteItem({ _id: route.params.id as string })
       .then(() => router.push({ name: 'Items' }))
+      .finally(() => loading.hide())
+  })
+}
+
+const showSaveOnServerDialog = () => {
+  dialog({
+    title: t('pages.item.saveOnServer'),
+    message: currentItem.value?.name,
+    cancel: t('common.cancel'),
+    ok: t('common.save'),
+  }).onOk(async () => {
+    if (!currentItem.value) {
+      return
+    }
+
+    loading.show()
+
+    const isOfflineModeEnabled = userSettings.value.offlineMode
+    userSettings.value.offlineMode = false
+
+    const uploadedImages = []
+
+    if (currentItem.value.images.length) {
+      const offlineItem = await db.offlineItems.get({ _id: currentItem.value._id })
+      if (offlineItem?.images.length) {
+        const uploadItem = await db.upload.get({ _id: offlineItem.images[0] })
+        if (uploadItem?.file) {
+          const uploadedImage = await uploadImage(uploadItem.file)
+          if ('url' in uploadedImage) {
+            uploadedImages.push(uploadedImage.url)
+          }
+        }
+      }
+    }
+
+    createItem({ item: { ...currentItem.value, images: uploadedImages } })
+      .then(() => {
+        if (currentItem.value?._id) {
+          deleteItem({ _id: currentItem.value._id })
+        }
+        userSettings.value.offlineMode = isOfflineModeEnabled
+        notify({
+          color: 'positive',
+          message: t('notifications.itemSaved'),
+        })
+        router.push({ name: 'Items' })
+      })
       .finally(() => loading.hide())
   })
 }

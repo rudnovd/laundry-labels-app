@@ -57,16 +57,21 @@
       "signOut": "Would you like to sign out?",
       "languageSettings": "Language settings",
       "appLanguage": "App language",
-      "itemsTagsLanguage": "Items tags language"
+      "itemsTagsLanguage": "Items tags language",
+      "coreSettings": "Core settings",
+      "offlineMode": "Offline mode",
+      "offlineModeTooltip": "All items will be stored on the device. They can be saved to the server at any time after creation."
     },
     "item": {
-      "deleteItem": "Delete item?"
+      "deleteItem": "Delete item?",
+      "saveOnServer": "Save on server"
     },
     "items": {
       "searchTags": "Search tags",
       "noItemsAdded": "No items added yet",
       "addFirstItem": "Add first item",
-      "noItemsWithSelectedTags": "No items with selected tags"
+      "noItemsWithSelectedTags": "No items with selected tags",
+      "itemsLimitReached": "Items limit reached"
     },
     "error": {
       "pageNotFound": "Page not found",
@@ -143,6 +148,7 @@
     "signOutSuccess": "Sign out successfully",
     "sizeError": "Upload failed, the maximum size of the file is 15 MB",
     "typeError": "Wrong file type",
-    "captchaError": "Captcha required"
+    "captchaError": "Captcha required",
+    "itemSaved": "Item saved successfully"
   }
 }

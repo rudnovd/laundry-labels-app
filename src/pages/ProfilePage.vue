@@ -1,30 +1,29 @@
 <template>
   <q-page class="profile-page q-pa-sm">
     <section class="actions">
-      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('pages.profile.autoUpdateApp')" />
-
       <q-btn
-        v-if="isOnline && userStore.settings.installApp?.show"
+        v-if="isOnline && appSettingsStore.appInstallation?.showInstallButton"
         color="primary"
         :label="t('pages.profile.installApp')"
         icon="install_mobile"
-        @click="userStore.settings.installApp?.event.prompt()"
+        @click="appSettingsStore.appInstallation?.event.prompt()"
       />
+
+      <q-btn
+        v-if="isOnline && !userSettings.autoUpdateApp && appSettingsStore.appHasUpdate"
+        color="primary"
+        :label="t('pages.profile.updateApp')"
+        icon="upgrade"
+        @click="updateAppFromEvent"
+      />
+
+      <q-btn color="primary" :label="t('pages.profile.coreSettings')" icon="settings" @click="showCoreOptions = true" />
 
       <q-btn
         color="primary"
         :label="t('pages.profile.languageSettings')"
         icon="translate"
         @click="showLanguageOptions = true"
-      >
-      </q-btn>
-
-      <q-btn
-        v-if="isOnline && !userSettings.autoUpdateApp && userStore.settings.appHasUpdate"
-        color="primary"
-        :label="t('pages.profile.updateApp')"
-        icon="upgrade"
-        @click="updateAppFromEvent"
       />
 
       <q-btn
@@ -44,8 +43,37 @@
     </section>
 
     <teleport to="body">
+      <q-dialog v-model="showCoreOptions">
+        <q-card class="settings-card">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">{{ t('pages.profile.coreSettings') }}</div>
+            <q-space />
+            <q-btn v-close-popup icon="close" flat round dense />
+          </q-card-section>
+
+          <q-card-section>
+            <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('pages.profile.autoUpdateApp')" />
+            <div>
+              <q-toggle
+                v-model="userSettings.offlineMode"
+                class="q-mr-sm"
+                color="brand"
+                :label="t('pages.profile.offlineMode')"
+              />
+              <q-btn icon="help" flat round dense size="12px">
+                <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
+                  {{ t('pages.profile.offlineModeTooltip') }}
+                </q-tooltip>
+              </q-btn>
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </teleport>
+
+    <teleport to="body">
       <q-dialog v-model="showLanguageOptions">
-        <q-card class="language-settings-card">
+        <q-card class="settings-card">
           <q-card-section class="row items-center q-pb-none">
             <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
             <q-space />
@@ -86,6 +114,7 @@
 <script setup lang="ts">
 import { availableLocales, useLocale } from '@/i18n'
 import type { UserSettings } from '@/interfaces/types'
+import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
 import { useLocalStorage, useOnline } from '@vueuse/core'
 import { useQuasar } from 'quasar'
@@ -103,22 +132,21 @@ const langOptions = appLanguages.map((lang) => ({
 
 const { loading, dialog, notify, lang } = useQuasar()
 const userStore = useUserStore()
+const appSettingsStore = useAppSettingsStore()
 const router = useRouter()
 const { t } = useI18n()
 const isOnline = useOnline()
-const locale = useLocale()
-const userSettings = useLocalStorage<UserSettings>(
-  'user-settings',
-  {
-    autoUpdateApp: true,
-    items: {
-      standardTagsLocale: locale.value,
-    },
+const { locale } = useLocale()
+const userSettings = useLocalStorage<UserSettings>('user-settings', {
+  autoUpdateApp: true,
+  offlineMode: false,
+  items: {
+    standardTagsLocale: locale.value,
   },
-  { mergeDefaults: true }
-)
+})
 
 const showLanguageOptions = ref(false)
+const showCoreOptions = ref(false)
 
 const callLogoutDialog = () => {
   dialog({
@@ -168,7 +196,7 @@ const updateAppFromEvent = () => {
   }
 }
 
-.language-settings-card {
+.settings-card {
   width: clamp(300px, 30vw, 500px);
 }
 </style>

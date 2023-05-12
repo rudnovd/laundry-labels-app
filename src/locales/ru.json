@@ -57,16 +57,21 @@
       "signOut": "Хотите выйти?",
       "languageSettings": "Языковые настройки",
       "appLanguage": "Язык приложения",
-      "itemsTagsLanguage": "Язык тегов предметов"
+      "itemsTagsLanguage": "Язык тегов предметов",
+      "coreSettings": "Основные настройки",
+      "offlineMode": "Оффлайн режим",
+      "offlineModeTooltip": "Все предметы будут храниться на устройстве. Они могут быть сохранены на сервере в любое время после создания."
     },
     "item": {
-      "deleteItem": "Удалить предмет?"
+      "deleteItem": "Удалить предмет?",
+      "saveOnServer": "Сохранить на сервере"
     },
     "items": {
       "searchTags": "Поиск по тегам",
       "noItemsAdded": "Пока не добавлено ни одного предмета",
       "addFirstItem": "Добавить первый предмет",
-      "noItemsWithSelectedTags": "Нет предметов с указанными тегами"
+      "noItemsWithSelectedTags": "Нет предметов с указанными тегами",
+      "itemsLimitReached": "Достигнут лимит предметов"
     },
     "error": {
       "pageNotFound": "Страница не найдена",
@@ -143,6 +148,7 @@
     "signOutSuccess": "Успешный выход",
     "sizeError": "Ошибка загрузки, максимальный размер файла 15 МБ",
     "typeError": "Неверный тип файла",
-    "captchaError": "Введите Captcha"
+    "captchaError": "Введите Captcha",
+    "itemSaved": "Предмет сохранен успешно"
   }
 }

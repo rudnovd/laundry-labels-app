@@ -1,29 +1,21 @@
 import type { User, UserLoginResponse, UserRefreshTokenResponse } from '@/interfaces/user'
 import request from '@/services/request'
+import { useOnline } from '@vueuse/core'
 import type { JwtPayload } from 'jwt-decode'
 import jwtDecode from 'jwt-decode'
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>
-}
+import type { Ref } from 'vue'
 
 interface UserState {
   user: User | null
-  settings: {
-    appHasUpdate?: boolean
-    installApp?: {
-      event: BeforeInstallPromptEvent
-      show: boolean
-    }
-  }
+  isOnline: Ref<boolean>
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
-    settings: {},
+    isOnline: useOnline(),
   }),
   actions: {
     async signIn(payload: { email: string; password: string; token: string }) {

@@ -26,6 +26,7 @@
     "@hcaptcha/vue3-hcaptcha": "^1.2.1",
     "@quasar/extras": "^1.16.2",
     "@vueuse/core": "^10.0.2",
+    "dexie": "^3.2.3",
     "jwt-decode": "^3.1.2",
     "ky": "^0.33.3",
     "pinia": "^2.0.34",

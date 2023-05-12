@@ -44,7 +44,7 @@ export const useItemsStore = defineStore('items', {
       const url = await request
         .extend({ timeout: SIXTY_SECONDS })
         .post('/api/upload/items', { body: formData })
-        .json<{ url: string }>()
+        .json<{ url: Readonly<string> }>()
       return url
     },
   },

@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useLocale } from './i18n'
 import type { UserSettings } from './interfaces/types'
-import { useUserStore } from './store/user'
+import { useAppSettingsStore } from './store/settings'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -22,14 +22,26 @@ let icons: { [key: string]: string } = {}
 laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.group}/${icon._id}.svg`))
 
 const $q = useQuasar()
-const userStore = useUserStore()
 const router = useRouter()
 const isBrowser = window.matchMedia('(display-mode: browser)').matches
-const userSettings = useLocalStorage<Readonly<Partial<UserSettings>>>('user-settings', {})
 const { updateServiceWorker, needRefresh } = useRegisterSW({
   immediate: true,
 })
-useLocale()
+const { t } = useI18n()
+const { locale, initializeLocale } = useLocale()
+initializeLocale()
+const appSettingsStore = useAppSettingsStore()
+const userSettings = useLocalStorage<UserSettings>(
+  'user-settings',
+  {
+    autoUpdateApp: true,
+    offlineMode: false,
+    items: {
+      standardTagsLocale: locale.value,
+    },
+  },
+  { mergeDefaults: true }
+)
 
 $q.iconMapFn = (iconName) => {
   const icon = icons[iconName]
@@ -56,28 +68,27 @@ watchOnce(needRefresh, () => {
       updateApp()
     }
   } else {
-    userStore.settings.appHasUpdate = true
+    appSettingsStore.appHasUpdate = true
   }
 })
 
 const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
   event.preventDefault()
-  userStore.settings.installApp = {
-    show: true,
+  appSettingsStore.appInstallation = {
+    showInstallButton: true,
     event,
   }
 }
 
-const { t } = useI18n()
 const onAppInstalled = () => {
   $q.notify({ type: 'positive', message: t('notifications.appInstalled') })
-  delete userStore.settings.installApp
+  delete appSettingsStore.appInstallation
 }
 
 const updateApp = () => {
   $q.loading.show({ message: 'Updating app...', spinner: QSpinnerGears, ignoreDefaults: true })
-  if (userStore?.settings?.appHasUpdate) {
-    userStore.settings.appHasUpdate = false
+  if (appSettingsStore?.appHasUpdate) {
+    appSettingsStore.appHasUpdate = false
   }
   updateServiceWorker()
 }

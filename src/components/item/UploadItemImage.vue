@@ -10,7 +10,7 @@
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
     <q-img
       v-else-if="images?.length"
-      :src="images[0]"
+      :src="tmpImageUrl ? tmpImageUrl : images[0]"
       height="200px"
       width="200px"
       fit="contain"
@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useItemsStore } from '@/store/items'
+import useItems from '@/composables/useItems'
 import { useFileDialog } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
@@ -38,24 +38,32 @@ const props = withDefaults(
 )
 const emit = defineEmits<{
   (e: 'uploaded', url: string): void
+  (e: 'uploaded', id: string): void
   (e: 'remove', url: string): void
 }>()
 
 const { t } = useI18n()
 const { notify } = useQuasar()
 const { open, reset, onChange } = useFileDialog({ accept: 'image/*', multiple: false })
-const { uploadImage } = useItemsStore()
+const { uploadImage } = useItems()
 
 const isLoading = ref(false)
+const tmpImageUrl = ref('')
 
 const onRemoveImage = () => {
   emit('remove', props.images[0])
+  if (props.images[0].includes('offline-')) {
+    URL.revokeObjectURL(props.images[0])
+  }
+  if (tmpImageUrl.value) {
+    URL.revokeObjectURL(tmpImageUrl.value)
+  }
   reset()
 }
 
 onChange((files) => {
   if (!files) return
-  const uploadPromises: Array<Promise<{ url: string }>> = []
+  const uploadPromises: Array<Promise<{ url: string } | { _id: string; file: File }>> = []
   isLoading.value = true
 
   for (const file of files) {
@@ -69,11 +77,20 @@ onChange((files) => {
 
   Promise.allSettled(uploadPromises)
     .then((result) => {
-      result.map((promiseResult) => {
-        if (promiseResult.status === 'fulfilled') {
-          emit('uploaded', promiseResult.value.url)
+      for (const promiseResult of result) {
+        if (promiseResult.status === 'rejected') {
+          continue
         }
-      })
+
+        if ('file' in promiseResult.value) {
+          if (tmpImageUrl.value) {
+            URL.revokeObjectURL(tmpImageUrl.value)
+          }
+          tmpImageUrl.value = URL.createObjectURL(promiseResult.value.file)
+        }
+
+        emit('uploaded', 'url' in promiseResult.value ? promiseResult.value.url : promiseResult.value._id)
+      }
     })
     .finally(() => (isLoading.value = false))
 })

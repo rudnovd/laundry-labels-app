@@ -1,33 +1,36 @@
 <template>
-  <q-page v-if="!loading.isActive" class="create-item-page q-pa-md">
-    <section class="info-container">
-      <UploadItemImage
-        :images="editingItem.images"
-        @uploaded="editingItem.images.push($event)"
-        @remove="editingItem.images = editingItem.images.filter((url) => url !== $event)"
-      />
-      <q-input v-model="editingItem.name" class="q-mb-lg" filled :label="t('common.name')" />
-      <InputItemTags v-model="editingItem.tags" />
-    </section>
+  <q-page class="create-item-page q-pa-md">
+    <template v-if="!loading.isActive && currentItem?._id">
+      <section class="info-container">
+        <UploadItemImage
+          :images="editingItem.images"
+          @uploaded="editingItem.images.push($event)"
+          @remove="editingItem.images = editingItem.images.filter((url) => url !== $event)"
+        />
+        <q-input v-model="editingItem.name" class="q-mb-lg" filled :label="t('common.name')" />
+        <InputItemTags v-model="editingItem.tags" />
+      </section>
 
-    <section class="washing-icons-container">
-      <LaundryIconsGroup
-        v-for="(icons, group) in laundryIconsByGroup"
-        :key="group"
-        :group="{ name: group.toString(), icons: icons }"
-        :value="selectedLaundryIcons[group]"
-        @remove="editingItem.icons = editingItem.icons.filter((icon) => icon !== $event._id)"
-        @change="editingItem.icons.push($event._id)"
-      />
-    </section>
+      <section class="washing-icons-container">
+        <LaundryIconsGroup
+          v-for="(icons, group) in laundryIconsByGroup"
+          :key="group"
+          :group="{ name: group.toString(), icons: icons }"
+          :value="selectedLaundryIcons[group]"
+          @remove="editingItem.icons = editingItem.icons.filter((icon) => icon !== $event._id)"
+          @change="editingItem.icons.push($event._id)"
+        />
+      </section>
 
-    <q-btn
-      color="positive"
-      class="submit-button"
-      :label="t('common.save')"
-      :disable="loading.isActive"
-      @click="onSubmit"
-    />
+      <q-btn
+        color="positive"
+        class="submit-button"
+        :label="t('common.save')"
+        :disable="loading.isActive"
+        @click="onSubmit"
+      />
+    </template>
+    <template v-else-if="!loading.isActive && !currentItem?._id"> Item not found </template>
   </q-page>
 </template>
 
@@ -36,9 +39,9 @@ import { laundryIconsByGroup, laundryIconsMap } from '@/assets/laundryIcons'
 import InputItemTags from '@/components/item/InputItemTags.vue'
 import UploadItemImage from '@/components/item/UploadItemImage.vue'
 import LaundryIconsGroup from '@/components/LaundryIconsGroup.vue'
+import useItems from '@/composables/useItems'
 import type { Item, ItemBlank } from '@/interfaces/item'
 import type { LaundryIcon } from '@/interfaces/laundryIcon'
-import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -48,10 +51,9 @@ const { loading } = useQuasar()
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
-const itemsStore = useItemsStore()
+const { items, getItemById, editItem } = useItems()
 
-const userItems = computed(() => itemsStore.items)
-
+const currentItem = ref(items.value.find((userItem: Item) => userItem._id === route.params.id))
 const editingItem = ref<ItemBlank>({
   name: '',
   icons: [],
@@ -59,24 +61,25 @@ const editingItem = ref<ItemBlank>({
   tags: [],
 })
 
-const currentItem = userItems.value.find((userItem: Item) => userItem._id === route.params.id)
-if (!currentItem) {
+if (!currentItem.value) {
   loading.show()
-  itemsStore
-    .getItemById({ _id: route.params.id as string })
+  getItemById({ _id: route.params.id as string })
     .then((item) => {
-      const { name, icons, images, tags } = item
-      editingItem.value = {
-        ...editingItem.value,
-        name,
-        icons,
-        images,
-        tags,
+      if (item) {
+        currentItem.value = item
+        const { name, icons, images, tags } = item
+        editingItem.value = {
+          ...editingItem.value,
+          name,
+          icons,
+          images,
+          tags,
+        }
       }
     })
     .finally(() => loading.hide())
 } else {
-  const { name, icons, images, tags } = currentItem
+  const { name, icons, images, tags } = currentItem.value
   editingItem.value = {
     ...editingItem.value,
     name,
@@ -96,8 +99,7 @@ const selectedLaundryIcons = computed(() => {
 
 const onSubmit = () => {
   loading.show()
-  itemsStore
-    .editItem({ item: { ...editingItem.value, _id: route.params.id as string } })
+  editItem({ item: { ...editingItem.value, _id: route.params.id as string } })
     .then(() => router.push({ name: 'Items' }))
     .finally(() => loading.hide())
 }

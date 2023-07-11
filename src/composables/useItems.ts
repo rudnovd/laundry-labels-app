@@ -21,14 +21,15 @@ export default function useItems() {
     return id.includes('offline-')
   }
 
-  function getItems() {
+  async function getItems() {
     const requests = [offlineItemsStore.getItems()]
 
     if (!userSettings.value.offlineMode) {
       requests.push(itemsStore.getItems())
     }
 
-    return Promise.all(requests)
+    const items = await Promise.all(requests)
+    return items.flat()
   }
 
   async function getItemById(payload: { _id: string }) {

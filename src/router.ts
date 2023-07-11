@@ -84,40 +84,6 @@ const publicRoutes: Array<RouteRecordRaw> = [
   },
 ]
 
-const userRoutes: Array<RouteRecordRaw> = [
-  {
-    path: 'items',
-    name: 'Items',
-    component: () => import('@/pages/ItemsPage.vue'),
-  },
-  {
-    path: 'items/create',
-    name: 'Create item',
-    component: () => import('@/pages/items/CreateItemPage.vue'),
-  },
-  {
-    path: 'items/edit/:id',
-    name: 'Edit item',
-    component: () => import('@/pages/items/EditItemPage.vue'),
-  },
-  {
-    path: 'items/:id',
-    name: 'Item',
-    component: () => import('@/pages/items/ItemPage.vue'),
-  },
-  {
-    path: 'profile',
-    name: 'Profile',
-    component: () => import('@/pages/ProfilePage.vue'),
-  },
-
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'Page not found',
-    component: () => import('@/pages/ErrorPage.vue'),
-  },
-]
-
 const router = createRouter({
   history: createWebHistory('/'),
   routes: [
@@ -130,9 +96,47 @@ const router = createRouter({
       },
     },
     {
-      path: '/:pathMatch(.*)*',
+      path: '/items',
       component: () => import('@/layouts/UserLayout.vue'),
-      children: userRoutes,
+      children: [
+        {
+          path: '',
+          name: 'Items',
+          component: () => import('@/pages/ItemsPage.vue'),
+        },
+        {
+          path: 'create',
+          name: 'Create item',
+          component: () => import('@/pages/items/CreateItemPage.vue'),
+        },
+        {
+          path: 'edit/:id',
+          name: 'Edit item',
+          component: () => import('@/pages/items/EditItemPage.vue'),
+        },
+        {
+          path: ':id',
+          name: 'Item',
+          component: () => import('@/pages/items/ItemPage.vue'),
+        },
+      ],
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: () => import('@/layouts/UserLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'Profile',
+          component: () => import('@/pages/ProfilePage.vue'),
+        },
+      ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'Page not found',
+      component: () => import('@/pages/ErrorPage.vue'),
     },
   ],
 })

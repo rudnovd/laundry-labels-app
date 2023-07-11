@@ -37,6 +37,7 @@ module.exports = {
       },
     ],
     'vue/custom-event-name-casing': ['error', 'kebab-case'],
+    'vue/component-name-in-template-casing': ['error', 'kebab-case'],
     'vue/html-comment-content-spacing': [process.env.NODE_ENV === 'production' ? 'error' : 'warn', 'always'],
     'vue/no-reserved-component-names': [
       'error',

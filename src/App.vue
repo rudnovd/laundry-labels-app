@@ -9,7 +9,7 @@ import { QSpinnerGears, useQuasar } from 'quasar'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRouter, type RouteRecordName } from 'vue-router'
 import { useLocale } from './i18n'
 import type { UserSettings } from './interfaces/types'
 import { useAppSettingsStore } from './store/settings'
@@ -42,6 +42,13 @@ const userSettings = useLocalStorage<UserSettings>(
   },
   { mergeDefaults: true }
 )
+const demoStorage = useLocalStorage(
+  'demo',
+  {
+    active: false,
+  },
+  { writeDefaults: false }
+)
 
 $q.iconMapFn = (iconName) => {
   const icon = icons[iconName]
@@ -63,10 +70,14 @@ onUnmounted(() => {
 
 watchOnce(needRefresh, () => {
   if (userSettings.value.autoUpdateApp) {
-    const ignoreUpdateInPages = ['Create item', 'Edit item']
-    if (router.currentRoute.value.name && !ignoreUpdateInPages.includes(router.currentRoute.value.name as string)) {
-      updateApp()
+    const { name } = router.currentRoute.value
+    const ignoreUpdateInPages: ReadonlyArray<RouteRecordName> = ['Create item', 'Edit item', 'Sign in', 'Sign up']
+
+    if (!name || ignoreUpdateInPages.includes(name.toString()) || demoStorage.value.active) {
+      return
     }
+
+    updateApp()
   } else {
     appSettingsStore.appHasUpdate = true
   }

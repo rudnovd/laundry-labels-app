@@ -6,7 +6,7 @@
     {{ t('components.uploadItemImage.removePhoto') }}
   </q-btn>
 
-  <div class="flex justify-center q-mb-md">
+  <div v-if="isLoading || images.length" class="flex justify-center q-mb-md">
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
     <q-img
       v-else-if="images?.length"

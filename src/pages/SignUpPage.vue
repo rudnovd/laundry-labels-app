@@ -32,7 +32,7 @@
           lazy-rules
           :rules="[(v) => v?.length >= 6 || t('pages.signUp.validation.email')]"
         />
-        <VueHcaptcha
+        <vue-hcaptcha
           v-if="showCaptcha"
           ref="captchaForm"
           class="q-mb-md full-width"

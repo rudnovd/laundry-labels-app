@@ -32,7 +32,7 @@
           lazy-rules
           :rules="[(v) => v?.length || t('pages.signIn.validation.password')]"
         />
-        <VueHcaptcha
+        <vue-hcaptcha
           v-if="showCaptcha"
           ref="captchaForm"
           class="q-mb-md full-width"

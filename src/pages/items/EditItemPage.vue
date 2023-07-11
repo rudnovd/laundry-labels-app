@@ -2,17 +2,17 @@
   <q-page class="create-item-page q-pa-md">
     <template v-if="!loading.isActive && currentItem?._id">
       <section class="info-container">
-        <UploadItemImage
+        <upload-item-image
           :images="editingItem.images"
           @uploaded="editingItem.images.push($event)"
           @remove="editingItem.images = editingItem.images.filter((url) => url !== $event)"
         />
         <q-input v-model="editingItem.name" class="q-mb-lg" filled :label="t('common.name')" />
-        <InputItemTags v-model="editingItem.tags" />
+        <input-item-tags v-model="editingItem.tags" />
       </section>
 
       <section class="washing-icons-container">
-        <LaundryIconsGroup
+        <laundry-icons-group
           v-for="(icons, group) in laundryIconsByGroup"
           :key="group"
           :group="{ name: group.toString(), icons: icons }"

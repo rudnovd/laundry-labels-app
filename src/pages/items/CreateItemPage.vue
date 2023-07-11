@@ -10,7 +10,7 @@
       <input-item-tags v-model="newItem.tags" />
     </section>
 
-    <section class="washing-icons-container">
+    <section ref="laundryIconsContainer" class="washing-icons-container">
       <laundry-icons-group
         v-for="(icons, group) in laundryIconsByGroup"
         :key="group"
@@ -39,16 +39,17 @@ import useItems from '@/composables/useItems'
 import type { ItemBlank } from '@/interfaces/item'
 import { useUserStore } from '@/store/user'
 import { useQuasar } from 'quasar'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { t } = useI18n()
-const { loading } = useQuasar()
+const { loading, notify } = useQuasar()
 const { createItem } = useItems()
 const { isOnline } = useUserStore()
 
+const laundryIconsContainer = ref<HTMLElement | null>(null)
 const newItem = reactive<ItemBlank>({
   name: '',
   icons: [],
@@ -57,6 +58,14 @@ const newItem = reactive<ItemBlank>({
 })
 
 const onSubmit = () => {
+  if (!newItem.icons.length) {
+    laundryIconsContainer?.value?.scrollIntoView({ behavior: 'smooth' })
+    return notify({
+      type: 'negative',
+      message: t('createItem.validation.iconsRequired'),
+    })
+  }
+
   loading.show()
   createItem({ item: newItem })
     .then(() => router.push({ name: 'Items' }))

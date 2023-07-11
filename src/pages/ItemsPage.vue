@@ -39,11 +39,11 @@
 
     <section class="laundry-cards">
       <template v-if="loading.isActive">
-        <LaundryCardSkeleton v-for="skeleton in 4" :key="skeleton" />
+        <laundry-card-skeleton v-for="skeleton in 4" :key="skeleton" />
       </template>
 
       <template v-else-if="items.length && !searchTags.length">
-        <LaundryCard v-for="item in items" :key="item._id" :item="item" />
+        <laundry-card v-for="item in items" :key="item._id" :item="item" />
       </template>
 
       <div v-else-if="!items.length && !foundItems.length" class="flex column items-center">
@@ -52,7 +52,7 @@
       </div>
 
       <template v-else-if="foundItems.length">
-        <LaundryCard v-for="item in foundItems" :key="item._id" :item="item" />
+        <laundry-card v-for="item in foundItems" :key="item._id" :item="item" />
       </template>
 
       <div v-else-if="searchTags.length && !foundItems.length" class="flex column items-center">

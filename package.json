@@ -62,7 +62,7 @@
     "stylelint-prettier": "^3.0.0",
     "stylelint-scss": "^4.6.0",
     "typescript": "^5.0.4",
-    "vite": "^4.2.1",
+    "vite": "^4.2.3",
     "vite-plugin-pwa": "^0.14.7",
     "vite-svg-loader": "^4.0.0",
     "vue-eslint-parser": "^9.1.1",

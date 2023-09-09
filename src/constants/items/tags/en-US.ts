@@ -23,4 +23,8 @@ export default [
     group: 'Underwear and nightwear',
     items: ['underwear', 'socks', 'pyjamas', 'thermal'],
   },
+  {
+    group: 'Bedding',
+    items: ['sheet', 'blanket', 'blanket cover', 'pillow', 'pillowcase'],
+  },
 ]

@@ -150,5 +150,33 @@
     "typeError": "Неверный тип файла",
     "captchaError": "Введите Captcha",
     "itemSaved": "Предмет сохранен успешно"
+  },
+  "demo": {
+    "buttons": {
+      "next": "Далее",
+      "finish": "Завершить экскурсию"
+    },
+    "notification": {
+      "startTour": "Хотите начать экскурсию?",
+      "continueTour": "Продолжить экскурсию?",
+      "tourCompleted": "Экскурсия завершена",
+      "buttons": {
+        "start": "Начать",
+        "skip": "Пропустить",
+        "continue": "Продолжить"
+      }
+    },
+    "tours": {
+      "createItem": {
+        "steps": {
+          "addFirstItem": "Добавим первый предмет",
+          "enterItemName": "Введите название предмета",
+          "selectTags": "Выберите теги из предоставленного списка",
+          "enterCustomTags": "Вы также можете ввести собственные теги",
+          "selectIcons": "Выберите значки с этикетки по уходу",
+          "confirmItemCreation": "Подтвердите создание предмета"
+        }
+      }
+    }
   }
 }

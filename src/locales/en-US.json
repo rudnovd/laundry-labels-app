@@ -150,5 +150,33 @@
     "typeError": "Wrong file type",
     "captchaError": "Captcha required",
     "itemSaved": "Item saved successfully"
+  },
+  "demo": {
+    "buttons": {
+      "next": "Next",
+      "finish": "Finish tour"
+    },
+    "notification": {
+      "startTour": "Would you like to start the tour?",
+      "continueTour": "Continue the tour?",
+      "tourCompleted": "Tour completed",
+      "buttons": {
+        "start": "Start",
+        "skip": "Skip",
+        "continue": "Continue"
+      }
+    },
+    "tours": {
+      "createItem": {
+        "steps": {
+          "addFirstItem": "Let's add the first item",
+          "enterItemName": "Enter the name of the item",
+          "selectTags": "Choose tags from the provided list",
+          "enterCustomTags": "You can also enter custom tags",
+          "selectIcons": "Select the icons from the care label",
+          "confirmItemCreation": "Confirm item creation"
+        }
+      }
+    }
   }
 }

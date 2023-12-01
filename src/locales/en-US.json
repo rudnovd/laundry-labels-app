@@ -60,7 +60,8 @@
       "itemsTagsLanguage": "Items tags language",
       "coreSettings": "Core settings",
       "offlineMode": "Offline mode",
-      "offlineModeTooltip": "All items will be stored on the device. They can be saved to the server at any time after creation."
+      "offlineModeTooltip": "All items will be stored on the device. They can be saved to the server at any time after creation.",
+      "signingOut": "Signing out"
     },
     "item": {
       "deleteItem": "Delete item?",
@@ -72,6 +73,11 @@
       "addFirstItem": "Add first item",
       "noItemsWithSelectedTags": "No items with selected tags",
       "itemsLimitReached": "Items limit reached"
+    },
+    "createItem": {
+      "validation": {
+        "iconsRequired": "At least one icon is required"
+      }
     },
     "error": {
       "pageNotFound": "Page not found",

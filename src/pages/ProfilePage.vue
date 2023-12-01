@@ -154,7 +154,7 @@ const callLogoutDialog = () => {
     message: t('pages.profile.signOut'),
     cancel: t('common.cancel'),
   }).onOk(() => {
-    loading.show()
+    loading.show({ message: `${t('pages.profile.signingOut')}...` })
     userStore
       .signOut()
       .then(() => {

@@ -1,3 +1,4 @@
+import type { UserSettings } from '@/interfaces/types'
 import type { User, UserLoginResponse, UserRefreshTokenResponse } from '@/interfaces/user'
 import request from '@/services/request'
 import { useLocalStorage, useOnline, type RemovableRef } from '@vueuse/core'
@@ -10,12 +11,20 @@ import type { Ref } from 'vue'
 interface UserState {
   user: User | null
   isOnline: Ref<boolean>
+  settings: RemovableRef<Partial<UserSettings>>
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
     isOnline: useOnline(),
+    settings: useLocalStorage<Partial<UserSettings>>(
+      'user-settings',
+      {
+        offlineMode: true,
+      },
+      { mergeDefaults: true },
+    ),
   }),
   actions: {
     async signIn(payload: { email: string; password: string; token: string }) {

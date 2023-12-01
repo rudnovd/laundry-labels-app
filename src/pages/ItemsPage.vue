@@ -63,13 +63,14 @@
 </template>
 
 <script setup lang="ts">
-import LaundryCard from '@/components/cards/LaundryCard.vue'
-import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
-import useItems from '@/composables/useItems'
-import { useItemsStore } from '@/store/items'
 import { useQuasar } from 'quasar'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useItemsStore } from '@/store/items'
+import LaundryCard from '@/components/cards/LaundryCard.vue'
+import LaundryCardSkeleton from '@/components/cards/LaundryCardSkeleton.vue'
+import useDemoMode from '@/composables/useDemoMode'
+import useItems from '@/composables/useItems'
 
 const { loading } = useQuasar()
 const { t } = useI18n()
@@ -79,19 +80,26 @@ const itemsStore = useItemsStore()
 const search = ref('')
 const searchTags = ref<Array<string>>([])
 
+const itemsPromise = getItems()
 onBeforeMount(() => {
   loading.isActive = true
-  getItems().finally(() => (loading.isActive = false))
+
+  if (localStorage.getItem('demo')) {
+    let { showTourNotification } = useDemoMode()
+    itemsPromise.then((items) => {
+      if (!items.length) {
+        showTourNotification()
+      }
+    })
+  }
+  itemsPromise.finally(() => (loading.isActive = false))
 })
 
 const foundItems = computed(() => {
   return items.value.filter((item) => {
     for (const searchTag of searchTags.value) {
-      if (item.tags.includes(searchTag)) {
-        return true
-      }
+      return item.tags.includes(searchTag)
     }
-    return false
   })
 })
 
@@ -131,7 +139,6 @@ const onRemoveSearchTag = (tag: string) => {
 .search-tags {
   max-height: 215px;
   margin-bottom: 0.5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
 }
 </style>

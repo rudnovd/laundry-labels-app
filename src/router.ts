@@ -1,5 +1,6 @@
 import { isAccessTokenValid } from '@/services/jwt'
 import { useUserStore } from '@/store/user'
+import { useLocalStorage } from '@vueuse/core'
 import { LocalStorage } from 'quasar'
 import {
   createRouter,
@@ -8,6 +9,7 @@ import {
   type RouteLocationNormalized,
   type RouteRecordRaw,
 } from 'vue-router'
+import type { LocalStorageDemo, UserSettings } from './interfaces/types'
 
 function isUserSignedIn() {
   const userStore = useUserStore()
@@ -123,7 +125,6 @@ const router = createRouter({
     },
     {
       path: '/profile',
-      name: 'Profile',
       component: () => import('@/layouts/UserLayout.vue'),
       children: [
         {
@@ -139,30 +140,54 @@ const router = createRouter({
       component: () => import('@/pages/ErrorPage.vue'),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return new Promise((resolve) => {
+      if (savedPosition) {
+        return resolve(savedPosition)
+      } else if (to.hash) {
+        return document.querySelector(to.hash) ?? resolve({ el: to.hash })
+      } else {
+        return resolve({ left: 0, top: 0 })
+      }
+    })
+  },
 })
 
-router.beforeEach((to, _, next) => {
+router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
+  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken') ?? false
   const isUserSignedIn = !!userStore.user?._id
+  const demoStorage = useLocalStorage<Partial<LocalStorageDemo>>(
+    'demo',
+    {},
+    { listenToStorageChanges: false, writeDefaults: false },
+  )
+  const userSettings = useLocalStorage<Partial<UserSettings>>('user-settings', {})
 
-  if (isUserSignedIn) {
+  const isFirstVisitToDemo = to.query.demo && !demoStorage.value?.active
+  if (isFirstVisitToDemo) {
+    localStorage.setItem('demo', JSON.stringify({ active: false, page: null, step: null }))
+    useLocalStorage<Partial<UserSettings>>('user-settings', { offlineMode: !hasRefreshToken })
+  }
+
+  const isDemoActive = demoStorage.value?.active
+  const isOfflineMode = userSettings.value.offlineMode
+  const isPublicRoute = publicRoutes.some((route) => route.name === to.name)
+  if (isPublicRoute || isFirstVisitToDemo || isDemoActive || isUserSignedIn || isOfflineMode) {
+    return next()
+  }
+
+  if (!hasRefreshToken) {
+    return next({ name: 'Sign in' })
+  }
+
+  if (!window.navigator.onLine) {
     next()
+  } else if (isAccessTokenValid()) {
+    const auth = userStore.signInFromAccessToken()
+    next(auth.user?._id ? to.path : { name: 'Sign in' })
   } else {
-    if (publicRoutes.some((route) => route.name === to.name)) {
-      next()
-    } else if (hasRefreshToken) {
-      if (!window.navigator.onLine) {
-        next()
-      } else if (isAccessTokenValid()) {
-        const auth = userStore.signInFromAccessToken()
-        next(auth.user?._id ? to.path : { name: 'Sign in' })
-      } else {
-        userStore.signInFromRefreshToken().then((response) => (response.user?._id ? next() : next({ name: 'Sign in' })))
-      }
-    } else {
-      next({ name: 'Sign in' })
-    }
+    userStore.signInFromRefreshToken().then((response) => (response.user?._id ? next() : next({ name: 'Sign in' })))
   }
 })
 

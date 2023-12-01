@@ -15,7 +15,7 @@
         <h2>{{ t('pages.home.subtitle') }}</h2>
         <section class="app-buttons">
           <q-btn
-            :to="{ name: 'Items' }"
+            :to="{ name: 'Items', query: { demo: 'true' } }"
             color="positive"
             :label="isBrowser ? t('pages.home.tryInBrowser') : t('common.continue')"
           />

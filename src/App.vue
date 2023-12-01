@@ -11,7 +11,7 @@ import { onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, type RouteRecordName } from 'vue-router'
 import { useLocale } from './i18n'
-import type { UserSettings } from './interfaces/types'
+import type { LocalStorageDemo, UserSettings } from './interfaces/types'
 import { useAppSettingsStore } from './store/settings'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -40,14 +40,12 @@ const userSettings = useLocalStorage<UserSettings>(
       standardTagsLocale: locale.value,
     },
   },
-  { mergeDefaults: true }
+  { mergeDefaults: true },
 )
-const demoStorage = useLocalStorage(
+const demoStorage = useLocalStorage<Partial<LocalStorageDemo>>(
   'demo',
-  {
-    active: false,
-  },
-  { writeDefaults: false }
+  {},
+  { listenToStorageChanges: false, writeDefaults: false },
 )
 
 $q.iconMapFn = (iconName) => {

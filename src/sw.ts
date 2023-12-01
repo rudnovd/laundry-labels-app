@@ -29,7 +29,7 @@ registerRoute(
       }),
     ],
   }),
-  'GET'
+  'GET',
 )
 
 // Cache all uploaded user images
@@ -43,7 +43,7 @@ registerRoute(
       }),
     ],
   }),
-  'GET'
+  'GET',
 )
 
 // Cache all uploaded user images
@@ -57,7 +57,7 @@ registerRoute(
       }),
     ],
   }),
-  'GET'
+  'GET',
 )
 
 registerRoute(
@@ -70,7 +70,7 @@ registerRoute(
       }),
     ],
   }),
-  'GET'
+  'GET',
 )
 
 registerRoute(
@@ -82,5 +82,5 @@ registerRoute(
         statuses: [0, 200],
       }),
     ],
-  })
+  }),
 )

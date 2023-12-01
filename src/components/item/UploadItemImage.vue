@@ -34,7 +34,7 @@ const props = withDefaults(
   }>(),
   {
     images: () => [],
-  }
+  },
 )
 const emit = defineEmits<{
   (e: 'uploaded', url: string): void

@@ -47,7 +47,7 @@ const props = withDefaults(
   defineProps<{
     modelValue: Array<string>
   }>(),
-  {}
+  {},
 )
 const emit = defineEmits<{
   (e: 'update:modelValue', tags: Array<string>): void
@@ -113,7 +113,7 @@ const onClickTag = (tag: string) => {
   if (props.modelValue.includes(tag)) {
     emit(
       'update:modelValue',
-      props.modelValue.filter((itemTag) => itemTag !== tag)
+      props.modelValue.filter((itemTag) => itemTag !== tag),
     )
   } else if (props.modelValue.length < MAX_TAGS_COUNT) {
     emit('update:modelValue', [...props.modelValue, tag])

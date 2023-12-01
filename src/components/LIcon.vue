@@ -9,7 +9,7 @@ const props = withDefaults(
   defineProps<{
     icon: string
   }>(),
-  {}
+  {},
 )
 const attrs = useAttrs()
 

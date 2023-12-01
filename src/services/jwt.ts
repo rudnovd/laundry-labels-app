@@ -1,4 +1,4 @@
-import jwt_decode, { type JwtPayload } from 'jwt-decode'
+import { jwtDecode, type JwtPayload } from 'jwt-decode'
 import { date, LocalStorage } from 'quasar'
 
 export function isAccessTokenValid() {
@@ -8,7 +8,7 @@ export function isAccessTokenValid() {
   }
 
   const MAX_REQUEST_TIME_SECONDS = 30
-  const jwtPayload = jwt_decode<JwtPayload>(accessToken)
+  const jwtPayload = jwtDecode<JwtPayload>(accessToken)
   const tokenExpireTime = jwtPayload.exp ?? 0
   const currentTime = Number(date.formatDate(Date.now(), 'X'))
 

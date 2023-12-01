@@ -37,7 +37,7 @@ const props = withDefaults(
   }>(),
   {
     value: null,
-  }
+  },
 )
 const emit = defineEmits<{
   (e: 'change', icon: LaundryIcon): void
@@ -109,7 +109,9 @@ const onClickIcon = (icon: LaundryIcon) => {
       font-weight: 500;
       background-color: rgba($grey-6, 0.3);
       border: 1px solid $grey-6;
-      transition: border 0.25s linear, background-color 0.25s linear;
+      transition:
+        border 0.25s linear,
+        background-color 0.25s linear;
     }
 
     &.icon-transparent {

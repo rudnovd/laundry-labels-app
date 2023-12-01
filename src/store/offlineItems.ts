@@ -84,7 +84,7 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
     async editItem(payload: { item: Omit<Item, 'updatedAt' | 'createdAt'> }) {
       await db.offlineItems.update(
         payload.item._id,
-        Dexie.deepClone({ ...payload.item, updatedAt: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS') })
+        Dexie.deepClone({ ...payload.item, updatedAt: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS') }),
       )
 
       const item = await db.offlineItems.get({ _id: payload.item._id })

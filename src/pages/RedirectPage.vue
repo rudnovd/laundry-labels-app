@@ -11,7 +11,7 @@ const props = withDefaults(
     text: string
     path: string
   }>(),
-  {}
+  {},
 )
 
 const router = useRouter()

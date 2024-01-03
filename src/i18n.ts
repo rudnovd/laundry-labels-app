@@ -1,9 +1,11 @@
-import { useLocalStorage } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
+import type { UserSettings } from './types/types'
+import { ref } from 'vue'
 
-export const availableLocales: Readonly<Array<string>> = ['en-US', 'ru']
+export type AvailableLocale = 'en-US' | 'ru'
+export const availableLocales: ReadonlyArray<AvailableLocale> = ['en-US', 'ru']
 
 const i18n = createI18n({
   legacy: false,
@@ -11,40 +13,40 @@ const i18n = createI18n({
   availableLocales,
 })
 
-export function getBrowserLocale() {
-  if (!navigator.language) {
-    return 'en-US'
-  }
-
-  const navigatorLanguage = navigator.language === 'en-US' ? 'en-US' : navigator.language.trim().split(/-|_/)[0]
-  if (availableLocales.includes(navigatorLanguage)) {
-    return navigatorLanguage
-  } else {
-    return 'en-US'
-  }
+export function getBrowserLocale(): AvailableLocale {
+  const userLanguage = navigator.language
+  const languageCode = userLanguage.trim().split(/-|_/)[0]
+  const supportedLocale = availableLocales.find((language) => userLanguage === language || languageCode === language)
+  return supportedLocale ?? 'en-US'
 }
 
 export const useLocale = () => {
   const { lang } = useQuasar()
-  const selectedLocale = useLocalStorage('locale', getBrowserLocale() || 'en-US')
+  const userSettings = ref<UserSettings>(
+    JSON.parse(localStorage.getItem('user-settings') ?? `{ language: ${getBrowserLocale()} }`),
+  )
   const locale = computed({
     get() {
-      return selectedLocale.value
+      return userSettings.value.language
     },
-    async set(value) {
-      selectedLocale.value = value
-      const quasarLocaleData = import(`../node_modules/quasar/lang/${value}.mjs`)
-      const appLocaleData = import(`./locales/${value}.json`)
+    async set(locale) {
+      userSettings.value.language = locale
+      const userSettingsInLocalStorage: Partial<UserSettings> = JSON.parse(
+        localStorage.getItem('user-settings') ?? '{}',
+      )
+      localStorage.setItem('user-settings', JSON.stringify({ ...userSettingsInLocalStorage, ...userSettings.value }))
+      const quasarLocaleData = import(`../node_modules/quasar/lang/${locale}.mjs`)
+      const appLocaleData = import(`./locales/${locale}.json`)
       const locales = await Promise.all([quasarLocaleData, appLocaleData])
       lang.set(locales[0].default)
-      i18n.global.setLocaleMessage(selectedLocale.value, locales[1].default)
-      i18n.global.locale.value = selectedLocale.value
-      document.querySelector('html')?.setAttribute('lang', selectedLocale.value)
+      i18n.global.setLocaleMessage(locale, locales[1].default)
+      i18n.global.locale.value = locale
+      document.querySelector('html')?.setAttribute('lang', locale)
     },
   })
 
   function initializeLocale() {
-    locale.value = selectedLocale.value
+    locale.value = userSettings.value.language
   }
 
   return {

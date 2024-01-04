@@ -32,12 +32,12 @@ export interface Database {
           updated_at: string | null
         }
         Insert: {
-          materials?: string[]
+          materials: string[]
           name?: string | null
           owner: string
-          photos?: string[]
-          symbols?: string[]
-          tags?: string[]
+          photos: string[]
+          symbols: string[]
+          tags: string[]
         }
         Update: {
           materials?: string[]

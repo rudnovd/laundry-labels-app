@@ -2,6 +2,7 @@
   <q-page class="sign-in-page">
     <section>
       <h1 class="text-h3 q-mt-none">{{ t('common.signIn') }}</h1>
+
       <q-form
         class="q-mb-md"
         autocorrect="off"
@@ -10,11 +11,24 @@
         spellcheck="false"
         @submit="signIn"
       >
+        <q-btn
+          :disable="loading.isActive"
+          size="small"
+          class="full-width q-mb-sm"
+          color="white"
+          text-color="black"
+          @click="signInWithGoogle"
+        >
+          <l-icon class="q-mr-sm" icon="google-logo" />
+          {{ t('pages.signIn.signInWithGoogle') }}
+        </q-btn>
+        <span class="q-mb-sm inline-block">{{ t('common.or').toLocaleLowerCase() }}</span>
         <q-input
-          v-model="payload.email"
+          v-model="credentials.email"
           class="q-mb-md"
           type="email"
           :label="t('common.email')"
+          :disable="loading.isActive"
           maxlength="320"
           bg-color="grey-1"
           filled
@@ -22,29 +36,22 @@
           :rules="[(v) => v?.length || t('pages.signIn.validation.email')]"
         />
         <q-input
-          v-model="payload.password"
+          v-model="credentials.password"
           class="q-mb-md"
           type="password"
           :label="t('common.password')"
-          maxlength="64"
+          :disable="loading.isActive"
+          maxlength="72"
           bg-color="grey-1"
           filled
           lazy-rules
           :rules="[(v) => v?.length || t('pages.signIn.validation.password')]"
         />
-        <vue-hcaptcha
-          v-if="showCaptcha"
-          ref="captchaForm"
-          class="q-mb-md full-width"
-          :sitekey="sitekey"
-          @verify="verifyCaptcha"
-          @expired="resetCaptcha"
-          @challenge-expired="resetCaptcha"
-        />
+        <l-captcha v-if="!IS_LOCAL" class="q-mb-md full-width" @verify="credentials.options.captchaToken = $event" />
         <q-btn
           class="full-width"
           :label="t('common.signIn')"
-          :disable="!payload.email || !payload.password || (showCaptcha && !payload.token)"
+          :disable="isSignedInButtonDisabled"
           type="submit"
           color="positive"
         />
@@ -55,6 +62,9 @@
           {{ t('pages.signIn.noAccount') }}
           <router-link class="link-light" :to="{ name: 'Sign up' }">{{ t('common.signUp') }}</router-link>
         </div>
+        <router-link :to="{ name: 'Reset password' }" class="link-light">
+          {{ t('pages.signIn.resetPassword') }}
+        </router-link>
         <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signIn.backToHomePage') }}</router-link>
       </section>
     </section>
@@ -63,48 +73,32 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
-import { reactive, ref } from 'vue'
+import { computed, reactive, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
-const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
-const showCaptcha = import.meta.env.PROD && !import.meta.env.VITE_APP_IS_LOCAL
-const FIVE_SECONDS = 5000
+import type { UserSignInPayload } from '@/types/user'
+import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
+import LIcon from '@/components/LIcon.vue'
+const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
 const { notify, loading } = useQuasar()
 const { t } = useI18n()
 const userStore = useUserStore()
 const router = useRouter()
 
-const captchaForm = ref<VueHcaptcha>()
-const payload = reactive({
+const credentials = reactive<UserSignInPayload>({
   email: '',
   password: '',
-  token: '',
+  options: {
+    captchaToken: '',
+  },
 })
 
-const verifyCaptcha = (token: string) => {
-  payload.token = token
-}
-
-const resetCaptcha = () => {
-  payload.token = ''
-  captchaForm.value?.reset()
-}
-
 const signIn = throttle(async () => {
-  if (showCaptcha && !payload.token) {
-    return notify({
-      type: 'negative',
-      message: t('notifications.captchaError'),
-    })
-  }
-
   loading.show()
   try {
-    await userStore.signIn(payload)
+    await userStore.signIn(credentials)
     notify({
       type: 'positive',
       message: t('notifications.signInSuccess'),
@@ -113,7 +107,21 @@ const signIn = throttle(async () => {
   } finally {
     loading.hide()
   }
-}, FIVE_SECONDS)
+}, REQUEST_THROTTLE_TIMEOUT)
+
+const signInWithGoogle = throttle(async () => {
+  loading.show()
+  try {
+    await userStore.signInWithOAuth({ provider: 'google' })
+  } finally {
+    loading.hide()
+  }
+}, REQUEST_THROTTLE_TIMEOUT)
+
+const isSignedInButtonDisabled = computed(() => {
+  const { email, password, options } = credentials
+  return loading.isActive || !email || !password || (!IS_LOCAL && !options.captchaToken)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -144,6 +152,11 @@ const signIn = throttle(async () => {
       padding: 64px;
       border-radius: 8px;
     }
+  }
+
+  .links {
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

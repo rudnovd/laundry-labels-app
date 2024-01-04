@@ -1,51 +1,152 @@
-import type { Item, ItemBlank } from '@/interfaces/item'
-import request from '@/services/request'
+import type { Item, ItemBlank, ItemSymbol, ItemTag } from '@/types/item.ts'
+import { supabase } from '@/supabase'
 import { defineStore } from 'pinia'
+import { useUserStore } from './user'
+import Compressor from 'compressorjs'
 
 interface ItemState {
   items: Array<Item>
+  symbols: Array<ItemSymbol>
+  tags: Array<ItemTag>
 }
 
 export const useItemsStore = defineStore('items', {
   state: (): ItemState => ({
     items: [],
+    symbols: [],
+    tags: [],
   }),
+  getters: {
+    tagsByGroups(): Record<string, Array<string>> {
+      return this.tags.reduce((tags: Record<string, Array<string>>, tag: ItemTag) => {
+        if (!tags[tag.group]) {
+          tags[tag.group] = []
+        }
+        tags[tag.group].push(tag.name)
+        return tags
+      }, {})
+    },
+    symbolsByGroups(): Record<string, Array<ItemSymbol>> {
+      return this.symbols.reduce((symbols: Record<string, Array<ItemSymbol>>, symbol: ItemSymbol) => {
+        if (!symbols[symbol.group]) {
+          symbols[symbol.group] = []
+        }
+        symbols[symbol.group].push(symbol)
+        return symbols
+      }, {})
+    },
+  },
   actions: {
     async getItems() {
-      this.items = await request.get('/api/items').json<Array<Item>>()
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+      const { data, error } = await supabase
+        .from('items')
+        .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
+        .eq('owner', userStore.user?.id)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+
+      this.items = data
+
       return this.items
     },
-    async getItemById(payload: { _id: string }) {
-      const item = await request.get(`/api/item/${payload._id}`).json<Item>()
-      this.items.push(item)
-      return item
+    async getItemById(payload: { id: string }) {
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+      const { data, error } = await supabase
+        .from('items')
+        .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
+        .eq('owner', userStore.user?.id)
+        .eq('id', payload.id)
+        .single()
+      if (error) throw error
+
+      this.items.push(data)
+
+      return data
     },
     async createItem(payload: { item: ItemBlank }) {
-      const newItem = await request.post('/api/items', { json: payload.item }).json<Item>()
-      this.items.push(newItem)
-      return newItem
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+      const { data, error } = await supabase
+        .from('items')
+        .insert({ ...payload.item, owner: userStore.user?.id })
+        .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
+        .single()
+      if (error) throw error
+
+      this.items.push(data)
+
+      return data
     },
     async editItem(payload: { item: Omit<Item, 'updatedAt' | 'createdAt'> }) {
-      const editedItem = await request.put(`/api/item/${payload.item._id}`, { json: payload.item }).json<Item>()
-      const itemForUpdateIndex = this.items.findIndex((item) => item._id === editedItem._id)
-      this.items.splice(itemForUpdateIndex, 1, editedItem)
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+      const { data: updatedItem, error } = await supabase
+        .from('items')
+        .update(payload.item)
+        .eq('owner', userStore.user?.id)
+        .eq('id', payload.item.id)
+        .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
+        .single()
+      if (error) throw error
+
+      const itemForUpdateIndex = this.items.findIndex(({ id }) => id === updatedItem.id)
+      this.items.splice(itemForUpdateIndex, 1, updatedItem)
+
       return this.items
     },
-    async deleteItem(payload: { _id: string }) {
-      await request.delete(`/api/item/${payload._id}`)
-      const itemForDeleteIndex = this.items.findIndex((item) => item._id === payload._id)
+    async deleteItem(payload: { id: string }) {
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+      const { error } = await supabase
+        .from('items')
+        .delete()
+        .eq('owner', userStore.user?.id)
+        .eq('id', payload.id)
+      if (error) throw error
+
+      const itemForDeleteIndex = this.items.findIndex((item) => item.id === payload.id)
       this.items.splice(itemForDeleteIndex, 1)
+
       return this.items
     },
     async uploadImage(payload: File) {
-      const formData = new FormData()
-      formData.append('files', payload)
-      const SIXTY_SECONDS = 60000
-      const url = await request
-        .extend({ timeout: SIXTY_SECONDS })
-        .post('/api/upload/items', { body: formData })
-        .json<{ url: Readonly<string> }>()
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+
+      let url = ''
+      new Compressor(payload, {
+        quality: 0.3,
+        mimeType: 'image/webp',
+        async success(result) {
+          const { data, error } = await supabase.storage
+            .from('items')
+            .upload(`${userStore.user?.id}/${payload.name}`, result)
+          if (error) throw error
+
+          url = data.path
+        },
+      })
+
       return url
+    },
+    async getStandardTags() {
+      const { data, error } = await supabase.from('items_tags').select()
+      if (error) throw error
+
+      this.tags = data
+
+      return data
+    },
+    async getStandardSymbols() {
+      const { data, error } = await supabase.from('items_symbols').select()
+      if (error) throw error
+
+      this.symbols = data
+
+      return data
     },
   },
 })

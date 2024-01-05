@@ -6,8 +6,8 @@
       <q-card-section class="col-8 column laundry-card-body">
         <q-skeleton type="rect" />
 
-        <ul class="icons">
-          <li v-for="i in 6" :key="`skeleton-icon-${i}`">
+        <ul>
+          <li v-for="i in 6" :key="`skeleton-symbols-${i}`">
             <q-skeleton width="16px" height="16px" type="rect" />
           </li>
         </ul>
@@ -25,8 +25,6 @@
   width: 100%;
   max-width: 500px;
   height: 180px;
-  cursor: pointer;
-  user-select: none;
 }
 
 .laundry-card-body {
@@ -34,15 +32,6 @@
   grid-template-rows: 1rem auto;
   gap: 12px;
   padding: 8px;
-
-  span:first-child {
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
 
   ul {
     display: grid;
@@ -62,10 +51,6 @@
     border: 1px solid $grey-6;
     border-radius: 4px;
   }
-
-  li img {
-    font-size: 1.75rem;
-  }
 }
 
 .laundry-card-body-footer {
@@ -77,14 +62,6 @@
     display: flex;
     gap: 4px;
     align-items: center;
-  }
-
-  .item-type {
-    max-width: 9ch;
-  }
-
-  a {
-    width: 64px;
   }
 }
 </style>

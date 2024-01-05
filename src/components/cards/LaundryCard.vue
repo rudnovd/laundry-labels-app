@@ -1,23 +1,23 @@
 <template>
-  <q-card class="laundry-card" flat bordered @click="router.push(`/items/${item._id}`)">
+  <q-card class="laundry-card" flat bordered @click="router.push(`/items/${item.id}`)">
     <q-card-section horizontal class="full-height">
-      <q-img v-if="item.images.length" class="col-4" fit="contain" :src="item.images[0]" />
+      <q-img v-if="item.photos.length" class="col-4" fit="contain" :src="item.photos[0]" />
 
       <q-card-section
-        :class="item.images.length ? 'col-8' : 'col-12'"
+        :class="item.photos.length ? 'col-8' : 'col-12'"
         class="q-px-sm q-pt-sm q-pb-none column laundry-card-body"
       >
         <div class="flex no-wrap justify-between ellipsis">
           <div class="q-mb-sm ellipsis text-h6">{{ item.name }}</div>
 
-          <q-icon v-if="item._id.includes('offline-')" name="cloud_off" />
+          <q-icon v-if="item.id.includes('offline-')" name="cloud_off" />
         </div>
 
         <ul class="row full-width q-mb-sm icons">
-          <li v-for="icon in iconsValues.slice(0, item.images.length ? 6 : 8)" :key="icon._id" @click.stop>
-            <q-icon tag="svg" :name="icon._id" size="2.6em" />
+          <li v-for="icon in selectedSymbols.slice(0, item.photos.length ? 6 : 8)" :key="icon.name" @click.stop>
+            <q-icon tag="svg" :name="icon.name" size="2.6em" />
             <q-tooltip :anchor="'top middle'" :offset="[0, 42]">
-              {{ t(icon.description) }}
+              {{ t(`symbols.${icon.name}`) }}
             </q-tooltip>
           </li>
         </ul>
@@ -31,19 +31,19 @@
 </template>
 
 <script setup lang="ts">
-import { laundryIcons } from '@/assets/laundryIcons'
-import type { Item } from '@/interfaces/item'
+import useItems from '@/composables/useItems'
+import { type Item } from '@/types/item'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-const props = defineProps<{
-  item: Item
-}>()
+const props = defineProps<{ item: Item }>()
 
 const router = useRouter()
 const { t } = useI18n()
+const { symbols } = useItems()
 
-const iconsValues = laundryIcons.filter((icon) => props.item.icons.indexOf(icon._id) !== -1)
+const selectedSymbols = computed(() => symbols.value.filter(({ name }) => props.item.symbols.indexOf(name) !== -1))
 </script>
 
 <style lang="scss" scoped>

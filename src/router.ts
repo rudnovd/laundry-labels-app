@@ -79,6 +79,18 @@ const publicRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: 'reset-password',
+    name: 'Reset password',
+    component: () => import('@/pages/ResetPasswordPage.vue'),
+    beforeEnter: redirectIfSignedIn,
+    meta: {
+      redirect: {
+        text: 'You are already signed in, redirecting...',
+        path: window.history.state?.back || '/',
+      },
+    },
+  },
+  {
     path: '/redirect',
     name: 'Redirect',
     component: () => import('@/pages/RedirectPage.vue'),

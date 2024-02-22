@@ -1,20 +1,22 @@
-import type { ErrorResponse } from '@/interfaces/types'
 import { createPinia } from 'pinia'
 import { Notify } from 'quasar'
 
-const pinia = createPinia()
+interface ErrorResponse {
+  name: string
+  message: string
+  status: number
+}
 
+const pinia = createPinia()
 pinia.use(({ store }) => {
   store.$onAction(({ name, args, onError }) => {
     // catch errors from all store actions
     onError((storeError) => {
       const error: ErrorResponse = storeError as ErrorResponse
-
       if (import.meta.env.DEV) {
         console.warn(`Failed action "${name}" in store "${store.$id}" with args "${JSON.stringify(args)}".`)
       }
-
-      if (!error.name || !error.message) throw new Error()
+      if (!error.name || !error.message) throw error
 
       console.error(`${error.name}: ${error.message}`)
       Notify.create({

@@ -1,5 +1,5 @@
 import type { UserSettings } from '@/types/types'
-import type { UserSignInPayload, UserSignUpCredentials } from '@/types/user'
+import type { UserSignInCredentials, UserSignUpCredentials } from '@/types/user'
 import { supabase } from '@/supabase'
 import { useOnline, type RemovableRef } from '@vueuse/core'
 import { defineStore } from 'pinia'
@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', {
     settings: userSettingsStorage,
   }),
   actions: {
-    async signIn(payload: UserSignInPayload) {
+    async signIn(payload: UserSignInCredentials) {
       const {
         data: { user },
         error,

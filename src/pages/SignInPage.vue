@@ -77,7 +77,7 @@ import { throttle, useQuasar } from 'quasar'
 import { computed, reactive, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import type { UserSignInPayload } from '@/types/user'
+import type { UserSignInCredentials } from '@/types/user'
 import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import LIcon from '@/components/LIcon.vue'
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
@@ -87,7 +87,7 @@ const { t } = useI18n()
 const userStore = useUserStore()
 const router = useRouter()
 
-const credentials = reactive<UserSignInPayload>({
+const credentials = reactive<UserSignInCredentials>({
   email: '',
   password: '',
   options: {

@@ -37,6 +37,18 @@ export const useUserStore = defineStore('user', {
       })
       if (error) throw error
     },
+    async getSession() {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+      if (error) throw error
+      if (session) {
+        this.user = session.user
+      }
+
+      return session
+    },
     async signUp(credentials: UserSignUpCredentials) {
       const {
         data: { user },

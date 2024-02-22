@@ -62,15 +62,14 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       VueDevTools(),
-      vue({
-        template: { transformAssetUrls },
-      }),
-      quasar({
-        sassVariables: 'src/styles/quasar-variables.scss',
-      }),
+      vue({ template: { transformAssetUrls } }),
+      quasar({ sassVariables: 'src/styles/quasar-variables.scss' }),
       VitePWA(pwaOptions),
       svgLoader({ svgo: false, defaultImport: 'component' }),
       VueI18nPlugin({ include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**') }),
     ],
+    server: {
+      port: 5801,
+    },
   }
 })

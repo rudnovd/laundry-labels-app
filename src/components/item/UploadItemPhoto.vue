@@ -1,0 +1,65 @@
+<template>
+  <q-btn v-if="!modelValue.length" class="full-width" color="brand" :disable="isLoading" @click="() => open()">
+    {{ t('components.uploadItemPhoto.uploadPhoto') }}
+  </q-btn>
+  <q-btn v-else class="full-width q-mb-sm" color="negative" @click="onRemovePhoto">
+    {{ t('components.uploadItemPhoto.removePhoto') }}
+  </q-btn>
+
+  <div v-if="isLoading || modelValue.length" class="flex justify-center q-mb-md">
+    <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
+    <item-photo v-else-if="modelValue?.length" :path="modelValue[0]" height="200px" width="200px" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import useItems from '@/composables/useItems'
+import { MAX_ITEM_PHOTO_UNCOMPRESSED_SIZE } from '@/constants'
+import { useFileDialog } from '@vueuse/core'
+import { useQuasar } from 'quasar'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import ItemPhoto from './ItemPhoto.vue'
+
+const modelValue = defineModel<Array<string>>({ default: [] })
+
+const { t } = useI18n()
+const { notify } = useQuasar()
+const { open, reset, onChange } = useFileDialog({ accept: 'image/*', multiple: false })
+const { uploadPhoto } = useItems()
+
+const isLoading = ref(false)
+
+onChange(async (files) => {
+  if (!files) return
+  const uploadPromises: Array<Promise<string>> = []
+  isLoading.value = true
+
+  for (const file of files) {
+    if (file.type.split('/')[0] !== 'image') {
+      return notify({ type: 'negative', message: t('notifications.typeError') })
+    } else if (file.size > MAX_ITEM_PHOTO_UNCOMPRESSED_SIZE) {
+      return notify({ type: 'negative', message: t('notifications.sizeError') })
+    }
+    uploadPromises.push(uploadPhoto(file))
+  }
+
+  try {
+    const result = await Promise.allSettled(uploadPromises)
+    for (const promise of result) {
+      if (promise.status === 'rejected') {
+        notify({ type: 'negative', message: t('notifications.uploadError') })
+        continue
+      }
+      modelValue.value.push(promise.value)
+    }
+  } finally {
+    isLoading.value = false
+  }
+})
+
+const onRemovePhoto = () => {
+  reset()
+  modelValue.value.shift()
+}
+</script>

@@ -1,7 +1,7 @@
 <template>
   <vue-hcaptcha
     ref="captchaForm"
-    :sitekey="import.meta.env.VITE_APP_CAPTCHA_KEY"
+    :sitekey="sitekey"
     @verify="verifyCaptcha"
     @expired="resetCaptcha"
     @error="resetCaptcha"
@@ -18,6 +18,7 @@ const emit = defineEmits<{
   reset: []
 }>()
 
+const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
 const captchaForm = ref<VueHcaptcha | null>(null)
 const captchaToken = ref<string>('')
 

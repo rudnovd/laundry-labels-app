@@ -27,4 +27,4 @@ export default [
     group: 'Bedding',
     items: ['sheet', 'blanket', 'blanket cover', 'pillow', 'pillowcase'],
   },
-]
+] as const

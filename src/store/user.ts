@@ -1,23 +1,19 @@
-import type { UserSettings } from '@/types/types'
-import type { UserSignInCredentials, UserSignUpCredentials } from '@/types/user'
-import { supabase } from '@/supabase'
-import { useOnline, type RemovableRef } from '@vueuse/core'
-import { defineStore } from 'pinia'
 import type { Ref } from 'vue'
+import { defineStore } from 'pinia'
+import { useOnline } from '@vueuse/core'
+import { supabase } from '@/supabase'
 import type { Provider, User, UserAttributes } from '@supabase/supabase-js'
-import { userSettingsStorage } from '@/utils/localStorage'
+import type { UserSignInCredentials, UserSignUpCredentials } from '@/types/user'
 
 interface UserState {
   user: User | null
   isOnline: Ref<boolean>
-  settings: RemovableRef<Partial<UserSettings>>
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
     isOnline: useOnline(),
-    settings: userSettingsStorage,
   }),
   actions: {
     async signIn(payload: UserSignInCredentials) {

@@ -1,66 +1,66 @@
 <template>
-  <q-page class="item-page q-pb-md">
-    <template v-if="currentItem">
-      <q-img
-        v-if="currentItem.images.length"
-        class="item-image q-mb-md"
-        :src="currentItem.images[0]"
-        loading="lazy"
-        fit="contain"
-        decoding="async"
-        height="100%"
-      />
+  <q-page :class="['item-page', { 'centered-container': loading.isActive || !currentItem }]">
+    <q-circular-progress v-if="loading.isActive" indeterminate size="50px" color="brand" />
+    <template v-else-if="!loading.isActive && currentItem">
+      <div class="item-photo-container">
+        <item-photo v-if="currentItem.photos.length" :path="currentItem.photos[0]" height="100%" />
+      </div>
 
-      <section class="q-px-sm" :class="{ 'q-pt-sm': !currentItem.images.length }">
-        <h1 v-if="currentItem.name" class="text-h5 ellipsis">{{ currentItem.name }}</h1>
+      <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.length }]">
+        <h1 v-if="currentItem.name" class="text-h5">{{ currentItem.name }}</h1>
 
-        <section class="item-icons q-mb-md">
-          <div v-for="icon in currentItem.icons" :key="icon" class="icon-chip">
-            <q-icon :name="laundryIconsMap[icon]._id" size="5em" />
-            <span>{{ t(laundryIconsMap[icon].description) }}</span>
-          </div>
+        <section class="item-symbols">
+          <laundry-symbol-button
+            v-for="symbol in currentItem.symbols"
+            :key="symbol"
+            :symbol="{ ...symbols[symbol], name: symbol }"
+          />
         </section>
 
-        <section v-if="currentItem.tags.length" class="item-tags q-mb-md">
-          <q-chip v-for="tag in currentItem.tags" :key="tag">{{ tag }}</q-chip>
+        <section v-if="currentItem.tags.length" class="item-tags">
+          <item-tag v-for="tag in currentItem.tags" :key="tag">{{ tag }}</item-tag>
         </section>
 
         <section class="flex justify-between">
-          <q-btn color="negative" outline :label="t('common.delete')" icon="delete" @click="showDeleteDialog" />
+          <q-btn
+            color="negative"
+            outline
+            :label="t('common.delete')"
+            icon="delete"
+            @click="showDeleteDialog(currentItem)"
+          />
           <q-btn
             color="primary"
             outline
             :label="t('common.edit')"
             icon="edit"
-            @click="router.push(`/items/edit/${currentItem?._id}`)"
+            @click="router.push(`/items/edit/${currentItem?.id}`)"
           />
         </section>
 
-        <section v-if="currentItem._id.includes('offline-')" class="q-mt-sm flex">
-          <q-btn
-            class="full-width"
-            color="primary"
-            outline
-            :label="t('pages.item.saveOnServer')"
-            icon="sync"
-            @click="showSaveOnServerDialog"
-          />
-        </section>
+        <q-btn
+          v-if="isOfflineItem(currentItem.id)"
+          class="full-width"
+          color="primary"
+          outline
+          :label="t('pages.item.saveOnServer')"
+          icon="sync"
+          @click="showSaveOnServerDialog(currentItem)"
+        />
       </section>
     </template>
-    <template v-else-if="!currentItem && !loading"> Item not found </template>
+    <span v-else> Item not found </span>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { laundryIconsMap } from '@/assets/laundryIcons'
+import ItemPhoto from '@/components/item/ItemPhoto.vue'
+import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
+import ItemTag from '@/components/item/tags/ItemTag.vue'
 import useItems from '@/composables/useItems'
 import { db } from '@/db'
-import type { Item } from '@/interfaces/item'
-import type { UserSettings } from '@/interfaces/types'
-import { useItemsStore } from '@/store/items'
-import { useUserStore } from '@/store/user'
-import { useLocalStorage } from '@vueuse/core'
+import type { Item } from '@/types/item'
+import { userSettingsStorage } from '@/utils/localStorage'
 import { useQuasar } from 'quasar'
 import { onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -70,161 +70,110 @@ const { loading, dialog, notify } = useQuasar()
 const router = useRouter()
 const { t } = useI18n()
 const route = useRoute()
-const itemsStore = useItemsStore()
-const { isOnline } = useUserStore()
-const { items, deleteItem, getItemById, createItem, uploadImage } = useItems()
-const userSettings = useLocalStorage<Partial<UserSettings>>('user-settings', {
-  offlineMode: false,
-})
+const { items, deleteItem, getItemById, createItem, uploadPhoto, symbols, isOfflineItem } = useItems()
 
-const currentItem = ref<Item>()
+const currentItem = ref<Item | null>(null)
 
 onBeforeMount(async () => {
-  currentItem.value = items.value.find((item) => item._id === route.params.id)
-
-  if (currentItem.value) {
+  const item = items.value.find(({ id }) => id === route.params.id)
+  if (item) {
+    currentItem.value = item
     return
   }
 
-  loading.show()
+  loading.isActive = true
   try {
-    if (isOnline) {
-      currentItem.value = await getItemById({ _id: route.params.id as string })
-    } else {
-      const items = await itemsStore.getItems()
-      const item = items.find((_item) => _item._id === route.params.id)
-      if (item) {
-        currentItem.value = item
-      }
-    }
+    currentItem.value = await getItemById(route.params.id.toString())
   } finally {
-    loading.hide()
+    loading.isActive = false
   }
 })
 
-const showDeleteDialog = () => {
+async function showDeleteDialog(item: Item) {
   dialog({
     title: t('pages.item.deleteItem'),
-    message: currentItem.value?.name,
+    message: item.name ?? 'item',
     cancel: t('common.cancel'),
-  }).onOk(() => {
+  }).onOk(async () => {
     loading.show()
-    deleteItem({ _id: route.params.id as string })
-      .then(() => router.push({ name: 'Items' }))
-      .finally(() => loading.hide())
+    try {
+      await deleteItem(route.params.id.toString())
+      notify({ color: 'positive', message: t('notifications.itemDeleted') })
+      router.replace({ name: 'Items' })
+    } finally {
+      loading.hide()
+    }
   })
 }
 
-const showSaveOnServerDialog = () => {
+function showSaveOnServerDialog(item: Item) {
   dialog({
     title: t('pages.item.saveOnServer'),
-    message: currentItem.value?.name,
+    message: item.name ?? 'item',
     cancel: t('common.cancel'),
     ok: t('common.save'),
   }).onOk(async () => {
-    if (!currentItem.value) {
-      return
-    }
-
     loading.show()
 
-    const isOfflineModeEnabled = userSettings.value.offlineMode
-    userSettings.value.offlineMode = false
+    const isOfflineModeEnabled = userSettingsStorage.value.offlineMode
+    userSettingsStorage.value.offlineMode = false
 
-    const uploadedImages = []
-
-    if (currentItem.value.images.length) {
-      const offlineItem = await db.offlineItems.get({ _id: currentItem.value._id })
-      if (offlineItem?.images.length) {
-        const uploadItem = await db.upload.get({ _id: offlineItem.images[0] })
-        if (uploadItem?.file) {
-          const uploadedImage = await uploadImage(uploadItem.file)
-          if ('url' in uploadedImage) {
-            uploadedImages.push(uploadedImage.url)
-          }
-        }
+    const uploadedPhotos = []
+    if (item.photos.length) {
+      const uploadItem = await db.upload.get({ id: item.photos[0] })
+      if (uploadItem?.file) {
+        const uploadedPhoto = await uploadPhoto(uploadItem.file)
+        uploadedPhotos.push(uploadedPhoto)
       }
     }
 
-    createItem({ item: { ...currentItem.value, images: uploadedImages } })
-      .then(() => {
-        if (currentItem.value?._id) {
-          deleteItem({ _id: currentItem.value._id })
-        }
-        userSettings.value.offlineMode = isOfflineModeEnabled
-        notify({
-          color: 'positive',
-          message: t('notifications.itemSaved'),
-        })
-        router.push({ name: 'Items' })
-      })
-      .finally(() => loading.hide())
+    try {
+      await createItem({ ...item, photos: uploadedPhotos })
+      await deleteItem(item.id)
+      userSettingsStorage.value.offlineMode = isOfflineModeEnabled
+      notify({ color: 'positive', message: t('notifications.itemSaved') })
+      router.replace({ name: 'Items' })
+    } finally {
+      loading.hide()
+    }
   })
 }
 </script>
 
-<style lang="scss" scoped>
+<style>
 .item-page {
   max-width: 1280px;
+  padding-bottom: 16px;
   margin: auto;
-}
 
-.item-image {
-  max-width: 600px;
-  max-height: 300px;
+  .item-photo-container {
+    display: flex;
+    justify-content: center;
 
-  @include media-medium {
-    max-width: 100%;
-  }
-}
-
-.item-info {
-  display: grid;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-
-  div:first-child {
-    font-size: 1.25rem;
-    font-weight: 500;
-  }
-}
-
-.item-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-}
-
-.item-icons {
-  display: grid;
-  gap: 1rem;
-
-  @include media-small {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-}
-
-.icon-chip {
-  position: relative;
-  display: grid;
-  grid-template-columns: 64px auto;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.25rem;
-  border: 1px solid $grey-4;
-  border-radius: 8px;
-
-  & img {
-    font-size: 4rem;
+    img {
+      max-width: 600px;
+      max-height: 300px;
+    }
   }
 
-  & span:nth-child(2) {
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
+  .item-data {
+    display: grid;
+    gap: 16px;
+  }
+
+  .item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .item-symbols {
+    display: grid;
+    gap: 1rem;
+
+    @media (width >= 576px) {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
   }
 }
 </style>

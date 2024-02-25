@@ -1,12 +1,3 @@
-export type ItemTagGroup =
-  | 'colors'
-  | 'tops'
-  | 'bottoms'
-  | 'outwear'
-  | 'footwear'
-  | 'underwear-and-nightwear'
-  | 'bedding'
-
 export type ItemSymbolGroup =
   | 'washing'
   | 'ironing'
@@ -112,15 +103,15 @@ export interface Database {
       }
       items_tags: {
         Row: {
-          group: ItemTagGroup
+          group: string
           name: string
         }
         Insert: {
-          group: ItemTagGroup
+          group: string
           name: string
         }
         Update: {
-          group?: ItemTagGroup
+          group?: string
           name?: string
         }
         Relationships: [

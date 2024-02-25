@@ -173,13 +173,12 @@ const updateAppFromEvent = () => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style>
 .profile-page {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
-}
 
 .actions {
   display: grid;
@@ -198,5 +197,6 @@ const updateAppFromEvent = () => {
 
 .settings-card {
   width: clamp(300px, 30vw, 500px);
+  }
 }
 </style>

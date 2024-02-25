@@ -99,7 +99,7 @@ const updatePassword = throttle(async () => {
 }, REQUEST_THROTTLE_TIMEOUT)
 </script>
 
-<style lang="scss" scoped>
+<style>
 .update-password-dialog-card {
   min-width: 300px;
 }

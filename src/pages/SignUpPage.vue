@@ -124,17 +124,17 @@ const isSignedUpButtonDisabled = computed(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style>
 .sign-up-page {
   display: grid;
   grid: 1fr / 1fr;
   place-content: center;
-  color: $grey-1;
+  color: rgb(250 250 250);
   text-align: center;
   background: linear-gradient(135deg, rgb(9 121 46) 0%, rgb(75 8 129) 50%, rgb(9 121 46) 100%);
 
-  @include media-small {
-    grid: auto-flow / calc($breakpoint-sm-min - 8px);
+  @media (width >= 576px) {
+    grid: auto-flow / 592px;
     padding: 8px;
   }
 
@@ -146,7 +146,7 @@ const isSignedUpButtonDisabled = computed(() => {
     background: rgb(0 0 0 / 30%);
     transition: padding 0.5s linear;
 
-    @include media-small {
+    @media (width >= 576px) {
       padding: 64px;
       border-radius: 8px;
     }

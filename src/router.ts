@@ -1,41 +1,21 @@
-import { isAccessTokenValid } from '@/services/jwt'
 import { useUserStore } from '@/store/user'
-import { useLocalStorage } from '@vueuse/core'
-import { LocalStorage } from 'quasar'
-import {
-  createRouter,
-  createWebHistory,
-  type NavigationGuardNext,
-  type RouteLocationNormalized,
-  type RouteRecordRaw,
-} from 'vue-router'
-import type { LocalStorageDemo, UserSettings } from './interfaces/types'
+import { createRouter, createWebHistory, type RouteRecordRaw, type NavigationGuard } from 'vue-router'
+import { demoStorage, userSettingsStorage } from '@/utils/localStorage'
 
-function isUserSignedIn() {
+async function isUserSignedIn() {
   const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
-  return !!userStore.user?._id || isAccessTokenValid() || (hasRefreshToken && !window.navigator.onLine) || false
+  const session = await userStore.getSession()
+  return !!userStore.user || !!session
 }
 
-async function trySignIn() {
-  const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
-
-  if (!window.navigator.onLine) {
-    return null
-  } else if (isAccessTokenValid()) {
-    const auth = userStore.signInFromAccessToken()
-    return auth.user
-  } else if (hasRefreshToken) {
-    const auth = await userStore.signInFromRefreshToken()
-    return auth.user
-  } else {
-    return null
-  }
+const redirectIfSignedIn: NavigationGuard = async (_from, _to, next) => {
+  const isSignedIn = await isUserSignedIn()
+  return isSignedIn ? next({ name: 'Redirect' }) : next()
 }
 
-function redirectIfSignedIn(_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) {
-  isUserSignedIn() ? next({ name: 'Redirect' }) : next()
+const pushIfSignedIn: NavigationGuard = async (_from, _to, next) => {
+  const isSignedIn = await isUserSignedIn()
+  return isSignedIn ? next({ name: 'Items' }) : next()
 }
 
 const publicRoutes: Array<RouteRecordRaw> = [
@@ -46,13 +26,7 @@ const publicRoutes: Array<RouteRecordRaw> = [
       title: 'Laundry Labels App',
     },
     component: () => import('@/pages/HomePage.vue'),
-    beforeEnter: async (_from, _to, next) => {
-      if (isUserSignedIn() || (await trySignIn())) {
-        next({ name: 'Items' })
-      } else {
-        next()
-      }
-    },
+    beforeEnter: pushIfSignedIn,
   },
   {
     path: 'sign-in',
@@ -98,65 +72,75 @@ const publicRoutes: Array<RouteRecordRaw> = [
   },
 ]
 
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    component: () => import('@/layouts/PublicLayout.vue'),
+    children: publicRoutes,
+  },
+  {
+    path: '/items',
+    component: () => import('@/layouts/UserLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Items',
+        component: () => import('@/pages/ItemsPage.vue'),
+      },
+      {
+        path: 'create',
+        name: 'Create item',
+        component: () => import('@/pages/items/ModifyItemPage.vue'),
+      },
+      {
+        path: 'edit/:id',
+        name: 'Edit item',
+        component: () => import('@/pages/items/ModifyItemPage.vue'),
+      },
+      {
+        path: ':id',
+        name: 'Item',
+        component: () => import('@/pages/items/ItemPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/profile',
+    component: () => import('@/layouts/UserLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Profile',
+        component: () => import('@/pages/ProfilePage.vue'),
+        children: [
+          {
+            path: 'update-password',
+            name: 'Update password',
+            component: () => import('@/pages/profile/UpdatePasswordDialog.vue'),
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'Page not found',
+    component: () => import('@/pages/ErrorPage.vue'),
+  },
+]
+
 const router = createRouter({
   history: createWebHistory('/'),
-  routes: [
-    {
-      path: '/',
-      component: () => import('@/layouts/PublicLayout.vue'),
-      children: publicRoutes,
-      beforeEnter: (_to, _from, next) => {
-        isUserSignedIn() ? next({ name: 'Items' }) : next()
-      },
-    },
-    {
-      path: '/items',
-      component: () => import('@/layouts/UserLayout.vue'),
-      children: [
-        {
-          path: '',
-          name: 'Items',
-          component: () => import('@/pages/ItemsPage.vue'),
-        },
-        {
-          path: 'create',
-          name: 'Create item',
-          component: () => import('@/pages/items/CreateItemPage.vue'),
-        },
-        {
-          path: 'edit/:id',
-          name: 'Edit item',
-          component: () => import('@/pages/items/EditItemPage.vue'),
-        },
-        {
-          path: ':id',
-          name: 'Item',
-          component: () => import('@/pages/items/ItemPage.vue'),
-        },
-      ],
-    },
-    {
-      path: '/profile',
-      component: () => import('@/layouts/UserLayout.vue'),
-      children: [
-        {
-          path: '',
-          name: 'Profile',
-          component: () => import('@/pages/ProfilePage.vue'),
-        },
-      ],
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      name: 'Page not found',
-      component: () => import('@/pages/ErrorPage.vue'),
-    },
-  ],
-  scrollBehavior(to, from, savedPosition) {
+  routes,
+  scrollBehavior(to, _, savedPosition) {
     return new Promise((resolve) => {
       if (savedPosition) {
         return resolve(savedPosition)
       } else if (to.hash) {
+        const ignoredHashes = ['#access_token', '#error']
+        const hashName = to.hash.split('=').shift()
+        if (hashName && ignoredHashes.includes(hashName)) return resolve()
+
         return document.querySelector(to.hash) ?? resolve({ el: to.hash })
       } else {
         return resolve({ left: 0, top: 0 })
@@ -165,42 +149,27 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, _, next) => {
   const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken') ?? false
-  const isUserSignedIn = !!userStore.user?._id
-  const demoStorage = useLocalStorage<Partial<LocalStorageDemo>>(
-    'demo',
-    {},
-    { listenToStorageChanges: false, writeDefaults: false },
-  )
-  const userSettings = useLocalStorage<Partial<UserSettings>>('user-settings', {})
+  const isSignedIn = await isUserSignedIn()
 
   const isFirstVisitToDemo = to.query.demo && !demoStorage.value?.active
   if (isFirstVisitToDemo) {
     localStorage.setItem('demo', JSON.stringify({ active: false, page: null, step: null }))
-    useLocalStorage<Partial<UserSettings>>('user-settings', { offlineMode: !hasRefreshToken })
+    userSettingsStorage.value.offlineMode = !isSignedIn
   }
 
   const isDemoActive = demoStorage.value?.active
-  const isOfflineMode = userSettings.value.offlineMode
+  const isOfflineMode = userSettingsStorage.value.offlineMode
+  const isOffline = !userStore.isOnline
   const isPublicRoute = publicRoutes.some((route) => route.name === to.name)
-  if (isPublicRoute || isFirstVisitToDemo || isDemoActive || isUserSignedIn || isOfflineMode) {
+  if (isPublicRoute || isFirstVisitToDemo || isDemoActive || isSignedIn || isOfflineMode || isOffline) {
     return next()
   }
-
-  if (!hasRefreshToken) {
+  if (!isSignedIn) {
     return next({ name: 'Sign in' })
   }
-
-  if (!window.navigator.onLine) {
-    next()
-  } else if (isAccessTokenValid()) {
-    const auth = userStore.signInFromAccessToken()
-    next(auth.user?._id ? to.path : { name: 'Sign in' })
-  } else {
-    userStore.signInFromRefreshToken().then((response) => (response.user?._id ? next() : next({ name: 'Sign in' })))
-  }
+  next()
 })
 
 router.beforeResolve((to) => {

@@ -124,19 +124,19 @@ const isSignedInButtonDisabled = computed(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style>
 .sign-in-page {
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr;
   place-content: center;
-  color: $grey-1;
+  color: rgb(250 250 250);
   text-align: center;
   background: linear-gradient(135deg, rgb(9 121 46) 0%, rgb(75 8 129) 50%, rgb(9 121 46) 100%);
 
-  @include media-small {
+  @media (width >= 576px) {
     grid-template-rows: initial;
-    grid-template-columns: calc($breakpoint-sm-min - 8px);
+    grid-template-columns: 592px;
     padding: 8px;
   }
 
@@ -148,7 +148,7 @@ const isSignedInButtonDisabled = computed(() => {
     background: rgb(0 0 0 / 30%);
     transition: padding 0.5s linear;
 
-    @include media-small {
+    @media (width >= 576px) {
       padding: 64px;
       border-radius: 8px;
     }

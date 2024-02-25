@@ -49,14 +49,13 @@ const share = () => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style>
 .home-page {
   display: grid;
   grid-template-rows: auto 1fr;
   padding-top: 40px;
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(9 121 46 / 100%) 0%, rgb(75 8 129 / 100%) 50%, rgb(9 121 46 / 100%) 100%);
-}
+  background: linear-gradient(135deg, rgb(9 121 46) 0%, rgb(75 8 129) 50%, rgb(9 121 46) 100%);
 
 header {
   display: flex;
@@ -66,16 +65,16 @@ header {
 
   & > svg {
     padding: 8px;
-    background-color: $brand;
+      background-color: var(--color-brand);
     border-radius: 8px;
   }
 }
 
 .main-data {
   display: grid;
-  grid-template-columns: 1fr;
+    grid-template-columns: 1fr 40vw;
 
-  @include media-medium {
+    @media (width >= 1024px) {
     grid-template-columns: 1fr 40vw;
   }
 
@@ -90,7 +89,7 @@ header {
   flex-wrap: wrap;
   gap: 2rem;
 
-  & > a,
+    a,
   svg {
     width: 180px;
     height: 53.3px;
@@ -100,13 +99,14 @@ header {
 .demo-image {
   display: none;
 
-  @include media-medium {
+    @media (width >= 1024px) {
     display: flex;
-    align-items: flex-end;
+      align-items: end;
   }
 
   & > img {
     width: 100%;
+    }
   }
 }
 </style>

@@ -79,10 +79,10 @@ const previousPageLink = computed<string>(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-header {
+<style>
+.user-layout-header {
   color: black;
-  background-color: $brand;
+  background-color: var(--color-brand);
 
   /* stylelint-disable-next-line selector-class-pattern */
   .q-toolbar__title:last-child {

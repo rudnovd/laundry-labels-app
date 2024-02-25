@@ -1,6 +1,6 @@
 <template>
   <q-layout container>
-    <q-header>
+    <q-header class="user-layout-header">
       <q-toolbar>
         <q-btn
           :class="{ invisible: route.name === 'Items' }"
@@ -19,10 +19,14 @@
 
           <q-space />
 
-          <q-icon v-if="userSettings.offlineMode || !userStore.isOnline" class="q-mr-sm" name="cloud_off">
+          <q-icon v-if="userSettingsStorage.offlineMode || !userStore.isOnline" class="q-mr-sm" name="cloud_off">
             <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
               <q-banner class="bg-white">
-                <q-toggle v-model="userSettings.offlineMode" color="brand" :label="t('pages.profile.offlineMode')" />
+                <q-toggle
+                  v-model="userSettingsStorage.offlineMode"
+                  color="brand"
+                  :label="t('pages.profile.offlineMode')"
+                />
                 <q-btn icon="help" flat round dense size="12px">
                   <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
                     {{ t('pages.profile.offlineModeTooltip') }}
@@ -51,13 +55,12 @@
 
 <script setup lang="ts">
 import LIcon from '@/components/LIcon.vue'
-import type { UserSettings } from '@/interfaces/types'
 import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
-import { useLocalStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import { userSettingsStorage } from '@/utils/localStorage'
 
 const keepAliveComponents = ['ItemsPage']
 
@@ -66,9 +69,6 @@ const route = useRoute()
 const appSettingsStore = useAppSettingsStore()
 const { t } = useI18n()
 const userStore = useUserStore()
-const userSettings = useLocalStorage<Partial<UserSettings>>('user-settings', {
-  offlineMode: false,
-})
 
 const previousPageLink = computed<string>(() => {
   if (window.history.state.back === router.currentRoute.value.path) {

@@ -6,7 +6,7 @@
   "endOfLine": "lf",
   "overrides": [
     {
-      "files": ["src/constants/**/*.ts", "src/locales/*.json"],
+      "files": ["src/constants/**/*.ts", "src/locales/*.json", "src/assets/data/**/*.ts"],
       "options": {
         "printWidth": 300
       }

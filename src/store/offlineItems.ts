@@ -1,40 +1,11 @@
-import { db } from '@/db'
-import type { Item, ItemBlank } from '@/interfaces/item'
-import Dexie from 'dexie'
 import { defineStore } from 'pinia'
-import { date, uid } from 'quasar'
+import { date } from 'quasar'
+import Dexie from 'dexie'
+import { db } from '@/db'
+import type { Item, ItemBlank } from '@/types/item'
 
 interface ItemState {
   items: Array<Item>
-}
-
-async function getItemImages(payload: { _id: string }) {
-  const item = await db.offlineItems.get(payload._id)
-  if (!item) {
-    return []
-  }
-
-  const imagesPromises: Array<
-    Promise<
-      | {
-          _id: string
-          file: File
-        }
-      | undefined
-    >
-  > = []
-  item.images.forEach((_id) => imagesPromises.push(db.upload.get({ _id })))
-
-  const uploadItems = await Promise.all(imagesPromises)
-  const images: Array<string> = []
-
-  uploadItems.forEach((uploadItem) => {
-    if (uploadItem?.file) {
-      images.push(URL.createObjectURL(uploadItem.file))
-    }
-  })
-
-  return images
 }
 
 export const useOfflineItemsStore = defineStore('offlineItems', {
@@ -43,82 +14,68 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
   }),
   actions: {
     async getItems() {
-      this.items = await db.offlineItems.orderBy('updatedAt').toArray()
-
-      const imagesPromises: Array<Promise<string[]>> = []
-      this.items.forEach((item) => {
-        imagesPromises.push(getItemImages({ _id: item._id }))
-      })
-      const images = await Promise.all(imagesPromises)
-      this.items.forEach((item, index) => {
-        item.images = images[index]
-      })
+      this.items = await db.offlineItems.orderBy('updated_at').toArray()
 
       return this.items
     },
-    async getItemById(payload: { _id: string }) {
-      const item = await db.offlineItems.get({ _id: payload._id })
-      if (item) {
-        item.images = await getItemImages({ _id: item._id })
-        this.items.push(item)
+    async getItemById(id: string) {
+      const item = await db.offlineItems.get({ id })
+      if (!item) {
+        throw new Error(`Item with id ${id} not found`)
       }
+      this.items.push(item)
 
       return item
     },
-    async createItem(payload: { item: ItemBlank }) {
+    async createItem(itemBlank: Omit<ItemBlank, 'owner'>) {
       const newOfflineItem: Item = {
-        ...payload.item,
-        _id: `offline-${uid()}`,
-        createdAt: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
-        updatedAt: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
+        ...itemBlank,
+        name: itemBlank.name ?? null,
+        id: `offline-${Date.now()}`,
+        created_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
+        updated_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
       }
-
       await db.offlineItems.add(Dexie.deepClone(newOfflineItem))
-
-      newOfflineItem.images = await getItemImages({ _id: newOfflineItem._id })
-
       this.items.push(newOfflineItem)
 
       return newOfflineItem
     },
-    async editItem(payload: { item: Omit<Item, 'updatedAt' | 'createdAt'> }) {
+    async editItem(editedItem: Omit<Item, 'updated_at' | 'created_at' | 'owner'>) {
       await db.offlineItems.update(
-        payload.item._id,
-        Dexie.deepClone({ ...payload.item, updatedAt: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS') }),
+        editedItem.id,
+        Dexie.deepClone({ ...editedItem, updated_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS') }),
       )
 
-      const item = await db.offlineItems.get({ _id: payload.item._id })
-      if (!item) {
-        return this.items
-      }
+      const item = await db.offlineItems.get({ id: editedItem.id })
+      if (!item) return this.items
 
-      const itemForUpdateIndex = this.items.findIndex((item) => item._id === payload.item._id)
-      this.items[itemForUpdateIndex].images.forEach((image) => URL.revokeObjectURL(image))
-
+      const itemForUpdateIndex = this.items.findIndex((item) => item.id === editedItem.id)
+      this.items[itemForUpdateIndex].photos.forEach((photo) => URL.revokeObjectURL(photo))
       this.items.splice(itemForUpdateIndex, 1, item)
-      this.items[itemForUpdateIndex].images = await getItemImages({ _id: payload.item._id })
 
       return this.items
     },
-    async deleteItem(payload: { _id: string }) {
-      const item = await db.offlineItems.get({ _id: payload._id })
+    async deleteItem(id: string) {
+      const item = await db.offlineItems.get({ id })
       if (item) {
-        await db.offlineItems.delete(payload._id)
-        item.images.forEach((_id) => db.upload.delete(_id))
+        await db.offlineItems.delete(id)
+        item.photos.forEach((id) => db.upload.delete(id))
         this.items = await db.offlineItems.toArray()
       }
+
       return this.items
     },
-    async uploadImage(payload: File) {
-      const uploadId = `offline-${uid()}`
-      await db.upload.add({
-        _id: uploadId,
-        file: payload,
-      })
-      return {
-        _id: uploadId,
-        file: payload,
-      }
+    async getPhoto(id: string) {
+      const item = await db.upload.get({ id })
+
+      if (!item) return null
+      return URL.createObjectURL(item.file)
+    },
+    async uploadPhoto(file: File | Blob) {
+      const id = `offline-${Date.now()}`
+      await db.upload.add({ id, file })
+
+      return id
     },
   },
 })

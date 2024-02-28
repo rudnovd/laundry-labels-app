@@ -16,6 +16,17 @@ export default function useItems() {
   })
 
   const items = computed(() => [...itemsStore.items, ...offlineItemsStore.items])
+  function compressPhoto(file: File | Blob) {
+    return new Promise<File | Blob>((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.3,
+        mimeType: 'image/webp',
+        convertSize: 2_097_152,
+        success: resolve,
+        error: reject,
+      })
+    })
+  }
 
   function isOfflineItem(id: string) {
     return id.includes('offline-')
@@ -70,8 +81,11 @@ export default function useItems() {
     return isOfflineItem(payload._id) ? offlineItemsStore.deleteItem(payload) : itemsStore.deleteItem(payload)
   }
 
-  function uploadImage(payload: File) {
-    return userSettings.value.offlineMode ? offlineItemsStore.uploadImage(payload) : itemsStore.uploadImage(payload)
+  async function uploadPhoto(file: Parameters<typeof itemsStore.uploadPhoto>[0]) {
+    const compressedFile = await compressPhoto(file)
+    return userSettingsStorage.value.offlineMode
+      ? offlineItemsStore.uploadPhoto(compressedFile)
+      : itemsStore.uploadPhoto(compressedFile)
   }
 
   return {

@@ -2,7 +2,7 @@ import type { Item, ItemBlank, ItemSymbol, ItemTag } from '@/types/item.ts'
 import { supabase } from '@/supabase'
 import { defineStore } from 'pinia'
 import { useUserStore } from './user'
-import Compressor from 'compressorjs'
+import { userSettingsStorage } from '@/utils/localStorage'
 
 interface ItemState {
   items: Array<Item>
@@ -115,12 +115,22 @@ export const useItemsStore = defineStore('items', {
 
       return this.items
     },
+    async getPhoto(path: string) {
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('items').getPublicUrl(path)
+
+      return publicUrl
+    },
     async uploadPhoto(file: File | Blob) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
 
       const { data, error } = await supabase.storage.from('items').upload(`${userStore.user.id}/${Date.now()}`, file)
-          if (error) throw error
+      if (error) throw error
 
       return data.path
     },

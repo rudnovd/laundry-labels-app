@@ -17,23 +17,29 @@ export const useItemsStore = defineStore('items', {
     tags: {},
   }),
   getters: {
-    tagsByGroups(): Record<string, Array<string>> {
-      return this.tags.reduce((tags: Record<string, Array<string>>, tag: ItemTag) => {
-        if (!tags[tag.group]) {
-          tags[tag.group] = []
-        }
-        tags[tag.group].push(tag.name)
-        return tags
-      }, {})
+    tagsByGroups(): ReadonlyMap<string, Array<ItemTag>> {
+      const tagsByGroups: Map<string, Array<ItemTag>> = new Map([])
+      for (const tag in this.tags) {
+        const group = this.tags[tag].group
+        tagsByGroups.set(group, [...(tagsByGroups.get(group) ?? []), this.tags[tag]])
+      }
+      return tagsByGroups
     },
-    symbolsByGroups(): Record<string, Array<ItemSymbol>> {
-      return this.symbols.reduce((symbols: Record<string, Array<ItemSymbol>>, symbol: ItemSymbol) => {
-        if (!symbols[symbol.group]) {
-          symbols[symbol.group] = []
-        }
-        symbols[symbol.group].push(symbol)
-        return symbols
-      }, {})
+    symbolsByGroups(): ReadonlyMap<string, Array<ItemSymbol>> {
+      const symbolsByGroups: Map<string, Array<ItemSymbol>> = new Map([
+        ['washing', []],
+        ['ironing', []],
+        ['bleaching', []],
+        ['tumble-drying', []],
+        ['natural-drying', []],
+        ['dry-cleaning', []],
+        ['wet-cleaning', []],
+      ])
+      for (const symbolKey in this.symbols) {
+        const symbol = this.symbols[symbolKey]
+        symbolsByGroups.get(symbol.group)?.push({ ...symbol, name: symbolKey })
+      }
+      return symbolsByGroups
     },
   },
   actions: {

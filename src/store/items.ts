@@ -133,20 +133,28 @@ export const useItemsStore = defineStore('items', {
       return url
     },
     async getStandardTags() {
-      const { data, error } = await supabase.from('items_tags').select()
-      if (error) throw error
+      this.tags = {}
+      const standardTagsLocale = userSettingsStorage.value.items.standardTagsLocale
+      const tags: Array<{ group: string; items: Array<string> }> = (
+        await import(`../assets/data/tags/${standardTagsLocale}.ts`)
+      ).default
+      for (const { items, group } of tags) {
+        for (const tag of items) {
+          this.tags[tag] = { name: tag, group }
+        }
+      }
 
-      this.tags = data
-
-      return data
+      return this.tags
     },
     async getStandardSymbols() {
-      const { data, error } = await supabase.from('items_symbols').select()
-      if (error) throw error
+      this.symbols = {}
+      const locale = userSettingsStorage.value.locale
+      const symbols: Record<string, { group: string; description: string }> = (
+        await import(`../assets/data/laundry-icons/${locale}.ts`)
+      ).default
+      this.symbols = symbols
 
-      this.symbols = data
-
-      return data
+      return this.symbols
     },
   },
 })

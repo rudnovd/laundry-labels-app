@@ -115,25 +115,14 @@ export const useItemsStore = defineStore('items', {
 
       return this.items
     },
-    async uploadImage(payload: File) {
+    async uploadPhoto(file: File | Blob) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
 
-      let url = ''
-      new Compressor(payload, {
-        quality: 0.3,
-        mimeType: 'image/webp',
-        async success(result) {
-          const { data, error } = await supabase.storage
-            .from('items')
-            .upload(`${userStore.user?.id}/${payload.name}`, result)
+      const { data, error } = await supabase.storage.from('items').upload(`${userStore.user.id}/${Date.now()}`, file)
           if (error) throw error
 
-          url = data.path
-        },
-      })
-
-      return url
+      return data.path
     },
     async getStandardTags() {
       this.tags = {}

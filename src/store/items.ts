@@ -6,15 +6,15 @@ import Compressor from 'compressorjs'
 
 interface ItemState {
   items: Array<Item>
-  symbols: Array<ItemSymbol>
-  tags: Array<ItemTag>
+  symbols: Record<string, { group: string; description: string }>
+  tags: Record<string, { group: string; name: string }>
 }
 
 export const useItemsStore = defineStore('items', {
   state: (): ItemState => ({
     items: [],
-    symbols: [],
-    tags: [],
+    symbols: {},
+    tags: {},
   }),
   getters: {
     tagsByGroups(): Record<string, Array<string>> {
@@ -43,7 +43,7 @@ export const useItemsStore = defineStore('items', {
       const { data, error } = await supabase
         .from('items')
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
-        .eq('owner', userStore.user?.id)
+        .eq('owner', userStore.user.id)
         .order('created_at', { ascending: false })
       if (error) throw error
 
@@ -51,14 +51,14 @@ export const useItemsStore = defineStore('items', {
 
       return this.items
     },
-    async getItemById(payload: { id: string }) {
+    async getItemById(id: string) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
       const { data, error } = await supabase
         .from('items')
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
-        .eq('owner', userStore.user?.id)
-        .eq('id', payload.id)
+        .eq('owner', userStore.user.id)
+        .eq('id', id)
         .single()
       if (error) throw error
 
@@ -66,12 +66,13 @@ export const useItemsStore = defineStore('items', {
 
       return data
     },
-    async createItem(payload: { item: ItemBlank }) {
+    async createItem(itemBlank: Omit<ItemBlank, 'owner'>) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
+
       const { data, error } = await supabase
         .from('items')
-        .insert({ ...payload.item, owner: userStore.user?.id })
+        .insert({ ...itemBlank, owner: userStore.user.id })
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
         .single()
       if (error) throw error
@@ -80,14 +81,14 @@ export const useItemsStore = defineStore('items', {
 
       return data
     },
-    async editItem(payload: { item: Omit<Item, 'updatedAt' | 'createdAt'> }) {
+    async editItem(editedItem: Omit<Item, 'updated_at' | 'created_at' | 'owner'>) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
       const { data: updatedItem, error } = await supabase
         .from('items')
-        .update(payload.item)
+        .update(editedItem)
         .eq('owner', userStore.user?.id)
-        .eq('id', payload.item.id)
+        .eq('id', editedItem.id)
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
         .single()
       if (error) throw error
@@ -97,17 +98,13 @@ export const useItemsStore = defineStore('items', {
 
       return this.items
     },
-    async deleteItem(payload: { id: string }) {
+    async deleteItem(id: string) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { error } = await supabase
-        .from('items')
-        .delete()
-        .eq('owner', userStore.user?.id)
-        .eq('id', payload.id)
+      const { error } = await supabase.from('items').delete().eq('owner', userStore.user?.id).eq('id', id)
       if (error) throw error
 
-      const itemForDeleteIndex = this.items.findIndex((item) => item.id === payload.id)
+      const itemForDeleteIndex = this.items.findIndex((item) => item.id === id)
       this.items.splice(itemForDeleteIndex, 1)
 
       return this.items

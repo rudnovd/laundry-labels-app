@@ -8,17 +8,14 @@
         icon="install_mobile"
         @click="appSettingsStore.appInstallation?.event.prompt()"
       />
-
       <q-btn
-        v-if="isOnline && !userSettings.autoUpdateApp && appSettingsStore.appHasUpdate"
+        v-if="isOnline && !userSettingsStorage.autoUpdateApp && appSettingsStore.appHasUpdate"
         color="primary"
         :label="t('pages.profile.updateApp')"
         icon="upgrade"
         @click="updateAppFromEvent"
       />
-
       <q-btn color="primary" :label="t('pages.profile.coreSettings')" icon="settings" @click="showCoreOptions = true" />
-
       <q-btn
         color="primary"
         :label="t('pages.profile.languageSettings')"
@@ -27,11 +24,11 @@
       />
 
       <q-btn
-        v-if="isOnline && userStore.user?._id"
+        v-if="isOnline && userStore.user?.id"
         color="primary"
         :label="t('common.signOut')"
         icon="logout"
-        @click="callLogoutDialog"
+        @click="showSignOutDialog"
       />
     </section>
 
@@ -52,10 +49,14 @@
           </q-card-section>
 
           <q-card-section>
-            <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('pages.profile.autoUpdateApp')" />
+            <q-toggle
+              v-model="userSettingsStorage.autoUpdateApp"
+              color="brand"
+              :label="t('pages.profile.autoUpdateApp')"
+            />
             <div>
               <q-toggle
-                v-model="userSettings.offlineMode"
+                v-model="userSettingsStorage.offlineMode"
                 class="q-mr-sm"
                 color="brand"
                 :label="t('pages.profile.offlineMode')"
@@ -69,9 +70,7 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-    </teleport>
 
-    <teleport to="body">
       <q-dialog v-model="showLanguageOptions">
         <q-card class="settings-card">
           <q-card-section class="row items-center q-pb-none">
@@ -91,11 +90,10 @@
               emit-value
               map-options
               options-dense
-              @update:model-value="locale = $event"
+              @update:model-value="setLocale($event)"
             />
-
             <q-select
-              v-model="userSettings.items.standardTagsLocale"
+              v-model="userSettingsStorage.items.standardTagsLocale"
               :options="langOptions"
               :label="t('pages.profile.itemsTagsLanguage')"
               dense
@@ -130,7 +128,7 @@ import { useItemsStore } from '@/store/items'
 const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
 
 const appVersion = import.meta.env.__APP_VERSION__
-const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName))
+const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName as AvailableLocale))
 const langOptions = appLanguages.map((lang) => ({
   label: lang.nativeName,
   value: lang.isoName,
@@ -141,40 +139,34 @@ const userStore = useUserStore()
 const appSettingsStore = useAppSettingsStore()
 const router = useRouter()
 const { t } = useI18n()
-const isOnline = useOnline()
-const { locale } = useLocale()
-const userSettings = useLocalStorage<UserSettings>('user-settings', {
-  autoUpdateApp: true,
-  offlineMode: false,
-  items: {
-    standardTagsLocale: locale.value,
-  },
-})
+
+const isOnline = computed(() => userStore.isOnline)
+const { items } = useItems()
+const { getStandardSymbols, getStandardTags } = useItemsStore()
+watch(() => userSettingsStorage.value.locale, getStandardSymbols)
+watch(() => userSettingsStorage.value.items.standardTagsLocale, getStandardTags)
 
 const showLanguageOptions = ref(false)
 const showCoreOptions = ref(false)
 
-const callLogoutDialog = () => {
+async function showSignOutDialog() {
   dialog({
     title: t('common.signOut'),
     message: t('pages.profile.signOut'),
     cancel: t('common.cancel'),
-  }).onOk(() => {
-    loading.show({ message: `${t('pages.profile.signingOut')}...` })
-    userStore
-      .signOut()
-      .then(() => {
-        notify({
-          type: 'positive',
-          message: t('notifications.signOutSuccess'),
-        })
+  }).onOk(async () => {
+    loading.show({ message: t('pages.profile.signingOut') })
+    try {
+      await userStore.signOut()
+      notify({ type: 'positive', message: t('notifications.signOutSuccess') })
         router.push({ name: 'Home' })
-      })
-      .finally(() => loading.hide())
+    } finally {
+      loading.hide()
+    }
   })
 }
 
-const updateAppFromEvent = () => {
+function updateAppFromEvent() {
   window.dispatchEvent(new CustomEvent('update-app'))
 }
 

@@ -16,7 +16,7 @@
     "https": "PORT=4444 REINSTALL=true serve dist",
     "lint": "eslint --ext .ts,.vue src",
     "lint:fix": "npm run lint -- --fix",
-    "lint:ts": "vue-tsc --noEmit",
+    "lint:ts": "vue-tsc --build --force",
     "lint:css": "stylelint **/*{.scss,.vue}",
     "lint:css:fix": "npm run lint:css -- --fix",
     "lint:all": "npm run lint && npm run lint:ts && npm run lint:css",

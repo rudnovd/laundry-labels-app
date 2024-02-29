@@ -84,10 +84,11 @@ const isMaxItems = computed(() => itemsStore.items.length >= ITEMS_LIMIT)
 
 onBeforeMount(async () => {
   loading.isActive = true
+  const demo = useDemoMode()
   try {
     const items = await getItems()
     if (!items.length && localStorage.getItem('demo')) {
-      useDemoMode().showTourNotification()
+      demo.showTourNotification()
     }
   } finally {
     loading.isActive = false

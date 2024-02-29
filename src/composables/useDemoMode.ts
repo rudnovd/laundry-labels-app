@@ -1,16 +1,12 @@
-import type { LocalStorageDemo } from '@/interfaces/types'
-import { offset } from '@floating-ui/vue'
-import { useLocalStorage } from '@vueuse/core'
-import { useQuasar, Notify } from 'quasar'
-import Shepherd from 'shepherd.js'
-import 'shepherd.js/dist/css/shepherd.css'
-import '@/styles/demo.css'
-import { computed } from 'vue'
+import { ref, watch, computed, type WatchStopHandle } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { watch } from 'vue'
-import { ref } from 'vue'
-import type { WatchStopHandle } from 'vue'
+import { useQuasar, Notify } from 'quasar'
+import Shepherd from 'shepherd.js'
+import { offset } from '@floating-ui/vue'
+import { demoStorage } from '@/utils/localStorage'
+import 'shepherd.js/dist/css/shepherd.css'
+import '@/styles/demo.css'
 
 type TourButtonAction = 'next' | 'finish'
 
@@ -48,15 +44,6 @@ export default function useDemoMode() {
   const router = useRouter()
   const { t } = useI18n()
   const { notify } = useQuasar()
-  const demoStorage = useLocalStorage<LocalStorageDemo>(
-    'demo',
-    {
-      active: false,
-      page: null,
-      step: null,
-    },
-    { listenToStorageChanges: false },
-  )
   const previousPage = ref()
 
   const buttons = computed<Record<TourButtonAction, Shepherd.Step.StepOptionsButton>>(() => {
@@ -77,7 +64,7 @@ export default function useDemoMode() {
     return [
       {
         id: 'Add first item',
-        text: t('demo.tours.createItem.steps.addFirstItem'),
+        text: t('demo.tours.modifyItem.steps.addFirstItem'),
         attachTo: {
           element: 'a[href="/items/create"]',
           on: 'bottom',
@@ -89,9 +76,9 @@ export default function useDemoMode() {
       },
       {
         id: 'Enter item name',
-        text: t('demo.tours.createItem.steps.enterItemName'),
+        text: t('demo.tours.modifyItem.steps.enterItemName'),
         attachTo: {
-          element: '.info-container > label:nth-child(2)',
+          element: '.modify-item-page > .item-data-container > label:nth-child(2)',
           on: 'bottom',
         },
         beforeShowPromise: async () => {
@@ -101,27 +88,27 @@ export default function useDemoMode() {
       },
       {
         id: 'Select tags from list',
-        text: t('demo.tours.createItem.steps.selectTags'),
+        text: t('demo.tours.modifyItem.steps.selectTags'),
         attachTo: {
-          element: '.info-container > .tags',
+          element: '.modify-item-page >.item-data-container > .input-item-tags > .tags',
           on: 'bottom',
         },
         buttons: [buttons.value.finish, buttons.value.next],
       },
       {
         id: 'Enter custom tags',
-        text: t('demo.tours.createItem.steps.enterCustomTags'),
+        text: t('demo.tours.modifyItem.steps.enterCustomTags'),
         attachTo: {
-          element: '.info-container > label:nth-child(3)',
+          element: '.modify-item-page >.item-data-container > .input-item-tags > label',
           on: 'top',
         },
         buttons: [buttons.value.finish, buttons.value.next],
       },
       {
-        id: 'Select icons',
-        text: t('demo.tours.createItem.steps.selectIcons'),
+        id: 'Select laundry symbols',
+        text: t('demo.tours.modifyItem.steps.selectLaundrySymbols'),
         attachTo: {
-          element: '.create-item-page > .washing-icons-container',
+          element: '.modify-item-page > .item-symbols-container',
           on: 'top',
         },
         buttons: [buttons.value.finish, buttons.value.next],
@@ -129,14 +116,14 @@ export default function useDemoMode() {
       },
       {
         id: 'Confirm creation',
-        text: t('demo.tours.createItem.steps.confirmItemCreation'),
+        text: t('demo.tours.modifyItem.steps.confirmItemCreation'),
         attachTo: {
-          element: '.create-item-page > button',
+          element: '.modify-item-page > button',
           on: 'top',
         },
         when: {
           show() {
-            document.querySelector('.create-item-page > button')?.addEventListener('click', complete)
+            document.querySelector('.modify-item-page > button')?.addEventListener('click', complete)
           },
         },
         buttons: [],

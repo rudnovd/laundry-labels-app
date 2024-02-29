@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isActive" class="import-items-dialog" persistent @close="$emit('close')">
+  <q-dialog v-model="isActive" class="import-items-dialog" persistent>
     <q-card class="dialog-card">
       <q-card-section class="header">
         <div class="text-h6">{{ t('pages.profile.importItems') }}</div>
@@ -55,7 +55,7 @@ const { notify } = useQuasar()
 const { t } = useI18n()
 const itemsStore = useItemsStore()
 const offlineItemsStore = useOfflineItemsStore()
-const isActive = true
+const isActive = ref(true)
 const savingIds = ref<Array<string>>([])
 const savedItemsIds = ref<Array<string>>([])
 

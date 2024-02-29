@@ -1,7 +1,7 @@
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
-import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { CacheFirst, NetworkFirst } from 'workbox-strategies'
 
 declare let self: ServiceWorkerGlobalScope
 

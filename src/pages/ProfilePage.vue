@@ -107,21 +107,27 @@
           </q-card-section>
         </q-card>
       </q-dialog>
+      <import-items-dialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
     </teleport>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { availableLocales, useLocale } from '@/i18n'
-import type { UserSettings } from '@/interfaces/types'
-import { useAppSettingsStore } from '@/store/settings'
-import { useUserStore } from '@/store/user'
-import { useLocalStorage, useOnline } from '@vueuse/core'
+import { defineAsyncComponent, computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import languages from 'quasar/lang/index.json'
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useFileSystemAccess } from '@vueuse/core'
+import { availableLocales, type AvailableLocale } from '@/i18n'
+import { useAppSettingsStore } from '@/store/settings'
+import { useUserStore } from '@/store/user'
+import useItems from '@/composables/useItems'
+import { userSettingsStorage } from '@/utils/localStorage'
+import { setLocale } from '@/utils/locale'
+import type { Item } from '@/types/item'
+import { useItemsStore } from '@/store/items'
+const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
 
 const appVersion = import.meta.env.__APP_VERSION__
 const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName))
@@ -170,6 +176,31 @@ const callLogoutDialog = () => {
 
 const updateAppFromEvent = () => {
   window.dispatchEvent(new CustomEvent('update-app'))
+}
+
+async function exportItems() {
+  const { saveAs, data } = useFileSystemAccess()
+  data.value = JSON.stringify(items.value)
+  try {
+    await saveAs({ suggestedName: `laundry-labels-items-${Date.now()}.json` })
+    notify({ type: 'positive', message: t('notifications.exportSuccess') })
+  } catch (error) {
+    console.info(error)
+  }
+}
+
+const showImportItemsDialog = ref(false)
+const importedItems = ref<Array<Item>>([])
+async function importItems() {
+  const { data, open } = useFileSystemAccess()
+  try {
+    await open()
+    if (!data.value || typeof data.value !== 'string') return
+    for (const item of JSON.parse(data.value)) importedItems.value.push(item)
+    showImportItemsDialog.value = true
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 

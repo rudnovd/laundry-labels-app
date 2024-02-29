@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { throttle, useQuasar, type ValidationRule } from 'quasar'
 import { useUserStore } from '@/store/user'
@@ -73,7 +73,7 @@ const passwords = reactive({
   newPassword: '',
   confirmPassword: '',
 })
-const isActive = true
+const isActive = ref(true)
 const isPasswordsEqual = computed(() => passwords.newPassword === passwords.confirmPassword)
 const validationRules = computed<Record<string, ValidationRule<string>>>(() => {
   return {

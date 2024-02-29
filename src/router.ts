@@ -80,6 +80,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/items',
+    name: 'Items parent',
     component: () => import('@/layouts/UserLayout.vue'),
     children: [
       {
@@ -106,6 +107,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/profile',
+    name: 'Profile parent',
     component: () => import('@/layouts/UserLayout.vue'),
     children: [
       {

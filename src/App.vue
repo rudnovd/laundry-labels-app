@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { onBeforeMount, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, type RouteRecordName } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { useUserStore } from '@/store/user'
@@ -28,15 +28,13 @@ onBeforeMount(async () => {
 })
 
 usePwa()
-watch(
-  router.currentRoute,
-  ({ matched }) => {
-    const { getStandardSymbols, getStandardTags } = useItemsStore()
-    if (matched.some(({ path }) => path === '/items')) {
-      getStandardSymbols()
-      getStandardTags()
-    }
-  },
-  { once: true },
-)
+const stop = watch(router.currentRoute, ({ matched }) => {
+  const matchedPages: Array<RouteRecordName> = ['Items parent', 'Profile parent']
+  const { getStandardSymbols, getStandardTags } = useItemsStore()
+  if (matched.some(({ name }) => name && matchedPages.includes(name))) {
+    getStandardSymbols()
+    getStandardTags()
+    stop()
+  }
+})
 </script>

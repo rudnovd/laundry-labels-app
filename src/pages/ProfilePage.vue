@@ -22,7 +22,20 @@
         icon="translate"
         @click="showLanguageOptions = true"
       />
-
+      <q-btn
+        color="primary"
+        :label="t('pages.profile.updatePassword')"
+        icon="password"
+        :to="{ name: 'Update password' }"
+      />
+      <q-btn
+        :disable="!items.length"
+        color="primary"
+        :label="t('pages.profile.exportItems')"
+        icon="upload"
+        @click="exportItems"
+      />
+      <q-btn color="primary" :label="t('pages.profile.importItems')" icon="download" @click="importItems" />
       <q-btn
         v-if="isOnline && userStore.user?.id"
         color="primary"
@@ -107,6 +120,8 @@
       </q-dialog>
       <import-items-dialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
     </teleport>
+
+    <router-view />
   </q-page>
 </template>
 
@@ -159,7 +174,7 @@ async function showSignOutDialog() {
     try {
       await userStore.signOut()
       notify({ type: 'positive', message: t('notifications.signOutSuccess') })
-        router.push({ name: 'Home' })
+      router.push({ name: 'Home' })
     } finally {
       loading.hide()
     }
@@ -203,23 +218,23 @@ async function importItems() {
   gap: 1rem;
   align-items: center;
 
-.actions {
-  display: grid;
-  gap: 1rem;
-}
-
-.app-version {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-
-  & > a {
-    display: flex;
+  .actions {
+    display: grid;
+    gap: 1rem;
   }
-}
 
-.settings-card {
-  width: clamp(300px, 30vw, 500px);
+  .app-version {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    & > a {
+      display: flex;
+    }
+  }
+
+  .settings-card {
+    width: clamp(300px, 30vw, 500px);
   }
 }
 </style>

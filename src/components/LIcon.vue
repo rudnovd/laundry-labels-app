@@ -1,19 +1,10 @@
 <template>
-  <component :is="icon" height="16px" width="16px" v-bind="attrs" />
+  <component :is="iconComponent" width="16px" height="16px" />
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, useAttrs } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    icon: string
-  }>(),
-  {},
-)
-const attrs = useAttrs()
-
-const icon = computed(() => {
-  return defineAsyncComponent(() => import(`@/assets/icons/${props.icon}.svg`))
-})
+const props = defineProps<{ icon: string }>()
+const iconComponent = computed(() => defineAsyncComponent(() => import(`@/assets/icons/${props.icon}.svg`)))
 </script>

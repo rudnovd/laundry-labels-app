@@ -28,7 +28,7 @@ const modelValue = defineModel<Array<string>>({ required: true })
 const { t } = useI18n()
 const { symbols, symbolsByGroups } = useItems()
 const selectedSymbol = ref<ItemSymbol['name'] | null>(
-  modelValue.value.find((symbol) => symbols.value[symbol].group === group) ?? null,
+  modelValue.value.find((symbol) => symbols.value[symbol]?.group === group) ?? null,
 )
 
 function onClickSymbol(symbol: string) {

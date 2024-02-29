@@ -3,6 +3,7 @@
     "signIn": "Sign in",
     "signUp": "Sign up",
     "signOut": "Sign Out",
+    "resetPassword": "Reset password",
     "email": "Email",
     "password": "Password",
     "save": "Save",
@@ -13,7 +14,11 @@
     "name": "Name",
     "cancel": "Cancel",
     "clear": "Clear",
-    "continue": "Continue"
+    "continue": "Continue",
+    "or": "Or",
+    "authenticating": "Authenticating",
+    "saveOnServer": "Save on server",
+    "saveLocal": "Save local"
   },
   "components": {
     "item": {
@@ -22,7 +27,7 @@
         "custom": "Custom"
       }
     },
-    "uploadItemImage": {
+    "uploadItemPhoto": {
       "uploadPhoto": "Upload photo",
       "removePhoto": "Remove photo"
     }
@@ -31,6 +36,8 @@
     "signIn": {
       "noAccount": "Don't have an account?",
       "backToHomePage": "Back to home page",
+      "signInWithGoogle": "Sign in with Google",
+      "resetPassword": "Reset password",
       "validation": {
         "email": "The email field is not filled",
         "password": "The password field is not filled"
@@ -39,10 +46,18 @@
     "signUp": {
       "alreadyRegistered": "Already registered?",
       "backToHomePage": "Back to home page",
+      "signUpWithGoogle": "Sign up with Google",
+      "signingUp": "Signing up",
+      "accountRegistered": "Account registered. Please check your email to confirm your account.",
       "validation": {
         "email": "The email field is not filled",
         "password": "Please use minimum 6 characters"
       }
+    },
+    "resetPassword": {
+      "backToSignIn": "Back to sign in",
+      "requestSended": "Request sended. Please check your email",
+      "backToHomePage": "Back to home page"
     },
     "home": {
       "share": "Share",
@@ -61,7 +76,25 @@
       "coreSettings": "Core settings",
       "offlineMode": "Offline mode",
       "offlineModeTooltip": "All items will be stored on the device. They can be saved to the server at any time after creation.",
-      "signingOut": "Signing out"
+      "signingOut": "Signing out",
+      "updatePassword": "Update password",
+      "exportItems": "Export items",
+      "importItems": "Import items",
+      "dialogs": {
+        "updatePassword": {
+          "updatePassword": "Update password",
+          "newPassword": "New password",
+          "confirmPassword": "Confirm password",
+          "validation": {
+            "passwordEmpty": "The password field is not filled",
+            "minLength": "Please use minimum 6 characters",
+            "passwordsNotMatch": "Passwords do not match"
+          }
+        }
+      },
+      "notifications": {
+        "passwordUpdated": "Password updated successfully"
+      }
     },
     "item": {
       "deleteItem": "Delete item?",
@@ -74,17 +107,20 @@
       "noItemsWithSelectedTags": "No items with selected tags",
       "itemsLimitReached": "Items limit reached"
     },
-    "createItem": {
+    "modifyItem": {
+      "createLocalItem": "Create local item",
+      "saveLocalItem": "Save local item",
       "validation": {
-        "iconsRequired": "At least one icon is required"
-      }
+        "symbolsRequired": "At least one laundry symbol is required"
+      },
+      "itemAdded": "Item added successfully"
     },
     "error": {
       "pageNotFound": "Page not found",
       "backToHomePage": "Back to home page"
     }
   },
-  "iconsGroups": {
+  "symbolsGroup": {
     "washing": "Washing",
     "bleaching": "Bleaching",
     "ironing": "Ironing",
@@ -101,7 +137,12 @@
     "sizeError": "Upload failed, the maximum size of the file is 15 MB",
     "typeError": "Wrong file type",
     "captchaError": "Captcha required",
-    "itemSaved": "Item saved successfully"
+    "itemSaved": "Item saved successfully",
+    "passwordResetSuccess": "Password reset successfully",
+    "uploadError": "Upload failed",
+    "itemDeleted": "Item deleted successfully",
+    "exportSuccess": "Exported successfully",
+    "importSuccess": "Imported successfully"
   },
   "demo": {
     "buttons": {
@@ -119,13 +160,13 @@
       }
     },
     "tours": {
-      "createItem": {
+      "modifyItem": {
         "steps": {
           "addFirstItem": "Let's add the first item",
           "enterItemName": "Enter the name of the item",
           "selectTags": "Choose tags from the provided list",
           "enterCustomTags": "You can also enter custom tags",
-          "selectIcons": "Select the icons from the care label",
+          "selectLaundrySymbols": "Select the symbols from the care label",
           "confirmItemCreation": "Confirm item creation"
         }
       }

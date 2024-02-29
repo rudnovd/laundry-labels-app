@@ -3,6 +3,7 @@
     "signIn": "Вход",
     "signUp": "Регистрация",
     "signOut": "Выйти",
+    "resetPassword": "Сбросить пароль",
     "email": "Email",
     "password": "Пароль",
     "save": "Сохранить",
@@ -13,7 +14,11 @@
     "name": "Название",
     "cancel": "Отменить",
     "clear": "Очистить",
-    "continue": "Продолжить"
+    "continue": "Продолжить",
+    "or": "Или",
+    "authenticating": "Аутентификация",
+    "saveOnServer": "Сохранить на сервере",
+    "saveLocal": "Сохранить локально"
   },
   "components": {
     "item": {
@@ -22,7 +27,7 @@
         "custom": "Пользовательские"
       }
     },
-    "uploadItemImage": {
+    "uploadItemPhoto": {
       "uploadPhoto": "Загрузить фото",
       "removePhoto": "Удалить фото"
     }
@@ -31,6 +36,8 @@
     "signIn": {
       "noAccount": "Нет аккаунта?",
       "backToHomePage": "Назад на домашнюю страницу",
+      "signInWithGoogle": "Войти с помощью Google",
+      "resetPassword": "Сбросить пароль",
       "validation": {
         "email": "Email не заполнен",
         "password": "Пароль не заполнен"
@@ -39,10 +46,18 @@
     "signUp": {
       "alreadyRegistered": "Уже зарегистрированы?",
       "backToHomePage": "Назад на домашнюю страницу",
+      "signUpWithGoogle": "Зарегистрироваться с помощью Google",
+      "signingUp": "Регистрация",
+      "accountRegistered": "Аккаунт зарегистрирован. Пожалуйста, проверьте свою электронную почту для подтверждения аккаунта",
       "validation": {
         "email": "Email не заполнен",
         "password": "Пожалуйста, используйте пароль от 6 символов"
       }
+    },
+    "resetPassword": {
+      "backToSignIn": "Вернуться на страницу входа",
+      "requestSended": "Запрос отправлен. Пожалуйста, проверьте электронную почту",
+      "backToHomePage": "Назад на домашнюю страницу"
     },
     "home": {
       "share": "Поделиться",
@@ -61,7 +76,25 @@
       "coreSettings": "Основные настройки",
       "offlineMode": "Оффлайн режим",
       "offlineModeTooltip": "Все предметы будут храниться на устройстве. Они могут быть сохранены на сервере в любое время после создания.",
-      "signingOut": "Выход"
+      "signingOut": "Выход",
+      "updatePassword": "Обновить пароль",
+      "exportItems": "Экспортировать предметы",
+      "importItems": "Импортировать предметы",
+      "dialogs": {
+        "updatePassword": {
+          "updatePassword": "Обновить пароль",
+          "newPassword": "Новый пароль",
+          "confirmPassword": "Подтвердите пароль",
+          "validation": {
+            "passwordEmpty": "Поле пароля не заполнено",
+            "minLength": "Пожалуйста, используйте минимум 6 символов",
+            "passwordsNotMatch": "Пароли не совпадают"
+          }
+        }
+      },
+      "notifications": {
+        "passwordUpdated": "Пароль обновлен"
+      }
     },
     "item": {
       "deleteItem": "Удалить предмет?",
@@ -74,17 +107,20 @@
       "noItemsWithSelectedTags": "Нет предметов с указанными тегами",
       "itemsLimitReached": "Достигнут лимит предметов"
     },
-    "createItem": {
+    "modifyItem": {
+      "createLocalItem": "Создать локальный предмет",
+      "saveLocalItem": "Сохранить локальный предмет",
       "validation": {
-        "iconsRequired": "Необходимо выбрать хотя бы один значок"
-      }
+        "symbolsRequired": "Необходимо выбрать хотя бы один значок по уходу"
+      },
+      "itemAdded": "Предмет добавлен успешно"
     },
     "error": {
       "pageNotFound": "Страница не найдена",
       "backToHomePage": "Назад на домашнюю страницу"
     }
   },
-  "iconsGroups": {
+  "symbolsGroup": {
     "washing": "Стирка",
     "bleaching": "Отбеливание",
     "ironing": "Глажка",
@@ -101,7 +137,12 @@
     "sizeError": "Ошибка загрузки, максимальный размер файла 15 МБ",
     "typeError": "Неверный тип файла",
     "captchaError": "Введите Captcha",
-    "itemSaved": "Предмет сохранен успешно"
+    "itemSaved": "Предмет сохранен успешно",
+    "passwordResetSuccess": "Пароль сброшен успешно",
+    "uploadError": "Ошибка загрузки",
+    "itemDeleted": "Предмет удален успешно",
+    "exportSuccess": "Экспортировано успешно",
+    "importSuccess": "Импортировано успешно"
   },
   "demo": {
     "buttons": {
@@ -119,13 +160,13 @@
       }
     },
     "tours": {
-      "createItem": {
+      "modifyItem": {
         "steps": {
           "addFirstItem": "Добавим первый предмет",
           "enterItemName": "Введите название предмета",
           "selectTags": "Выберите теги из предоставленного списка",
           "enterCustomTags": "Вы также можете ввести собственные теги",
-          "selectIcons": "Выберите значки с этикетки по уходу",
+          "selectLaundrySymbols": "Выберите значки с этикетки по уходу",
           "confirmItemCreation": "Подтвердите создание предмета"
         }
       }

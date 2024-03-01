@@ -30,6 +30,7 @@ export const useUserStore = defineStore('user', {
     async signInWithOAuth(options: { provider: Provider }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: options.provider,
+        options: { redirectTo: window.location.origin },
       })
       if (error) throw error
     },

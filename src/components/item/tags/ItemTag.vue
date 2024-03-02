@@ -21,6 +21,7 @@ withDefaults(
 .item-tag {
   position: relative;
   display: inline-flex;
+  gap: 4px;
   align-items: center;
   height: 2em;
   padding: 0.5em 0.9em;

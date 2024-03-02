@@ -120,6 +120,11 @@ const routes: Array<RouteRecordRaw> = [
             name: 'Update password',
             component: () => import('@/pages/profile/UpdatePasswordDialog.vue'),
           },
+          {
+            path: 'core-options',
+            name: 'Core options',
+            component: () => import('@/pages/profile/CoreOptionsDialog.vue'),
+          },
         ],
       },
     ],

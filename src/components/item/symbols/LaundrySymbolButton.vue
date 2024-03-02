@@ -13,29 +13,21 @@
 <script setup lang="ts">
 import type { ItemSymbol } from '@/types/item'
 
-withDefaults(
-  defineProps<{
-    symbol: ItemSymbol
-    styles?: {
-      selected?: boolean
-      transparent?: boolean
-    }
-  }>(),
-  {
-    styles: () => ({
-      selected: false,
-      transparent: false,
-    }),
-  },
-)
+defineProps<{
+  symbol: ItemSymbol
+  styles?: {
+    selected?: boolean
+    transparent?: boolean
+  }
+}>()
 </script>
 
 <style>
 .laundry-symbol-button {
   position: relative;
   display: grid;
-  grid-template-columns: 64px auto;
-  gap: 0.5rem;
+  grid: calc(4em * 1.3) / 64px 1fr;
+  gap: 0.25rem;
   align-items: center;
   width: 100%;
   padding: 0.25rem;
@@ -65,7 +57,9 @@ withDefaults(
   & > span {
     display: -webkit-box;
     overflow: hidden;
+    line-height: 1.3;
     text-overflow: ellipsis;
+    text-wrap: balance;
     overflow-wrap: break-word;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;

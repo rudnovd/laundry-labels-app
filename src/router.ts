@@ -125,6 +125,11 @@ const routes: Array<RouteRecordRaw> = [
             name: 'Core options',
             component: () => import('@/pages/profile/CoreOptionsDialog.vue'),
           },
+          {
+            path: 'language-options',
+            name: 'Language options',
+            component: () => import('@/pages/profile/LanguageOptionsDialog.vue'),
+          },
         ],
       },
     ],

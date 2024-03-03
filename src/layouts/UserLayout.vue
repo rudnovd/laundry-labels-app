@@ -57,7 +57,7 @@
 import LIcon from '@/components/LIcon.vue'
 import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { userSettingsStorage } from '@/utils/localStorage'
@@ -77,6 +77,20 @@ const previousPageLink = computed<string>(() => {
     return window.history.state.back || '/items'
   }
 })
+
+watch(
+  () => userSettingsStorage.value.offlineMode,
+  async (isOffline) => {
+    if (!isOffline) {
+      try {
+        const session = await userStore.getSession()
+        if (!session) router.replace({ name: 'Sign in' })
+      } catch (error) {
+        router.replace({ name: 'Sign in' })
+      }
+    }
+  },
+)
 </script>
 
 <style>

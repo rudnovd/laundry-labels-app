@@ -7,8 +7,7 @@
       </div>
 
       <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.length }]">
-        <h1 v-if="currentItem.name" class="text-h5">{{ currentItem.name }}</h1>
-
+        <h1 v-if="currentItem.name" class="text-h5 q-my-none">{{ currentItem.name }}</h1>
         <section class="item-symbols">
           <laundry-symbol-button
             v-for="symbol in currentItem.symbols"

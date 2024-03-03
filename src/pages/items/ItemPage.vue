@@ -38,7 +38,7 @@
         </section>
 
         <q-btn
-          v-if="isOfflineItem(currentItem.id)"
+          v-if="userStore.isOnline && userStore.user && isOfflineItem(currentItem.id)"
           class="full-width"
           color="primary"
           outline
@@ -58,6 +58,7 @@ import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.v
 import ItemTag from '@/components/item/tags/ItemTag.vue'
 import useItems from '@/composables/useItems'
 import { db } from '@/db'
+import { useUserStore } from '@/store/user'
 import type { Item } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
 import { useQuasar } from 'quasar'
@@ -70,6 +71,7 @@ const router = useRouter()
 const { t } = useI18n()
 const route = useRoute()
 const { items, deleteItem, getItemById, createItem, uploadPhoto, symbols, isOfflineItem } = useItems()
+const userStore = useUserStore()
 
 const currentItem = ref<Item | null>(null)
 

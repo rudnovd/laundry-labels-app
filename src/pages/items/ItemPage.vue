@@ -53,18 +53,18 @@
 </template>
 
 <script setup lang="ts">
-import ItemPhoto from '@/components/item/ItemPhoto.vue'
-import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
-import ItemTag from '@/components/item/tags/ItemTag.vue'
+import { useQuasar } from 'quasar'
+import { defineAsyncComponent, onBeforeMount, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import useItems from '@/composables/useItems'
 import { db } from '@/db'
 import { useUserStore } from '@/store/user'
 import type { Item } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
-import { useQuasar } from 'quasar'
-import { onBeforeMount, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
+const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
+const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
 const { loading, dialog, notify } = useQuasar()
 const router = useRouter()

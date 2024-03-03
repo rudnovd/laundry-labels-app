@@ -5,7 +5,7 @@
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">{{ t('pages.profile.dialogs.updatePassword.updatePassword') }}</div>
           <q-space />
-          <q-btn icon="close" flat round dense @click="router.push({ name: 'Profile' })" />
+          <q-btn icon="close" flat round dense @click="router.replace({ name: 'Profile' })" />
         </q-card-section>
 
         <q-card-section>
@@ -18,7 +18,8 @@
             @submit="updatePassword"
           >
             <q-input
-              v-model="passwords.newPassword"
+              ref="newPasswordRef"
+              v-model="passwords.new"
               outlined
               class="q-mb-md"
               type="password"
@@ -30,7 +31,8 @@
               :rules="[validationRules.notEmpty, validationRules.minLength]"
             />
             <q-input
-              v-model="passwords.confirmPassword"
+              ref="confirmedPasswordRef"
+              v-model="passwords.confirmed"
               outlined
               class="q-mb-md"
               type="password"
@@ -44,7 +46,7 @@
             <q-btn
               class="full-width"
               :label="t('pages.profile.dialogs.updatePassword.updatePassword')"
-              :disable="!passwords.newPassword.length || !isPasswordsEqual || loading.isActive"
+              :disable="hasValidationErrors || loading.isActive"
               type="submit"
               color="positive"
             />
@@ -58,7 +60,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { throttle, useQuasar, type ValidationRule } from 'quasar'
+import { QInput, throttle, useQuasar, type ValidationRule } from 'quasar'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { REQUEST_THROTTLE_TIMEOUT } from '@/constants'
@@ -69,12 +71,14 @@ const { t } = useI18n()
 const userStore = useUserStore()
 const router = useRouter()
 
-const passwords = reactive({
-  newPassword: '',
-  confirmPassword: '',
-})
 const isActive = ref(true)
-const isPasswordsEqual = computed(() => passwords.newPassword === passwords.confirmPassword)
+const passwords = reactive({
+  new: '',
+  confirmed: '',
+})
+const newPasswordRef = ref<InstanceType<typeof QInput> | null>(null)
+const confirmedPasswordRef = ref<InstanceType<typeof QInput> | null>(null)
+const isPasswordsEqual = computed(() => passwords.new === passwords.confirmed)
 const validationRules = computed<Record<string, ValidationRule<string>>>(() => {
   return {
     notEmpty: (value) => !!value?.length || t('pages.profile.dialogs.updatePassword.validation.passwordEmpty'),
@@ -83,16 +87,22 @@ const validationRules = computed<Record<string, ValidationRule<string>>>(() => {
       isPasswordsEqual.value || t('pages.profile.dialogs.updatePassword.validation.passwordsNotMatch'),
   }
 })
+const hasValidationErrors = computed(() => {
+  if (!newPasswordRef.value || !confirmedPasswordRef.value) return true
+  const hasNewPasswordError = !newPasswordRef.value.modelValue || newPasswordRef.value.hasError
+  const hasConfirmedPasswordError = !confirmedPasswordRef.value.modelValue || confirmedPasswordRef.value.hasError
+  return hasNewPasswordError || hasConfirmedPasswordError
+})
 
 const updatePassword = throttle(async () => {
   loading.show()
   try {
-    await userStore.update({ password: passwords.newPassword })
+    await userStore.update({ password: passwords.new })
     notify({
       type: 'positive',
       message: t('pages.profile.notifications.passwordUpdated'),
     })
-    router.push({ name: 'Profile' })
+    router.replace({ name: 'Profile' })
   } finally {
     loading.hide()
   }

@@ -27,20 +27,20 @@
       </q-input>
     </header>
 
-    <div v-if="searchingTags.length" class="search-tags">
-      <item-tag
-        class="chip text-white text-lowercase bg-negative"
-        color="negative"
-        clickable
-        @click="searchingTags = []"
-      >
-        <q-icon class="q-mr-xs" name="delete" size="16px" />
-        {{ t('common.clear') }}
-      </item-tag>
-      <button v-for="tag in searchingTags" :key="tag" class="chip" removable @remove="removeSearchTag(tag)">
-        <span class="ellipsis">{{ tag }}</span>
-      </button>
-    </div>
+    <ul v-if="searchingTags.length" class="search-tags">
+      <li>
+        <item-tag class="text-white text-lowercase bg-negative" color="negative" @click="searchingTags = []">
+          <q-icon name="delete" size="1em" />
+          {{ t('common.clear') }}
+        </item-tag>
+      </li>
+      <li v-for="tag in searchingTags" :key="tag">
+        <item-tag>
+          <q-icon name="close" size="1em" @click="removeSearchTag(tag)" />
+          <span class="ellipsis">{{ tag }}</span>
+        </item-tag>
+      </li>
+    </ul>
 
     <ul v-if="loading.isActive" class="items-cards">
       <li v-for="skeleton in 4" :key="skeleton">
@@ -134,7 +134,7 @@ function removeSearchTag(tag: string) {
   .search-tags {
     display: flex;
     gap: 8px;
-    padding-bottom: 4px;
+    padding-bottom: 6px;
     overflow-x: auto;
     scrollbar-width: thin;
   }

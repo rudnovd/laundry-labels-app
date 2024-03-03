@@ -6,7 +6,7 @@
         :size="isMaxItems ? 'sm' : undefined"
         :icon="isMaxItems ? undefined : 'add'"
         :to="{ name: 'Create item' }"
-        :disable="isMaxItems || loading.isActive"
+        :disable="isMaxItems || isLoading"
       >
         {{ t(isMaxItems ? 'pages.items.itemsLimitReached' : 'common.add') }}
       </q-btn>
@@ -17,7 +17,7 @@
         outlined
         :label="t('pages.items.searchTags')"
         dense
-        :disable="loading.isActive"
+        :disable="isLoading"
         :maxlength="32"
         @keyup.enter="searchTag"
       >
@@ -42,7 +42,7 @@
       </li>
     </ul>
 
-    <ul v-if="loading.isActive" class="items-cards">
+    <ul v-if="isLoading" class="items-cards">
       <li v-for="skeleton in 4" :key="skeleton">
         <laundry-card-skeleton />
       </li>
@@ -63,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useItemsStore } from '@/store/items'
@@ -75,15 +74,15 @@ import { ITEMS_LIMIT } from '@/constants'
 import { defineAsyncComponent } from 'vue'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
-const { loading } = useQuasar()
 const { t } = useI18n()
 const { items, getItems } = useItems()
 const itemsStore = useItemsStore()
 
+const isLoading = ref(false)
 const isMaxItems = computed(() => itemsStore.items.length >= ITEMS_LIMIT)
 
 onBeforeMount(async () => {
-  loading.isActive = true
+  isLoading.value = true
   const demo = useDemoMode()
   try {
     const items = await getItems()
@@ -91,7 +90,7 @@ onBeforeMount(async () => {
       demo.showTourNotification()
     }
   } finally {
-    loading.isActive = false
+    isLoading.value = false
   }
 })
 

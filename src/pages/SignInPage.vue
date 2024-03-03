@@ -47,7 +47,12 @@
           lazy-rules
           :rules="[(v) => v?.length || t('pages.signIn.validation.password')]"
         />
-        <l-captcha v-if="!IS_LOCAL" class="q-mb-md full-width" @verify="credentials.options.captchaToken = $event" />
+        <l-captcha
+          v-if="!IS_LOCAL"
+          ref="captchaRef"
+          class="q-mb-md full-width"
+          @verify="credentials.options.captchaToken = $event"
+        />
         <q-btn
           class="full-width"
           :label="t('common.signIn')"
@@ -74,7 +79,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/user'
 import { throttle, useQuasar } from 'quasar'
-import { computed, reactive, defineAsyncComponent } from 'vue'
+import { computed, reactive, defineAsyncComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import type { UserSignInCredentials } from '@/types/user'
@@ -94,6 +99,7 @@ const credentials = reactive<UserSignInCredentials>({
     captchaToken: '',
   },
 })
+const captchaRef = ref<InstanceType<typeof LCaptcha> | null>(null)
 
 const signIn = throttle(async () => {
   loading.show()
@@ -104,6 +110,8 @@ const signIn = throttle(async () => {
       message: t('notifications.signInSuccess'),
     })
     router.push({ name: 'Items' })
+  } catch {
+    captchaRef.value?.resetCaptcha()
   } finally {
     loading.hide()
   }
@@ -113,6 +121,8 @@ const signInWithGoogle = throttle(async () => {
   loading.show()
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
+  } catch {
+    captchaRef.value?.resetCaptcha()
   } finally {
     loading.hide()
   }

@@ -32,4 +32,6 @@ function resetCaptcha() {
   captchaForm.value?.reset()
   emit('reset')
 }
+
+defineExpose({ resetCaptcha })
 </script>

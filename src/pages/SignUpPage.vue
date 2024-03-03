@@ -52,7 +52,12 @@
           lazy-rules
           :rules="[(v) => v?.length >= 6 || t('pages.signUp.validation.email')]"
         />
-        <l-captcha v-if="!IS_LOCAL" class="q-mb-md full-width" @verify="credentials.options.captchaToken = $event" />
+        <l-captcha
+          v-if="!IS_LOCAL"
+          ref="captchaRef"
+          class="q-mb-md full-width"
+          @verify="credentials.options.captchaToken = $event"
+        />
         <q-btn
           class="full-width"
           :label="t('common.signUp')"
@@ -97,6 +102,7 @@ const credentials = reactive<UserSignUpCredentials>({
     captchaToken: '',
   },
 })
+const captchaRef = ref<InstanceType<typeof LCaptcha> | null>(null)
 
 const isSignedUp = ref(false)
 const signUp = throttle(async () => {
@@ -104,6 +110,8 @@ const signUp = throttle(async () => {
   try {
     await userStore.signUp(credentials)
     isSignedUp.value = true
+  } catch {
+    captchaRef.value?.resetCaptcha()
   } finally {
     loading.hide()
   }
@@ -113,6 +121,8 @@ const signUpWithGoogle = throttle(async () => {
   loading.show({ message: `${t('pages.signUp.signingUp')}...` })
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
+  } catch {
+    captchaRef.value?.resetCaptcha()
   } finally {
     loading.hide()
   }

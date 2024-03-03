@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/**/*.ts", "src/**/*.vue", "src/**/*.ext"],
   "types": ["node", "vite/client", "vite-plugin-pwa/client", "@intlify/unplugin-vue-i18n/messages"],
   "typeRoots": ["./src/global.d.ts"],
   "exclude": ["src/**/__tests__/*"],

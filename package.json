@@ -73,7 +73,7 @@
     "vite-plugin-vue-devtools": "^7.0.15",
     "vite-svg-loader": "^5.1.0",
     "vue-eslint-parser": "^9.4.2",
-    "vue-tsc": "^1.8.27",
+    "vue-tsc": "^2.0.3",
     "workbox-build": "^7.0.0",
     "workbox-cacheable-response": "^7.0.0",
     "workbox-core": "^7.0.0",

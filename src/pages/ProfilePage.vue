@@ -35,13 +35,20 @@
         :to="{ name: 'Update password', replace: true }"
       />
       <q-btn
+        v-if="isSupported"
         :disable="!items.length"
         color="primary"
         :label="t('pages.profile.exportItems')"
         icon="upload"
         @click="exportItems"
       />
-      <q-btn color="primary" :label="t('pages.profile.importItems')" icon="download" @click="importItems" />
+      <q-btn
+        v-if="isSupported"
+        color="primary"
+        :label="t('pages.profile.importItems')"
+        icon="download"
+        @click="importItems"
+      />
       <q-btn
         v-if="isOnline && isAuthenticated"
         color="primary"
@@ -115,24 +122,27 @@ function updateAppFromEvent() {
   window.dispatchEvent(new CustomEvent('update-app'))
 }
 
+const { isSupported, data, open, saveAs } = useFileSystemAccess()
 async function exportItems() {
-  const { saveAs, data } = useFileSystemAccess()
   data.value = JSON.stringify(items.value)
   try {
     await saveAs({ suggestedName: `laundry-labels-items-${Date.now()}.json` })
     notify({ type: 'positive', message: t('notifications.exportSuccess') })
   } catch (error) {
     console.info(error)
+  } finally {
+    data.value = ''
   }
 }
 
 const showImportItemsDialog = ref(false)
 const importedItems = ref<Array<Item>>([])
 async function importItems() {
-  const { data, open } = useFileSystemAccess()
   try {
     await open()
-    if (!data.value || typeof data.value !== 'string') return
+    if (!data.value || typeof data.value !== 'string') {
+      return notify({ type: 'negative', message: t('notifications.wrongFileType') })
+    }
     for (const item of JSON.parse(data.value)) importedItems.value.push(item)
     showImportItemsDialog.value = true
   } catch (error) {

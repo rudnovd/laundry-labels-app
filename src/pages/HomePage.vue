@@ -77,7 +77,6 @@ function share() {
 
   .main-data {
     display: grid;
-    grid-template-columns: 1fr 40vw;
 
     @media (width >= 1024px) {
       grid-template-columns: 1fr 40vw;

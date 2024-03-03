@@ -142,7 +142,8 @@
     "uploadError": "Ошибка загрузки",
     "itemDeleted": "Предмет удален успешно",
     "exportSuccess": "Экспортировано успешно",
-    "importSuccess": "Импортировано успешно"
+    "importSuccess": "Импортировано успешно",
+    "wrongFileType": "Неверный тип файла"
   },
   "demo": {
     "buttons": {

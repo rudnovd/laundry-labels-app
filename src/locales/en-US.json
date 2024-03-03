@@ -142,7 +142,8 @@
     "uploadError": "Upload failed",
     "itemDeleted": "Item deleted successfully",
     "exportSuccess": "Exported successfully",
-    "importSuccess": "Imported successfully"
+    "importSuccess": "Imported successfully",
+    "wrongFileType": "Wrong file type"
   },
   "demo": {
     "buttons": {

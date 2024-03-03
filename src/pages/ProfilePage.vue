@@ -15,18 +15,24 @@
         icon="upgrade"
         @click="updateAppFromEvent"
       />
-      <q-btn color="primary" :label="t('pages.profile.coreSettings')" icon="settings" @click="showCoreOptions = true" />
+      <q-btn
+        color="primary"
+        :label="t('pages.profile.coreSettings')"
+        icon="settings"
+        :to="{ name: 'Core options', replace: true }"
+      />
       <q-btn
         color="primary"
         :label="t('pages.profile.languageSettings')"
         icon="translate"
-        @click="showLanguageOptions = true"
+        :to="{ name: 'Language options', replace: true }"
       />
       <q-btn
+        v-if="isOnline && isAuthenticated"
         color="primary"
         :label="t('pages.profile.updatePassword')"
         icon="password"
-        :to="{ name: 'Update password' }"
+        :to="{ name: 'Update password', replace: true }"
       />
       <q-btn
         :disable="!items.length"
@@ -37,7 +43,7 @@
       />
       <q-btn color="primary" :label="t('pages.profile.importItems')" icon="download" @click="importItems" />
       <q-btn
-        v-if="isOnline && userStore.user?.id"
+        v-if="isOnline && isAuthenticated"
         color="primary"
         :label="t('common.signOut')"
         icon="logout"
@@ -53,116 +59,40 @@
     </section>
 
     <teleport to="body">
-      <q-dialog v-model="showCoreOptions">
-        <q-card class="settings-card">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">{{ t('pages.profile.coreSettings') }}</div>
-            <q-space />
-            <q-btn v-close-popup icon="close" flat round dense />
-          </q-card-section>
-
-          <q-card-section>
-            <q-toggle
-              v-model="userSettingsStorage.autoUpdateApp"
-              color="brand"
-              :label="t('pages.profile.autoUpdateApp')"
-            />
-            <div>
-              <q-toggle
-                v-model="userSettingsStorage.offlineMode"
-                class="q-mr-sm"
-                color="brand"
-                :label="t('pages.profile.offlineMode')"
-              />
-              <q-btn icon="help" flat round dense size="12px">
-                <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
-                  {{ t('pages.profile.offlineModeTooltip') }}
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <q-dialog v-model="showLanguageOptions">
-        <q-card class="settings-card">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
-            <q-space />
-            <q-btn v-close-popup icon="close" flat round dense />
-          </q-card-section>
-
-          <q-card-section>
-            <q-select
-              v-model="lang.nativeName"
-              class="q-mb-md"
-              :options="langOptions"
-              :label="t('pages.profile.appLanguage')"
-              dense
-              borderless
-              emit-value
-              map-options
-              options-dense
-              @update:model-value="setLocale($event)"
-            />
-            <q-select
-              v-model="userSettingsStorage.items.standardTagsLocale"
-              :options="langOptions"
-              :label="t('pages.profile.itemsTagsLanguage')"
-              dense
-              borderless
-              emit-value
-              map-options
-              options-dense
-            />
-          </q-card-section>
-        </q-card>
-      </q-dialog>
       <import-items-dialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
+      <router-view />
     </teleport>
-
-    <router-view />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
-import languages from 'quasar/lang/index.json'
 import { useFileSystemAccess } from '@vueuse/core'
-import { availableLocales, type AvailableLocale } from '@/i18n'
 import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
 import useItems from '@/composables/useItems'
 import { userSettingsStorage } from '@/utils/localStorage'
-import { setLocale } from '@/utils/locale'
 import type { Item } from '@/types/item'
 import { useItemsStore } from '@/store/items'
 const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
 
 const appVersion = import.meta.env.__APP_VERSION__
-const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName as AvailableLocale))
-const langOptions = appLanguages.map((lang) => ({
-  label: lang.nativeName,
-  value: lang.isoName,
-}))
 
-const { loading, dialog, notify, lang } = useQuasar()
+const { loading, dialog, notify } = useQuasar()
 const userStore = useUserStore()
 const appSettingsStore = useAppSettingsStore()
 const router = useRouter()
 const { t } = useI18n()
 
 const isOnline = computed(() => userStore.isOnline)
+const isAuthenticated = computed(() => userStore.user)
 const { items } = useItems()
 const { getStandardSymbols, getStandardTags } = useItemsStore()
 watch(() => userSettingsStorage.value.locale, getStandardSymbols)
 watch(() => userSettingsStorage.value.items.standardTagsLocale, getStandardTags)
-
-const showLanguageOptions = ref(false)
-const showCoreOptions = ref(false)
 
 async function showSignOutDialog() {
   dialog({

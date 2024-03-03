@@ -14,7 +14,7 @@
         <q-toolbar-title class="flex items-center">
           <q-btn flat :to="{ name: 'Items' }" :ripple="false" padding="0">
             <l-icon icon="logo" width="32px" height="32px" />
-            <span class="q-mt-sm">aundry Labels</span>
+            <span class="q-ml-xs q-mt-sm logo-text">Laundry Labels</span>
           </q-btn>
 
           <q-space />
@@ -81,12 +81,19 @@ const previousPageLink = computed<string>(() => {
 
 <style>
 .user-layout-header {
-  color: black;
+  color: rgb(0 0 0);
   background-color: var(--color-brand);
 
   /* stylelint-disable-next-line selector-class-pattern */
   .q-toolbar__title:last-child {
     padding-right: 4px;
+  }
+
+  .logo-text::first-letter {
+    font-family: cursive;
+    font-size: 1.2em;
+    font-style: italic;
+    font-weight: bold;
   }
 }
 </style>

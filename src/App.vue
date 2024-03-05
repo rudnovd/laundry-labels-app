@@ -9,8 +9,9 @@ import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { useUserStore } from '@/store/user'
 import usePwa from '@/composables/usePwa'
-import { getBrowserLocale, setLocale } from '@/utils/locale'
+import { setLocale } from '@/utils/locale'
 import { useItemsStore } from '@/store/items'
+import { userSettingsStorage } from '@/utils/localStorage'
 
 const { loading } = useQuasar()
 const userStore = useUserStore()
@@ -18,7 +19,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 onBeforeMount(async () => {
-  await setLocale(getBrowserLocale())
+  await setLocale(userSettingsStorage.value.locale)
   loading.show({ message: t('common.authenticating') })
   try {
     await userStore.getSession()

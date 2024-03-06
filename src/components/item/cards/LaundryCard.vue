@@ -26,7 +26,7 @@
         </li>
       </ul>
     </div>
-    <item-photo v-if="item.photos.length" :path="item.photos[0]" />
+    <item-photo v-if="item.photos.length" :path="item.photos[0]" :alt="`${item.name} photo` ?? 'item photo'" />
   </div>
 </template>
 

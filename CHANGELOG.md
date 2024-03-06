@@ -2,6 +2,107 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-beta.0](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.11...v0.0.0-beta.0) (2024-03-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **router:** rewrite router to supabase auth logic
+* **store:** migrate items store to supabase
+* **store:** migrate user store to supabase
+* init supabase
+
+### Features
+
+* add constants ([0343e92](https://github.com/rudnovd/laundry-labels-app/commit/0343e92421f12fa78f9f253146070d6171d801af))
+* add demo tour ([ec4183a](https://github.com/rudnovd/laundry-labels-app/commit/ec4183a61eb70307f4bffa62a13069fc75700c6e))
+* add functions for import or export items ([d3d160a](https://github.com/rudnovd/laundry-labels-app/commit/d3d160a4e3559e372a126179693657d50d40c64d))
+* **app:** add 'usePwa' composable in 'App' component ([9fa9970](https://github.com/rudnovd/laundry-labels-app/commit/9fa9970412667dd3d68f15f642edaf286447e5ad))
+* **App:** get standard symbols once when entering on item pages ([50e66d4](https://github.com/rudnovd/laundry-labels-app/commit/50e66d4ae5e6d1130740f2cc9a373334815914f2))
+* **App:** init user settings in localstorage on first load ([a4f0d03](https://github.com/rudnovd/laundry-labels-app/commit/a4f0d034366bf904722fa8a7652242da66db9365))
+* **App:** set app locale and user check session on before mount app ([b39b56c](https://github.com/rudnovd/laundry-labels-app/commit/b39b56c852b9915cecf272fe3714ddbdd36394a3))
+* **components:** add ItemPhoto component ([94f350e](https://github.com/rudnovd/laundry-labels-app/commit/94f350e4195cda34cbbb5244b561fa5263c1351d))
+* **components:** add ItemTag component ([ad8c3fd](https://github.com/rudnovd/laundry-labels-app/commit/ad8c3fd9b0b407e8fd394b0476f73863759e6d60))
+* **components:** move hcaptcha in single component ([5dcaadc](https://github.com/rudnovd/laundry-labels-app/commit/5dcaadc5441e2bec5ce428b6220b30046a77b57c))
+* **components:** rewrite and divide item symbols selection component ([3ef3f34](https://github.com/rudnovd/laundry-labels-app/commit/3ef3f34a42f5e37a9e989c533e1275186e03ebb8))
+* **components:** update LaundryCard components ([aae0486](https://github.com/rudnovd/laundry-labels-app/commit/aae0486e045795ab42ebe58024071a0169f6b22e))
+* **composables:** add useItems composable ([98c7880](https://github.com/rudnovd/laundry-labels-app/commit/98c7880236843ab8aa28ce395e2bfb59c5eee87b))
+* **composables:** update useItems composable ([106ee76](https://github.com/rudnovd/laundry-labels-app/commit/106ee76fdf6b524f6afb71e201fc0237f70f8acf))
+* **constants:** add Bedding group ([0ab8a10](https://github.com/rudnovd/laundry-labels-app/commit/0ab8a103d74e47bad84d8d374ce9b1f56b4bfd2d))
+* **constants:** add Bedding group ([e5165d6](https://github.com/rudnovd/laundry-labels-app/commit/e5165d6d77d2aec16f75a727ad3fb9f155928a53))
+* **constants:** add new constants and move in src/constants ([972ec39](https://github.com/rudnovd/laundry-labels-app/commit/972ec398e73b48b60088c587293c5a61dc3a3c0f))
+* **CreateItemPage:** add item validation ([7bc9d69](https://github.com/rudnovd/laundry-labels-app/commit/7bc9d699b3746171d01d7550824459d235914efd))
+* **CreateItemPage:** use function from composable ([0822358](https://github.com/rudnovd/laundry-labels-app/commit/08223584d09e639a0ebdb90ee279a8f6e0fea75d))
+* **db:** update offline database fields ([c5849a9](https://github.com/rudnovd/laundry-labels-app/commit/c5849a94efe17d5d883bd307102c7ef258134710))
+* **EditItemPage:** update page ([4bf652d](https://github.com/rudnovd/laundry-labels-app/commit/4bf652dcf057a4c051aeb37ed6e161156f8a8cbf))
+* **icons:** add google logo icon ([e50c40a](https://github.com/rudnovd/laundry-labels-app/commit/e50c40a1b0775a84d84c43f024504bb83c3f75cd))
+* init database ([3f06e5c](https://github.com/rudnovd/laundry-labels-app/commit/3f06e5c2986a932187946d4697bb88c49e867ca6))
+* init supabase ([0e7e7de](https://github.com/rudnovd/laundry-labels-app/commit/0e7e7de4ddd0fbabfdaf280d9047bd1c2f402921))
+* **InputItemTags:** update component ([c3e02c8](https://github.com/rudnovd/laundry-labels-app/commit/c3e02c8a1564941100852f80424610289aff171e))
+* **ItemPage:** add button to save the offline item to the server ([0d188db](https://github.com/rudnovd/laundry-labels-app/commit/0d188db654abb4a53924399753ab4fe0f3b57e2b))
+* **ItemPage:** update component ([a11d7f8](https://github.com/rudnovd/laundry-labels-app/commit/a11d7f8c94fc649779ae0cf4f5c889f75a4a51a0))
+* **items:** add migration items functions ([2d5e484](https://github.com/rudnovd/laundry-labels-app/commit/2d5e484990803d8ef4aa1ea9e69f1dc1547f58ed))
+* **ItemsPage:** update page ([499f97f](https://github.com/rudnovd/laundry-labels-app/commit/499f97f2a21e6872193b17b831a60b57e7bcf3fe))
+* **ItemsPage:** use function from composable, add more validation ([8f66e40](https://github.com/rudnovd/laundry-labels-app/commit/8f66e4096b78c80d9892b519df76cc49f1f7a052))
+* **ItemTag:** add gap ([3786548](https://github.com/rudnovd/laundry-labels-app/commit/3786548b2dab07cad52c033d3937fdcbbe20d182))
+* **laundry-icons:** move laundry icons data from locales to data assets ([3d4019b](https://github.com/rudnovd/laundry-labels-app/commit/3d4019b4a9ec848b88450e60608d3c8a33a5c916))
+* **LaundryCard:** add icon to display offline item ([df0e768](https://github.com/rudnovd/laundry-labels-app/commit/df0e7684766b37aeff383de2f53feb3289cef5ec))
+* **locales:** update tokens ([a5a63b3](https://github.com/rudnovd/laundry-labels-app/commit/a5a63b3ce0b872ae6010777dac72e2a847fae272))
+* **localStorage:** add merge defaults function for user settings storage ([6f85ca1](https://github.com/rudnovd/laundry-labels-app/commit/6f85ca14f2c524eda5779ab2c19cb595b5d68a17))
+* **migration:** add 'isMigrated' flag to localstorage ([5a43310](https://github.com/rudnovd/laundry-labels-app/commit/5a433101bc83ed55de1141a8fd416507dfe42ff2))
+* **pages:** add 'reset password' page ([630f818](https://github.com/rudnovd/laundry-labels-app/commit/630f818cabc8ebf09431bda3e7fa78684c2e59f5))
+* **Profile:** add password update dialog ([b17d345](https://github.com/rudnovd/laundry-labels-app/commit/b17d3455f6fbd82abd2511dbcfebb94c284499e3))
+* **profile:** add sign out message ([ee9ecdb](https://github.com/rudnovd/laundry-labels-app/commit/ee9ecdbf93842e19eeb3e517436625c966fc09f6))
+* **ProfilePage:** add 'import', 'export' and 'password update' buttons ([bcacf11](https://github.com/rudnovd/laundry-labels-app/commit/bcacf11ba9eb7d6f5416e5f1979f7e57c0178570))
+* **ProfilePage:** move dialogs scripts in dialogs pages ([c61bb6f](https://github.com/rudnovd/laundry-labels-app/commit/c61bb6fab26f70e3e23a35394dd7c18717d8cee1))
+* **ProfilePage:** update page ([814b3cf](https://github.com/rudnovd/laundry-labels-app/commit/814b3cfca8a65287d2911c6aea2d54a81b815c51))
+* **request:** add offline mode check in beforeRequest ([0faeaac](https://github.com/rudnovd/laundry-labels-app/commit/0faeaacc9c20872f715d785011218e81cb13dacb))
+* **router:** rewrite router to supabase auth logic ([f164bcc](https://github.com/rudnovd/laundry-labels-app/commit/f164bccaa207ff23936518f5a8f1fc148b6ce86e))
+* **SignInPage:** refactor page and add google oauth ([8520302](https://github.com/rudnovd/laundry-labels-app/commit/85203020d7c405d03b5b55182b401b4ce2f83a52))
+* **SignUpPage:** refactor page and add google oauth ([d5d89d4](https://github.com/rudnovd/laundry-labels-app/commit/d5d89d42416a2ecc94e4fc08404f23bc50a181c3))
+* **store:** add 'getPhoto' item function ([34b5f9b](https://github.com/rudnovd/laundry-labels-app/commit/34b5f9b3e7ad8e2d798a89b787929d7d96fcba5c))
+* **store:** add 'getSession' method in user store ([b2892b0](https://github.com/rudnovd/laundry-labels-app/commit/b2892b09c21fa289e9713677347fbda03d6616b5))
+* **store:** add reactive isOnline user state ([71261e3](https://github.com/rudnovd/laundry-labels-app/commit/71261e38ba726dfe17ab94387f73d0713091ca47))
+* **store:** add store for app settings ([1584f0b](https://github.com/rudnovd/laundry-labels-app/commit/1584f0b63fd750f9bd270d2fb9c2715c9398c289))
+* **store:** add store for offline user items ([f2c1baa](https://github.com/rudnovd/laundry-labels-app/commit/f2c1baae5fce80ff88e2346252ecf1ea86d6bfee))
+* **store:** migrate items store to supabase ([18b7e8a](https://github.com/rudnovd/laundry-labels-app/commit/18b7e8ac62a956ea2a85593e3143be404ead8926))
+* **store:** migrate user store to supabase ([a3ecf27](https://github.com/rudnovd/laundry-labels-app/commit/a3ecf2703ae477f475bcdef7d54d98f0e1c3c902))
+* **store:** simplify methods arguments ([f071c59](https://github.com/rudnovd/laundry-labels-app/commit/f071c59fdde634851ccfc31ba4662048077e166f))
+* **store:** update ErrorResponse type ([911896d](https://github.com/rudnovd/laundry-labels-app/commit/911896de8777fd29f1098cb463b29f62aa6913a7))
+* **store:** update offline items store ([f96959d](https://github.com/rudnovd/laundry-labels-app/commit/f96959dc07a1209689e7212ce45f4db7d56c09e8))
+* **store:** use local storage composable for user settings ([686f0d6](https://github.com/rudnovd/laundry-labels-app/commit/686f0d67fd595634d344d28318c080e083a6aa8a))
+* **store:** use Maps types for items getters ([cc5412c](https://github.com/rudnovd/laundry-labels-app/commit/cc5412cca054fdd5369b9d691726cad4602cc613))
+* **styles:** replace scss to css for main styles file, add new styles ([7313c36](https://github.com/rudnovd/laundry-labels-app/commit/7313c36cbc3c8aad232daf050a36f289696c7f07))
+* **types:** add offlineMode in UserSettings interface ([c59c04c](https://github.com/rudnovd/laundry-labels-app/commit/c59c04c99e0da961cfbadddedb3028d8b8eab507))
+* **UploadItemImage:** add uploading for offline items ([e395118](https://github.com/rudnovd/laundry-labels-app/commit/e395118bfe50f6d50bcf2502a0e141b57c70204f))
+* **UploadItemPhoto:** update component ([f1f4e23](https://github.com/rudnovd/laundry-labels-app/commit/f1f4e23913bdd14ab18d739cc1153ae5adeeeb42))
+* **UserLayout:** add offline icon in header ([bfd92d4](https://github.com/rudnovd/laundry-labels-app/commit/bfd92d4bf5b15dc09e9687018af52fa5e4245912))
+* **UserLayout:** check user session after deactivate offline mode ([a0d827e](https://github.com/rudnovd/laundry-labels-app/commit/a0d827e52b2debaa828e261c735bab67a30e98b5))
+* **UserLayout:** update logo text styles ([5a87d50](https://github.com/rudnovd/laundry-labels-app/commit/5a87d507af5b0ed41ef9fd3720cf42768aa8d97a))
+
+
+### Bug Fixes
+
+* **App:** fix first symbols fetching ([3af5b2a](https://github.com/rudnovd/laundry-labels-app/commit/3af5b2aac839a0aef600ace17a602effc398d9b0))
+* **App:** set initial locale from localStorage ([c8e5e87](https://github.com/rudnovd/laundry-labels-app/commit/c8e5e872c97f4477ddda70899ea605356053e807))
+* fix lint errors ([56a3e8a](https://github.com/rudnovd/laundry-labels-app/commit/56a3e8ac88684430ef8da46d4940af17fd50b3a2))
+* **HomePage:** fix grid columns for small screen resolution ([96e8d9b](https://github.com/rudnovd/laundry-labels-app/commit/96e8d9bd1a1bf93353178bb3fc461e41e5681ee6))
+* **ItemPage:** hide 'save on server' button if user not authenticated or offline ([2c9ee85](https://github.com/rudnovd/laundry-labels-app/commit/2c9ee8509716e3f0d3da8b86b0384a7a7c9b9d4a))
+* **ItemsPage:** use ItemTag component for searching tags ([02cf65d](https://github.com/rudnovd/laundry-labels-app/commit/02cf65d870318e779dea67a7628e794330cf7458))
+* **ItemsPage:** use local ref for 'is loading' state ([49131fb](https://github.com/rudnovd/laundry-labels-app/commit/49131fb30368a857de80d138e5c7eb8cae684b42))
+* **LaundryCard:** disable pointer events for laundry symbols inside card ([e17737b](https://github.com/rudnovd/laundry-labels-app/commit/e17737b3151721c155e1f181f4a7378d4f4f04b7))
+* **LaundrySymbolsButtonGroup:** add optional chaining for selected symbol ([14cb7e8](https://github.com/rudnovd/laundry-labels-app/commit/14cb7e831de359d82fbb6b56ecfde42c47dd0f6e))
+* **pages:** reset captcha after 'sign in' or 'sign up' error ([89239b6](https://github.com/rudnovd/laundry-labels-app/commit/89239b6f076e2b337be2151c79a57dfb48abb738))
+* **ProfilePage:** not render import/export buttons if File System API not supported ([c3e6d84](https://github.com/rudnovd/laundry-labels-app/commit/c3e6d843d557d773737c55b4b8dae6dad4ddd8ca))
+* **store:** redirect to origin domain when sign in with OAuth ([ee3a5dc](https://github.com/rudnovd/laundry-labels-app/commit/ee3a5dc787c4bf7beaf92614ff7f5e42aa696d3f))
+* **store:** remove settings composable from user store ([1ce23f9](https://github.com/rudnovd/laundry-labels-app/commit/1ce23f901a009b022cad6eacfde00e9ff0da3a98))
+* **store:** use local data in 'getStandardTags' and 'getStandardSymbols' functions ([9b68e8e](https://github.com/rudnovd/laundry-labels-app/commit/9b68e8e3e12e08199f409abd5f577b257284cafd))
+* **types:** fix supabase types ([d313e3e](https://github.com/rudnovd/laundry-labels-app/commit/d313e3efcd61efdbfd83f687576ddf017709b2f2))
+* **UpdatePasswordDialog:** fix password validation ([ff2cb5d](https://github.com/rudnovd/laundry-labels-app/commit/ff2cb5d24b5cac813abfdc240bdceb2c496531e2))
+* **UploadItemImage:** hide empty container ([e276a4e](https://github.com/rudnovd/laundry-labels-app/commit/e276a4e1ccd7611eb1320c06bbb6e11b09a0d5f2))
+* **useDemoMode:** update tour elements ([54b734b](https://github.com/rudnovd/laundry-labels-app/commit/54b734bc1963d68db6bf93813ee81c17a705a716))
+* **useItems:** flat getItems result ([db54919](https://github.com/rudnovd/laundry-labels-app/commit/db54919ad9ab103f642844abf02c61d8cdfb65ca))
+
 ## [0.0.0-alpha.11](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.10...v0.0.0-alpha.11) (2023-05-01)
 
 

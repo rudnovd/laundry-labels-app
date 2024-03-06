@@ -104,7 +104,7 @@ watch(
   }
 
   .logo-text::first-letter {
-    font-family: cursive;
+    font-family: 'Comic Sans MS', 'Comic Sans', Roboto, cursive;
     font-size: 1.2em;
     font-style: italic;
     font-weight: bold;

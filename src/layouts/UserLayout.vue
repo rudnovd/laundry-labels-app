@@ -1,6 +1,6 @@
 <template>
   <q-layout container>
-    <q-header>
+    <q-header class="user-layout-header">
       <q-toolbar>
         <q-btn
           :class="{ invisible: route.name === 'Items' }"
@@ -11,13 +11,33 @@
           :to="previousPageLink"
           replace
         />
-        <q-toolbar-title class="flex items-center justify-between">
+        <q-toolbar-title class="flex items-center">
           <q-btn flat :to="{ name: 'Items' }" :ripple="false" padding="0">
             <l-icon icon="logo" width="32px" height="32px" />
-            <span class="q-mt-sm">aundry Labels</span>
+            <span class="q-ml-xs q-mt-sm logo-text">Laundry Labels</span>
           </q-btn>
+
+          <q-space />
+
+          <q-icon v-if="userSettingsStorage.offlineMode || !userStore.isOnline" class="q-mr-sm" name="cloud_off">
+            <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
+              <q-banner class="bg-white">
+                <q-toggle
+                  v-model="userSettingsStorage.offlineMode"
+                  color="brand"
+                  :label="t('pages.profile.offlineMode')"
+                />
+                <q-btn icon="help" flat round dense size="12px">
+                  <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
+                    {{ t('pages.profile.offlineModeTooltip') }}
+                  </q-tooltip>
+                </q-btn>
+              </q-banner>
+            </q-popup-proxy>
+          </q-icon>
+
           <q-btn flat icon="person" padding="0" :to="{ name: 'Profile' }" :ripple="false">
-            <q-badge v-if="userStore.settings.appHasUpdate" floating rounded color="red" />
+            <q-badge v-if="appSettingsStore.appHasUpdate" floating rounded color="red" />
           </q-btn>
         </q-toolbar-title>
       </q-toolbar>
@@ -35,14 +55,19 @@
 
 <script setup lang="ts">
 import LIcon from '@/components/LIcon.vue'
+import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import { userSettingsStorage } from '@/utils/localStorage'
 
 const keepAliveComponents = ['ItemsPage']
 
 const router = useRouter()
 const route = useRoute()
+const appSettingsStore = useAppSettingsStore()
+const { t } = useI18n()
 const userStore = useUserStore()
 
 const previousPageLink = computed<string>(() => {
@@ -52,16 +77,37 @@ const previousPageLink = computed<string>(() => {
     return window.history.state.back || '/items'
   }
 })
+
+watch(
+  () => userSettingsStorage.value.offlineMode,
+  async (isOffline) => {
+    if (!isOffline) {
+      try {
+        const session = await userStore.getSession()
+        if (!session) router.replace({ name: 'Sign in' })
+      } catch (error) {
+        router.replace({ name: 'Sign in' })
+      }
+    }
+  },
+)
 </script>
 
-<style lang="scss" scoped>
-header {
-  color: black;
-  background-color: $brand;
+<style>
+.user-layout-header {
+  color: rgb(0 0 0);
+  background-color: var(--color-brand);
 
   /* stylelint-disable-next-line selector-class-pattern */
   .q-toolbar__title:last-child {
     padding-right: 4px;
+  }
+
+  .logo-text::first-letter {
+    font-family: 'Comic Sans MS', 'Comic Sans', Roboto, cursive;
+    font-size: 1.2em;
+    font-style: italic;
+    font-weight: bold;
   }
 }
 </style>

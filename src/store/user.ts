@@ -1,90 +1,102 @@
-import type { User, UserLoginResponse, UserRefreshTokenResponse } from '@/interfaces/user'
-import request from '@/services/request'
-import type { JwtPayload } from 'jwt-decode'
-import jwtDecode from 'jwt-decode'
+import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
-import { LocalStorage } from 'quasar'
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>
-}
+import { useOnline } from '@vueuse/core'
+import { supabase } from '@/supabase'
+import type { Provider, User, UserAttributes } from '@supabase/supabase-js'
+import type { UserSignInCredentials, UserSignUpCredentials } from '@/types/user'
 
 interface UserState {
   user: User | null
-  settings: {
-    appHasUpdate?: boolean
-    installApp?: {
-      event: BeforeInstallPromptEvent
-      show: boolean
-    }
-  }
+  isOnline: Ref<boolean>
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
-    settings: {},
+    isOnline: useOnline(),
   }),
   actions: {
-    async signIn(payload: { email: string; password: string; token: string }) {
-      const response = await request
-        .post('/auth/login', {
-          json: { email: payload.email, password: payload.password, token: payload.token },
-        })
-        .json<UserLoginResponse>()
-      LocalStorage.set('accessToken', response.accessToken)
-      LocalStorage.set('hasRefreshToken', true)
-      this.user = response.user
+    async signIn(payload: UserSignInCredentials) {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.signInWithPassword(payload)
+      if (error) throw error
+
+      this.user = user
 
       return this.user
     },
-    async signUp(payload: { email: string; password: string; token: string }) {
-      const response = await request
-        .post('/auth/registration', {
-          json: {
-            email: payload.email,
-            password: payload.password,
-            token: payload.token,
-          },
-        })
-        .json<UserLoginResponse>()
-      LocalStorage.set('accessToken', response.accessToken)
-      LocalStorage.set('hasRefreshToken', true)
-      this.user = response.user
+    async signInWithOAuth(options: { provider: Provider }) {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: options.provider,
+        options: { redirectTo: window.location.origin },
+      })
+      if (error) throw error
+    },
+    async getSession() {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+      if (error) throw error
+      if (session) {
+        this.user = session.user
+      }
+
+      return session
+    },
+    async signUp(credentials: UserSignUpCredentials) {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.signUp(credentials)
+      if (error) throw error
+
+      this.user = user
 
       return this.user
     },
     async signOut() {
-      await request.post('/auth/logout')
-      LocalStorage.remove('accessToken')
-      LocalStorage.remove('hasRefreshToken')
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+
       this.user = null
 
       return this.user
     },
-    async signInFromRefreshToken() {
-      try {
-        const response = await request.post('/auth/refreshtoken').json<UserRefreshTokenResponse>()
-        if (response.accessToken) {
-          LocalStorage.set('accessToken', response.accessToken)
-          LocalStorage.set('hasRefreshToken', true)
-          this.user = response.user
-        }
-
-        return { user: response.user, accessToken: response.accessToken }
-      } catch (error) {
-        LocalStorage.remove('hasRefreshToken')
-      }
-
-      return { user: this.user, accessToken: '' }
+    async resetPassword(payload: { email: string; captchaToken: string }) {
+      const { error } = await supabase.auth.resetPasswordForEmail(payload.email, {
+        captchaToken: payload.captchaToken,
+      })
+      if (error) throw error
     },
-    signInFromAccessToken() {
-      const accessToken = LocalStorage.getItem('accessToken')?.toString()
-      if (accessToken) {
-        this.user = jwtDecode<JwtPayload & { data: { _id: string } }>(accessToken).data
-      }
+    async update(payload: UserAttributes) {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.updateUser(payload)
+      if (error) throw error
 
-      return { user: this.user, accessToken }
+      this.user = user
+
+      return this.user
+    },
+    async refreshSession() {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+      if (error) throw error
+      const {
+        data: { user },
+        error: refreshSessionError,
+      } = await supabase.auth.refreshSession({ refresh_token: session?.refresh_token ?? '' })
+      if (refreshSessionError) throw refreshSessionError
+
+      this.user = user
+
+      return this.user
     },
   },
 })

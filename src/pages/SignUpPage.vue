@@ -1,8 +1,14 @@
 <template>
   <q-page class="sign-up-page">
-    <section>
+    <article>
       <h1 class="text-h3 q-mt-none">{{ t('common.signUp') }}</h1>
+
+      <section v-if="isSignedUp" class="account-registered">
+        <span class="text-body1">{{ t('pages.signUp.accountRegistered') }}</span>
+        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signUp.backToHomePage') }}</router-link>
+      </section>
       <q-form
+        v-else
         class="q-mb-md"
         autocorrect="off"
         autocapitalize="off"
@@ -10,11 +16,24 @@
         spellcheck="false"
         @submit="signUp"
       >
+        <q-btn
+          :disable="loading.isActive"
+          size="small"
+          class="full-width q-mb-sm"
+          color="white"
+          text-color="black"
+          @click="signUpWithGoogle"
+        >
+          <l-icon class="q-mr-sm" icon="google-logo" />
+          {{ t('pages.signUp.signUpWithGoogle') }}
+        </q-btn>
+        <span class="q-mb-sm inline-block">{{ t('common.or').toLocaleLowerCase() }}</span>
         <q-input
-          v-model="payload.email"
+          v-model="credentials.email"
           class="q-mb-md"
           type="email"
           :label="t('common.email')"
+          :disable="loading.isActive"
           maxlength="320"
           bg-color="grey-1"
           filled
@@ -22,132 +41,114 @@
           :rules="[(v) => v?.length || t('pages.signUp.validation.email')]"
         />
         <q-input
-          v-model="payload.password"
+          v-model="credentials.password"
           class="q-mb-md"
           type="password"
           :label="t('common.password')"
-          maxlength="64"
+          :disable="loading.isActive"
+          maxlength="72"
           bg-color="grey-1"
           filled
           lazy-rules
           :rules="[(v) => v?.length >= 6 || t('pages.signUp.validation.email')]"
         />
-        <VueHcaptcha
-          v-if="showCaptcha"
-          ref="captchaForm"
+        <l-captcha
+          v-if="!IS_LOCAL"
+          ref="captchaRef"
           class="q-mb-md full-width"
-          :sitekey="sitekey"
-          @verify="verifyCaptcha"
-          @expired="resetCaptcha"
-          @challenge-expired="resetCaptcha"
+          @verify="credentials.options.captchaToken = $event"
         />
         <q-btn
           class="full-width"
           :label="t('common.signUp')"
-          :disable="!payload.email || !payload.password || (showCaptcha && !payload.token)"
+          :disable="isSignedUpButtonDisabled"
+          :loading="loading.isActive"
           type="submit"
           color="positive"
         />
       </q-form>
 
-      <section class="links">
+      <section v-if="!isSignedUp">
         <div>
           {{ t('pages.signUp.alreadyRegistered') }}
           <router-link class="link-light" :to="{ name: 'Sign in' }">{{ t('common.signIn') }}</router-link>
         </div>
         <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signUp.backToHomePage') }}</router-link>
       </section>
-    </section>
+    </article>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { type ErrorResponse } from '@/interfaces/types'
 import { useUserStore } from '@/store/user'
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 import { throttle, useQuasar } from 'quasar'
-import { reactive, ref } from 'vue'
+import { defineAsyncComponent, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import type { UserSignUpCredentials } from '@/types/user'
+import { REQUEST_THROTTLE_TIMEOUT, IS_LOCAL } from '@/constants'
+import { ref } from 'vue'
+import { computed } from 'vue'
+const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
+const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
-const sitekey = import.meta.env.VITE_APP_CAPTCHA_KEY
-const showCaptcha = import.meta.env.PROD && !import.meta.env.VITE_APP_IS_LOCAL
-const FIVE_SECONDS = 5000
-
-const { notify, loading } = useQuasar()
+const { loading } = useQuasar()
 const userStore = useUserStore()
-const router = useRouter()
 const { t } = useI18n()
 
-const captchaForm = ref<VueHcaptcha>()
-const payload = reactive({
+const credentials = reactive<UserSignUpCredentials>({
   email: '',
   password: '',
-  token: '',
+  options: {
+    captchaToken: '',
+  },
 })
+const captchaRef = ref<InstanceType<typeof LCaptcha> | null>(null)
 
-const verifyCaptcha = (token: string) => {
-  payload.token = token
-}
-
-const resetCaptcha = () => {
-  payload.token = ''
-  captchaForm.value?.reset()
-}
-
+const isSignedUp = ref(false)
 const signUp = throttle(async () => {
-  if (showCaptcha && !payload.token) {
-    return notify({
-      type: 'negative',
-      message: t('notifications.captchaError'),
-      timeout: 5000,
-    })
-  }
-
-  loading.show()
+  loading.show({ message: `${t('pages.signUp.signingUp')}...` })
   try {
-    await userStore.signUp(payload)
-    notify({
-      message: t('notifications.signUpSuccess'),
-    })
-    router.push({ name: 'Items' })
-  } catch (e) {
-    const error = e as ErrorResponse
-    if (error.name === 'ERR_AUTH_REGISTRATION_EMAIL_ALREADY_REGISTERED') {
-      try {
-        await userStore.signIn(payload)
-        notify({
-          type: 'positive',
-          message: t('notifications.signInSuccess'),
-        })
-        router.push({ name: 'Items' })
-      } finally {
-        loading.hide()
-      }
-    }
+    await userStore.signUp(credentials)
+    isSignedUp.value = true
+  } catch {
+    captchaRef.value?.resetCaptcha()
   } finally {
     loading.hide()
   }
-}, FIVE_SECONDS)
+}, REQUEST_THROTTLE_TIMEOUT)
+
+const signUpWithGoogle = throttle(async () => {
+  loading.show({ message: `${t('pages.signUp.signingUp')}...` })
+  try {
+    await userStore.signInWithOAuth({ provider: 'google' })
+  } catch {
+    captchaRef.value?.resetCaptcha()
+  } finally {
+    loading.hide()
+  }
+}, REQUEST_THROTTLE_TIMEOUT)
+
+const isSignedUpButtonDisabled = computed(() => {
+  const { email, password, options } = credentials
+  return loading.isActive || !email || !password || (!IS_LOCAL && !options.captchaToken)
+})
 </script>
 
-<style lang="scss" scoped>
+<style>
 .sign-up-page {
   display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr;
+  grid: 1fr / 1fr;
   place-content: center;
-  color: $grey-1;
+  color: rgb(250 250 250);
   text-align: center;
   background: linear-gradient(135deg, rgb(9 121 46) 0%, rgb(75 8 129) 50%, rgb(9 121 46) 100%);
 
-  @include media-small {
-    grid-template-rows: initial;
-    grid-template-columns: calc($breakpoint-sm-min - 8px);
+  @media (width >= 576px) {
+    grid: auto-flow / 592px;
     padding: 8px;
   }
 
-  & > section {
+  > article {
     display: grid;
     grid-template-columns: 1fr;
     place-content: center;
@@ -155,9 +156,14 @@ const signUp = throttle(async () => {
     background: rgb(0 0 0 / 30%);
     transition: padding 0.5s linear;
 
-    @include media-small {
+    @media (width >= 576px) {
       padding: 64px;
       border-radius: 8px;
+    }
+
+    > .account-registered {
+      display: grid;
+      gap: 1rem;
     }
   }
 }

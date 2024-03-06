@@ -76,6 +76,7 @@ import { defineAsyncComponent } from 'vue'
 import { supabase } from '@/supabase'
 import { useUserStore } from '@/store/user'
 import type { Item, ItemBlank } from '@/types/item'
+import { userSettingsStorage } from '@/utils/localStorage'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
 const { loading, notify } = useQuasar()
@@ -86,6 +87,7 @@ const userStore = useUserStore()
 
 const isLoading = ref(false)
 const isMaxItems = computed(() => itemsStore.items.length >= ITEMS_LIMIT)
+const isOnline = computed(() => userStore.isOnline)
 
 onBeforeMount(async () => {
   isLoading.value = true
@@ -100,27 +102,32 @@ onBeforeMount(async () => {
   }
 
   // TODO: remove after migration date is over
-  itemsStore.getMigrationItems().then((migration) => {
-    if (migration.items.length && !migration.migration_date) {
-      notify({
-        message:
-          'Welcome to the new version of the app! Please complete the migration and copy items from the old version',
-        color: 'brand',
-        timeout: 60_000,
-        actions: [
-          {
-            label: 'Skip',
-            color: 'black',
-          },
-          {
-            label: t('demo.notification.buttons.start'),
-            color: 'black',
-            handler: () => migrate(migration.items),
-          },
-        ],
-      })
-    }
-  })
+  if (!userSettingsStorage.value.isMigrated && isOnline.value) {
+    itemsStore.getMigrationItems().then((migration) => {
+      if (!migration.migration_date) {
+        userSettingsStorage.value.isMigrated = false
+        notify({
+          message:
+            'Welcome to the new version of the app! Please complete the migration and copy items from the old version',
+          color: 'brand',
+          timeout: 60_000,
+          actions: [
+            {
+              label: 'Skip',
+              color: 'black',
+            },
+            {
+              label: t('demo.notification.buttons.start'),
+              color: 'black',
+              handler: () => migrate(migration.items),
+            },
+          ],
+        })
+      } else {
+        userSettingsStorage.value.isMigrated = true
+      }
+    })
+  }
 })
 
 const search = ref('')
@@ -194,13 +201,28 @@ async function migrate(items: Array<Item>) {
       })
     } else {
       await itemsStore.updateMigrationDate()
+      userSettingsStorage.value.isMigrated = true
       notify({
         type: 'positive',
         message: 'Migration completed successfully',
       })
     }
   } catch (error) {
-    migrate(items)
+    notify({
+      type: 'negative',
+      message: `something went wrong, try migrate again?`,
+      actions: [
+        {
+          label: 'Skip',
+          color: 'black',
+        },
+        {
+          label: t('demo.notification.buttons.start'),
+          color: 'black',
+          handler: () => migrate(items),
+        },
+      ],
+    })
   }
 }
 </script>

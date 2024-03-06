@@ -10,6 +10,8 @@ interface UserSettingsLocalStorage {
   items: {
     standardTagsLocale: AvailableLocale
   }
+  // TODO: remove after migration date is over
+  isMigrated: boolean
 }
 
 interface DemoLocalStorage {
@@ -27,6 +29,7 @@ export const userSettingsStorage = useLocalStorage<UserSettingsLocalStorage>(
     items: {
       standardTagsLocale: getBrowserLocale(),
     },
+    isMigrated: false,
   },
   {
     mergeDefaults(storageValue: Partial<UserSettingsLocalStorage>, defaults) {
@@ -37,6 +40,7 @@ export const userSettingsStorage = useLocalStorage<UserSettingsLocalStorage>(
         items: {
           standardTagsLocale: storageValue.items?.standardTagsLocale ?? defaults.items.standardTagsLocale,
         },
+        isMigrated: storageValue?.isMigrated ?? defaults.isMigrated,
       }
     },
   },

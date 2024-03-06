@@ -3,86 +3,39 @@
 </template>
 
 <script setup lang="ts">
-import { laundryIcons } from '@/assets/laundryIcons'
-import { useLocalStorage, watchOnce } from '@vueuse/core'
-import { QSpinnerGears, useQuasar } from 'quasar'
-import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { onMounted, onUnmounted } from 'vue'
+import { onBeforeMount, watch } from 'vue'
+import { useRouter, type RouteRecordName } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
-import { useLocale } from './i18n'
-import type { UserSettings } from './interfaces/types'
-import { useUserStore } from './store/user'
+import { useQuasar } from 'quasar'
+import { useUserStore } from '@/store/user'
+import usePwa from '@/composables/usePwa'
+import { setLocale } from '@/utils/locale'
+import { useItemsStore } from '@/store/items'
+import { userSettingsStorage } from '@/utils/localStorage'
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>
-}
-
-let icons: { [key: string]: string } = {}
-laundryIcons.forEach((icon) => (icons[icon._id] = `img:/icons/laundry/${icon.group}/${icon._id}.svg`))
-
-const $q = useQuasar()
+const { loading } = useQuasar()
 const userStore = useUserStore()
-const router = useRouter()
-const isBrowser = window.matchMedia('(display-mode: browser)').matches
-const userSettings = useLocalStorage<Readonly<Partial<UserSettings>>>('user-settings', {})
-const { updateServiceWorker, needRefresh } = useRegisterSW({
-  immediate: true,
-})
-useLocale()
-
-$q.iconMapFn = (iconName) => {
-  const icon = icons[iconName]
-  if (icon !== void 0) return { icon }
-}
-
-onMounted(() => {
-  if (isBrowser) {
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt)
-    window.addEventListener('appinstalled', onAppInstalled)
-  }
-})
-
-onUnmounted(() => {
-  window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt)
-  window.removeEventListener('appinstalled', onAppInstalled)
-  window.removeEventListener('update-app', updateApp)
-})
-
-watchOnce(needRefresh, () => {
-  if (userSettings.value.autoUpdateApp) {
-    const ignoreUpdateInPages = ['Create item', 'Edit item']
-    if (router.currentRoute.value.name && !ignoreUpdateInPages.includes(router.currentRoute.value.name as string)) {
-      updateApp()
-    }
-  } else {
-    userStore.settings.appHasUpdate = true
-  }
-})
-
-const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
-  event.preventDefault()
-  userStore.settings.installApp = {
-    show: true,
-    event,
-  }
-}
-
 const { t } = useI18n()
-const onAppInstalled = () => {
-  $q.notify({ type: 'positive', message: t('notifications.appInstalled') })
-  delete userStore.settings.installApp
-}
+const router = useRouter()
 
-const updateApp = () => {
-  $q.loading.show({ message: 'Updating app...', spinner: QSpinnerGears, ignoreDefaults: true })
-  if (userStore?.settings?.appHasUpdate) {
-    userStore.settings.appHasUpdate = false
+onBeforeMount(async () => {
+  await setLocale(userSettingsStorage.value.locale)
+  loading.show({ message: t('common.authenticating') })
+  try {
+    await userStore.getSession()
+  } finally {
+    loading.hide()
   }
-  updateServiceWorker()
-}
+})
 
-if (!userSettings.value.autoUpdateApp) {
-  window.addEventListener('update-app', updateApp)
-}
+usePwa()
+const stop = watch(router.currentRoute, ({ matched }) => {
+  const matchedPages: Array<RouteRecordName> = ['Items parent', 'Profile parent']
+  const { getStandardSymbols, getStandardTags } = useItemsStore()
+  if (matched.some(({ name }) => name && matchedPages.includes(name))) {
+    getStandardSymbols()
+    getStandardTags()
+    stop()
+  }
+})
 </script>

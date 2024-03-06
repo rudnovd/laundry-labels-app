@@ -1,38 +1,60 @@
 <template>
   <q-page class="profile-page q-pa-sm">
     <section class="actions">
-      <q-toggle v-model="userSettings.autoUpdateApp" color="brand" :label="t('pages.profile.autoUpdateApp')" />
-
       <q-btn
-        v-if="isOnline && userStore.settings.installApp?.show"
+        v-if="isOnline && appSettingsStore.appInstallation?.showInstallButton"
         color="primary"
         :label="t('pages.profile.installApp')"
         icon="install_mobile"
-        @click="userStore.settings.installApp?.event.prompt()"
+        @click="appSettingsStore.appInstallation?.event.prompt()"
       />
-
       <q-btn
-        color="primary"
-        :label="t('pages.profile.languageSettings')"
-        icon="translate"
-        @click="showLanguageOptions = true"
-      >
-      </q-btn>
-
-      <q-btn
-        v-if="isOnline && !userSettings.autoUpdateApp && userStore.settings.appHasUpdate"
+        v-if="isOnline && !userSettingsStorage.autoUpdateApp && appSettingsStore.appHasUpdate"
         color="primary"
         :label="t('pages.profile.updateApp')"
         icon="upgrade"
         @click="updateAppFromEvent"
       />
-
       <q-btn
-        v-if="isOnline && userStore.user?._id"
+        color="primary"
+        :label="t('pages.profile.coreSettings')"
+        icon="settings"
+        :to="{ name: 'Core options', replace: true }"
+      />
+      <q-btn
+        color="primary"
+        :label="t('pages.profile.languageSettings')"
+        icon="translate"
+        :to="{ name: 'Language options', replace: true }"
+      />
+      <q-btn
+        v-if="isOnline && isAuthenticated"
+        color="primary"
+        :label="t('pages.profile.updatePassword')"
+        icon="password"
+        :to="{ name: 'Update password', replace: true }"
+      />
+      <q-btn
+        v-if="isSupported"
+        :disable="!items.length"
+        color="primary"
+        :label="t('pages.profile.exportItems')"
+        icon="upload"
+        @click="exportItems"
+      />
+      <q-btn
+        v-if="isSupported"
+        color="primary"
+        :label="t('pages.profile.importItems')"
+        icon="download"
+        @click="importItems"
+      />
+      <q-btn
+        v-if="isOnline && isAuthenticated"
         color="primary"
         :label="t('common.signOut')"
         icon="logout"
-        @click="callLogoutDialog"
+        @click="showSignOutDialog"
       />
     </section>
 
@@ -44,131 +66,115 @@
     </section>
 
     <teleport to="body">
-      <q-dialog v-model="showLanguageOptions">
-        <q-card class="language-settings-card">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
-            <q-space />
-            <q-btn v-close-popup icon="close" flat round dense />
-          </q-card-section>
-
-          <q-card-section>
-            <q-select
-              v-model="lang.nativeName"
-              class="q-mb-md"
-              :options="langOptions"
-              :label="t('pages.profile.appLanguage')"
-              dense
-              borderless
-              emit-value
-              map-options
-              options-dense
-              @update:model-value="locale = $event"
-            />
-
-            <q-select
-              v-model="userSettings.items.standardTagsLocale"
-              :options="langOptions"
-              :label="t('pages.profile.itemsTagsLanguage')"
-              dense
-              borderless
-              emit-value
-              map-options
-              options-dense
-            />
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+      <import-items-dialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
+      <router-view />
     </teleport>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { availableLocales, useLocale } from '@/i18n'
-import type { UserSettings } from '@/interfaces/types'
-import { useUserStore } from '@/store/user'
-import { useLocalStorage, useOnline } from '@vueuse/core'
-import { useQuasar } from 'quasar'
-import languages from 'quasar/lang/index.json'
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
+import { useFileSystemAccess } from '@vueuse/core'
+import { useAppSettingsStore } from '@/store/settings'
+import { useUserStore } from '@/store/user'
+import useItems from '@/composables/useItems'
+import { userSettingsStorage } from '@/utils/localStorage'
+import type { Item } from '@/types/item'
+import { useItemsStore } from '@/store/items'
+const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
 
 const appVersion = import.meta.env.__APP_VERSION__
-const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName))
-const langOptions = appLanguages.map((lang) => ({
-  label: lang.nativeName,
-  value: lang.isoName,
-}))
 
-const { loading, dialog, notify, lang } = useQuasar()
+const { loading, dialog, notify } = useQuasar()
 const userStore = useUserStore()
+const appSettingsStore = useAppSettingsStore()
 const router = useRouter()
 const { t } = useI18n()
-const isOnline = useOnline()
-const locale = useLocale()
-const userSettings = useLocalStorage<UserSettings>(
-  'user-settings',
-  {
-    autoUpdateApp: true,
-    items: {
-      standardTagsLocale: locale.value,
-    },
-  },
-  { mergeDefaults: true }
-)
 
-const showLanguageOptions = ref(false)
+const isOnline = computed(() => userStore.isOnline)
+const isAuthenticated = computed(() => userStore.user)
+const { items } = useItems()
+const { getStandardSymbols, getStandardTags } = useItemsStore()
+watch(() => userSettingsStorage.value.locale, getStandardSymbols)
+watch(() => userSettingsStorage.value.items.standardTagsLocale, getStandardTags)
 
-const callLogoutDialog = () => {
+async function showSignOutDialog() {
   dialog({
     title: t('common.signOut'),
     message: t('pages.profile.signOut'),
     cancel: t('common.cancel'),
-  }).onOk(() => {
-    loading.show()
-    userStore
-      .signOut()
-      .then(() => {
-        notify({
-          type: 'positive',
-          message: t('notifications.signOutSuccess'),
-        })
-        router.push({ name: 'Home' })
-      })
-      .finally(() => loading.hide())
+  }).onOk(async () => {
+    loading.show({ message: t('pages.profile.signingOut') })
+    try {
+      await userStore.signOut()
+      notify({ type: 'positive', message: t('notifications.signOutSuccess') })
+      router.push({ name: 'Home' })
+    } finally {
+      loading.hide()
+    }
   })
 }
 
-const updateAppFromEvent = () => {
+function updateAppFromEvent() {
   window.dispatchEvent(new CustomEvent('update-app'))
+}
+
+const { isSupported, data, open, saveAs } = useFileSystemAccess()
+async function exportItems() {
+  data.value = JSON.stringify(items.value)
+  try {
+    await saveAs({ suggestedName: `laundry-labels-items-${Date.now()}.json` })
+    notify({ type: 'positive', message: t('notifications.exportSuccess') })
+  } catch (error) {
+    console.info(error)
+  } finally {
+    data.value = ''
+  }
+}
+
+const showImportItemsDialog = ref(false)
+const importedItems = ref<Array<Item>>([])
+async function importItems() {
+  try {
+    await open()
+    if (!data.value || typeof data.value !== 'string') {
+      return notify({ type: 'negative', message: t('notifications.wrongFileType') })
+    }
+    for (const item of JSON.parse(data.value)) importedItems.value.push(item)
+    showImportItemsDialog.value = true
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
-<style lang="scss" scoped>
+<style>
 .profile-page {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
-}
 
-.actions {
-  display: grid;
-  gap: 1rem;
-}
-
-.app-version {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-
-  & > a {
-    display: flex;
+  .actions {
+    display: grid;
+    gap: 1rem;
   }
-}
 
-.language-settings-card {
-  width: clamp(300px, 30vw, 500px);
+  .app-version {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    & > a {
+      display: flex;
+    }
+  }
+
+  .settings-card {
+    width: clamp(300px, 30vw, 500px);
+  }
 }
 </style>

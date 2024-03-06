@@ -7,6 +7,7 @@ import { defineConfig, loadEnv } from 'vite'
 import type { VitePWAOptions } from 'vite-plugin-pwa'
 import { VitePWA } from 'vite-plugin-pwa'
 import svgLoader from 'vite-svg-loader'
+import VueDevTools from 'vite-plugin-vue-devtools'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   strategies: 'injectManifest',
@@ -60,34 +61,15 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      vue({
-        template: { transformAssetUrls },
-      }),
-      quasar({
-        sassVariables: 'src/styles/quasar-variables.scss',
-      }),
+      VueDevTools(),
+      vue({ template: { transformAssetUrls } }),
+      quasar({ sassVariables: 'src/styles/quasar-variables.scss' }),
       VitePWA(pwaOptions),
       svgLoader({ svgo: false, defaultImport: 'component' }),
       VueI18nPlugin({ include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**') }),
     ],
-
     server: {
-      proxy: {
-        '^/auth/.*': {
-          target: `${env.VITE_APP_API_URL}/auth`,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/auth/, ''),
-        },
-        '^/api/.*': {
-          target: `${env.VITE_APP_API_URL}/api`,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-        '^/upload/.*': {
-          target: `${env.VITE_APP_API_URL}`,
-          changeOrigin: true,
-        },
-      },
+      port: 5801,
     },
   }
 })

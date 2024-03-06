@@ -1,39 +1,21 @@
-import { isAccessTokenValid } from '@/services/jwt'
 import { useUserStore } from '@/store/user'
-import { LocalStorage } from 'quasar'
-import {
-  createRouter,
-  createWebHistory,
-  type NavigationGuardNext,
-  type RouteLocationNormalized,
-  type RouteRecordRaw,
-} from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw, type NavigationGuard } from 'vue-router'
+import { demoStorage, userSettingsStorage } from '@/utils/localStorage'
 
-function isUserSignedIn() {
+async function isUserSignedIn() {
   const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
-  return !!userStore.user?._id || isAccessTokenValid() || (hasRefreshToken && !window.navigator.onLine) || false
+  const session = await userStore.getSession()
+  return !!userStore.user || !!session
 }
 
-async function trySignIn() {
-  const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
-
-  if (!window.navigator.onLine) {
-    return null
-  } else if (isAccessTokenValid()) {
-    const auth = userStore.signInFromAccessToken()
-    return auth.user
-  } else if (hasRefreshToken) {
-    const auth = await userStore.signInFromRefreshToken()
-    return auth.user
-  } else {
-    return null
-  }
+const redirectIfSignedIn: NavigationGuard = async (_from, _to, next) => {
+  const isSignedIn = await isUserSignedIn()
+  return isSignedIn ? next({ name: 'Redirect' }) : next()
 }
 
-function redirectIfSignedIn(_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) {
-  isUserSignedIn() ? next({ name: 'Redirect' }) : next()
+const pushIfSignedIn: NavigationGuard = async (_from, _to, next) => {
+  const isSignedIn = await isUserSignedIn()
+  return isSignedIn ? next({ name: 'Items' }) : next()
 }
 
 const publicRoutes: Array<RouteRecordRaw> = [
@@ -44,13 +26,7 @@ const publicRoutes: Array<RouteRecordRaw> = [
       title: 'Laundry Labels App',
     },
     component: () => import('@/pages/HomePage.vue'),
-    beforeEnter: async (_from, _to, next) => {
-      if (isUserSignedIn() || (await trySignIn())) {
-        next({ name: 'Items' })
-      } else {
-        next()
-      }
-    },
+    beforeEnter: pushIfSignedIn,
   },
   {
     path: 'sign-in',
@@ -77,6 +53,26 @@ const publicRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: 'reset-password',
+    name: 'Reset password',
+    component: () => import('@/pages/ResetPasswordPage.vue'),
+    beforeEnter: redirectIfSignedIn,
+    meta: {
+      redirect: {
+        text: 'You are already signed in, redirecting...',
+        path: window.history.state?.back || '/',
+      },
+    },
+  },
+  {
+    path: 'new-version-announcement',
+    name: 'New version announcement',
+    components: {
+      default: () => import('@/pages/HomePage.vue'),
+      dialog: () => import('@/pages/NewVersionAnnouncementDialog.vue'),
+    },
+  },
+  {
     path: '/redirect',
     name: 'Redirect',
     component: () => import('@/pages/RedirectPage.vue'),
@@ -84,33 +80,68 @@ const publicRoutes: Array<RouteRecordRaw> = [
   },
 ]
 
-const userRoutes: Array<RouteRecordRaw> = [
+const routes: Array<RouteRecordRaw> = [
   {
-    path: 'items',
-    name: 'Items',
-    component: () => import('@/pages/ItemsPage.vue'),
+    path: '/',
+    component: () => import('@/layouts/PublicLayout.vue'),
+    children: publicRoutes,
   },
   {
-    path: 'items/create',
-    name: 'Create item',
-    component: () => import('@/pages/items/CreateItemPage.vue'),
+    path: '/items',
+    name: 'Items parent',
+    component: () => import('@/layouts/UserLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Items',
+        component: () => import('@/pages/ItemsPage.vue'),
+      },
+      {
+        path: 'create',
+        name: 'Create item',
+        component: () => import('@/pages/items/ModifyItemPage.vue'),
+      },
+      {
+        path: 'edit/:id',
+        name: 'Edit item',
+        component: () => import('@/pages/items/ModifyItemPage.vue'),
+      },
+      {
+        path: ':id',
+        name: 'Item',
+        component: () => import('@/pages/items/ItemPage.vue'),
+      },
+    ],
   },
   {
-    path: 'items/edit/:id',
-    name: 'Edit item',
-    component: () => import('@/pages/items/EditItemPage.vue'),
+    path: '/profile',
+    name: 'Profile parent',
+    component: () => import('@/layouts/UserLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Profile',
+        component: () => import('@/pages/ProfilePage.vue'),
+        children: [
+          {
+            path: 'update-password',
+            name: 'Update password',
+            component: () => import('@/pages/profile/UpdatePasswordDialog.vue'),
+          },
+          {
+            path: 'core-options',
+            name: 'Core options',
+            component: () => import('@/pages/profile/CoreOptionsDialog.vue'),
+          },
+          {
+            path: 'language-options',
+            name: 'Language options',
+            component: () => import('@/pages/profile/LanguageOptionsDialog.vue'),
+          },
+        ],
+      },
+    ],
   },
-  {
-    path: 'items/:id',
-    name: 'Item',
-    component: () => import('@/pages/items/ItemPage.vue'),
-  },
-  {
-    path: 'profile',
-    name: 'Profile',
-    component: () => import('@/pages/ProfilePage.vue'),
-  },
-
   {
     path: '/:pathMatch(.*)*',
     name: 'Page not found',
@@ -120,46 +151,45 @@ const userRoutes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHistory('/'),
-  routes: [
-    {
-      path: '/',
-      component: () => import('@/layouts/PublicLayout.vue'),
-      children: publicRoutes,
-      beforeEnter: (_to, _from, next) => {
-        isUserSignedIn() ? next({ name: 'Items' }) : next()
-      },
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      component: () => import('@/layouts/UserLayout.vue'),
-      children: userRoutes,
-    },
-  ],
+  routes,
+  scrollBehavior(to, _, savedPosition) {
+    return new Promise((resolve) => {
+      if (savedPosition) {
+        return resolve(savedPosition)
+      } else if (to.hash) {
+        const ignoredHashes = ['#access_token', '#error']
+        const hashName = to.hash.split('=').shift()
+        if (hashName && ignoredHashes.includes(hashName)) return resolve()
+
+        return document.querySelector(to.hash) ?? resolve({ el: to.hash })
+      } else {
+        return resolve({ left: 0, top: 0 })
+      }
+    })
+  },
 })
 
-router.beforeEach((to, _, next) => {
+router.beforeEach(async (to, _, next) => {
   const userStore = useUserStore()
-  const hasRefreshToken = LocalStorage.getItem<boolean>('hasRefreshToken')
-  const isUserSignedIn = !!userStore.user?._id
+  const isSignedIn = await isUserSignedIn()
 
-  if (isUserSignedIn) {
-    next()
-  } else {
-    if (publicRoutes.some((route) => route.name === to.name)) {
-      next()
-    } else if (hasRefreshToken) {
-      if (!window.navigator.onLine) {
-        next()
-      } else if (isAccessTokenValid()) {
-        const auth = userStore.signInFromAccessToken()
-        next(auth.user?._id ? to.path : { name: 'Sign in' })
-      } else {
-        userStore.signInFromRefreshToken().then((response) => (response.user?._id ? next() : next({ name: 'Sign in' })))
-      }
-    } else {
-      next({ name: 'Sign in' })
-    }
+  const isFirstVisitToDemo = to.query.demo && !demoStorage.value?.active
+  if (isFirstVisitToDemo) {
+    localStorage.setItem('demo', JSON.stringify({ active: false, page: null, step: null }))
+    userSettingsStorage.value.offlineMode = !isSignedIn
   }
+
+  const isDemoActive = demoStorage.value?.active
+  const isOfflineMode = userSettingsStorage.value.offlineMode
+  const isOffline = !userStore.isOnline
+  const isPublicRoute = publicRoutes.some((route) => route.name === to.name)
+  if (isPublicRoute || isFirstVisitToDemo || isDemoActive || isSignedIn || isOfflineMode || isOffline) {
+    return next()
+  }
+  if (!isSignedIn) {
+    return next({ name: 'Sign in' })
+  }
+  next()
 })
 
 router.beforeResolve((to) => {

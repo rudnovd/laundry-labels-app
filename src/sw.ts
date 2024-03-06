@@ -1,7 +1,7 @@
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
-import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { CacheFirst, NetworkFirst } from 'workbox-strategies'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -29,35 +29,7 @@ registerRoute(
       }),
     ],
   }),
-  'GET'
-)
-
-// Cache all uploaded user images
-registerRoute(
-  ({ url }) => url.pathname.startsWith('/upload/items'),
-  new StaleWhileRevalidate({
-    cacheName: 'upload-items-images',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [200],
-      }),
-    ],
-  }),
-  'GET'
-)
-
-// Cache all uploaded user images
-registerRoute(
-  ({ url }) => url.pathname.startsWith('res.cloudinary.com'),
-  new StaleWhileRevalidate({
-    cacheName: 'cloudinary-items-images',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [200],
-      }),
-    ],
-  }),
-  'GET'
+  'GET',
 )
 
 registerRoute(
@@ -70,7 +42,7 @@ registerRoute(
       }),
     ],
   }),
-  'GET'
+  'GET',
 )
 
 registerRoute(
@@ -82,5 +54,5 @@ registerRoute(
         statuses: [0, 200],
       }),
     ],
-  })
+  }),
 )

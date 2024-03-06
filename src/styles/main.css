@@ -1,0 +1,91 @@
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 300;
+  src:
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-300.woff2') format('woff2'),
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-300.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-regular.woff2') format('woff2'),
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-regular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  src:
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-500.woff2') format('woff2'),
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-500.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-700.woff2') format('woff2'),
+    url('@/assets/fonts/roboto/roboto-v30-cyrillic_latin-700.woff') format('woff');
+  font-display: swap;
+}
+
+:root {
+  --color-brand: #7cc6ff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  min-width: 320px;
+  max-width: 3840px;
+}
+
+.text-brand {
+  color: var(--color-brand) !important;
+}
+
+.bg-brand {
+  background: var(--color-brand) !important;
+}
+
+.link-light:link {
+  color: rgb(255 255 255);
+}
+
+.link-light:visited {
+  color: rgb(255 255 255);
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.centered-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

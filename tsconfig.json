@@ -1,34 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "types": ["node", "vite/client", "vite-plugin-pwa/client", "@intlify/unplugin-vue-i18n/messages"],
-    "typeRoots": ["./src/global.d.ts"],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
-    "noImplicitThis": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "removeComments": true,
-
-    // Required in Vue projects
-    "jsx": "preserve",
-
-    "verbatimModuleSyntax": true,
-
-    // Vite recommended (https://vitejs.dev/guide/features.html#typescript-compiler-options=)
-    "isolatedModules": true,
-    "useDefineForClassFields": true,
-
-    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*", "env.d.ts", "vite.config.ts"],
-  "exclude": ["dist, node_modules"]
+  "files": [],
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.app.json" }],
 }

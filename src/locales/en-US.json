@@ -3,6 +3,7 @@
     "signIn": "Sign in",
     "signUp": "Sign up",
     "signOut": "Sign Out",
+    "resetPassword": "Reset password",
     "email": "Email",
     "password": "Password",
     "save": "Save",
@@ -13,7 +14,11 @@
     "name": "Name",
     "cancel": "Cancel",
     "clear": "Clear",
-    "continue": "Continue"
+    "continue": "Continue",
+    "or": "Or",
+    "authenticating": "Authenticating",
+    "saveOnServer": "Save on server",
+    "saveLocal": "Save local"
   },
   "components": {
     "item": {
@@ -22,7 +27,7 @@
         "custom": "Custom"
       }
     },
-    "uploadItemImage": {
+    "uploadItemPhoto": {
       "uploadPhoto": "Upload photo",
       "removePhoto": "Remove photo"
     }
@@ -31,6 +36,8 @@
     "signIn": {
       "noAccount": "Don't have an account?",
       "backToHomePage": "Back to home page",
+      "signInWithGoogle": "Sign in with Google",
+      "resetPassword": "Reset password",
       "validation": {
         "email": "The email field is not filled",
         "password": "The password field is not filled"
@@ -39,10 +46,18 @@
     "signUp": {
       "alreadyRegistered": "Already registered?",
       "backToHomePage": "Back to home page",
+      "signUpWithGoogle": "Sign up with Google",
+      "signingUp": "Signing up",
+      "accountRegistered": "Account registered. Please check your email to confirm your account.",
       "validation": {
         "email": "The email field is not filled",
         "password": "Please use minimum 6 characters"
       }
+    },
+    "resetPassword": {
+      "backToSignIn": "Back to sign in",
+      "requestSended": "Request sended. Please check your email",
+      "backToHomePage": "Back to home page"
     },
     "home": {
       "share": "Share",
@@ -57,23 +72,55 @@
       "signOut": "Would you like to sign out?",
       "languageSettings": "Language settings",
       "appLanguage": "App language",
-      "itemsTagsLanguage": "Items tags language"
+      "itemsTagsLanguage": "Items tags language",
+      "coreSettings": "Core settings",
+      "offlineMode": "Offline mode",
+      "offlineModeTooltip": "All items will be stored on the device. They can be saved to the server at any time after creation.",
+      "signingOut": "Signing out",
+      "updatePassword": "Update password",
+      "exportItems": "Export items",
+      "importItems": "Import items",
+      "dialogs": {
+        "updatePassword": {
+          "updatePassword": "Update password",
+          "newPassword": "New password",
+          "confirmPassword": "Confirm password",
+          "validation": {
+            "passwordEmpty": "The password field is not filled",
+            "minLength": "Please use minimum 6 characters",
+            "passwordsNotMatch": "Passwords do not match"
+          }
+        }
+      },
+      "notifications": {
+        "passwordUpdated": "Password updated successfully"
+      }
     },
     "item": {
-      "deleteItem": "Delete item?"
+      "deleteItem": "Delete item?",
+      "saveOnServer": "Save on server"
     },
     "items": {
       "searchTags": "Search tags",
       "noItemsAdded": "No items added yet",
       "addFirstItem": "Add first item",
-      "noItemsWithSelectedTags": "No items with selected tags"
+      "noItemsWithSelectedTags": "No items with selected tags",
+      "itemsLimitReached": "Items limit reached"
+    },
+    "modifyItem": {
+      "createLocalItem": "Create local item",
+      "saveLocalItem": "Save local item",
+      "validation": {
+        "symbolsRequired": "At least one laundry symbol is required"
+      },
+      "itemAdded": "Item added successfully"
     },
     "error": {
       "pageNotFound": "Page not found",
       "backToHomePage": "Back to home page"
     }
   },
-  "iconsGroups": {
+  "symbolsGroup": {
     "washing": "Washing",
     "bleaching": "Bleaching",
     "ironing": "Ironing",
@@ -82,60 +129,6 @@
     "dry-cleaning": "Dry Cleaning",
     "wet-cleaning": "Wet Cleaning"
   },
-  "icons": {
-    "wash": "Machine wash",
-    "mild-wash": "Mild machine wash",
-    "very-mild-wash": "Very mild machine wash",
-    "hand-wash": "Hand wash",
-    "do-not-wash": "Do not wash",
-    "wash-cold": "Wash at or below 30°C",
-    "mild-wash-cold": "Mild wash at or below 30°C",
-    "very-mild-wash-cold": "Very mild wash at or below 30°C",
-    "wash-warm": "Wash at or below 40°C",
-    "mild-wash-warm": "Mild wash at or below 40°C",
-    "very-mild-wash-warm": "Very mild wash at or below 40°C",
-    "wash-hot": "Wash at or below 50°C",
-    "mild-wash-hot": "Mild wash at or below 50°C",
-    "very-mild-wash-hot": "Very mild wash at or below 50°C",
-    "wash-very-hot": "Wash at or below 60°C",
-    "mild-wash-very-hot": "Mild wash at or below 60°C",
-    "very-mild-wash-very-hot": "Very mild wash at or below 60°C",
-    "iron": "Iron",
-    "do-not-iron": "Do not iron",
-    "iron-low": "Iron at low temperature (max. 110°C)",
-    "iron-medium": "Iron at medium temperature (max. 150°C)",
-    "iron-high": "Iron at high temperature (max. 200°C)",
-    "iron-steam": "Iron with steam",
-    "iron-do-not-steam": "Do not steam",
-    "bleach": "Bleaching allowed",
-    "do-not-bleach": "Do not bleach",
-    "non-chlorine-bleach": "Non-chlorine bleach",
-    "tumble-dry": "Tumble dry allowed",
-    "do-not-tumble-dry": "Do not tumble dry",
-    "tumble-dry-low-heat": "Tumble dry on low heat",
-    "tumble-dry-medium-heat": "Tumble dry on medium heat",
-    "tumble-dry-high-heat": "Tumble dry on high heat",
-    "dry": "Dry",
-    "dry-in-shade": "Dry in shade",
-    "line-dry": "Line dry",
-    "line-dry-in-shade": "Line dry in shade",
-    "drip-dry": "Drip dry",
-    "drip-dry-in-shade": "Drip dry in shade",
-    "dry-flat": "Dry flat",
-    "dry-flat-in-shade": "Dry flat in shade",
-    "dry-clean": "Dry clean",
-    "do-not-dry-clean": "Do not dry clean",
-    "dry-clean-petroleum": "Dry clean with petroleum solvent",
-    "gentle-dry-clean-petroleum": "Gentle dry clean with petroleum solvent",
-    "very-gentle-dry-clean-petroleum": "Very gentle dry clean with petroleum solvent",
-    "dry-clean-pce": "Dry clean with PCE",
-    "gentle-dry-clean-pce": "Gentle clean with PCE",
-    "very-gentle-dry-clean-pce": "Very gentle clean with PCE",
-    "wet-clean": "Wet clean allowed",
-    "do-not-wet-clean": "Do not wet clean",
-    "gentle-wet-clean": "Gentle wet clean",
-    "very-gentle-wet-clean": "Very gentle wet clean"
-  },
   "notifications": {
     "appInstalled": "App installed",
     "signUpSuccess": "Sign up successfully",
@@ -143,6 +136,41 @@
     "signOutSuccess": "Sign out successfully",
     "sizeError": "Upload failed, the maximum size of the file is 15 MB",
     "typeError": "Wrong file type",
-    "captchaError": "Captcha required"
+    "captchaError": "Captcha required",
+    "itemSaved": "Item saved successfully",
+    "passwordResetSuccess": "Password reset successfully",
+    "uploadError": "Upload failed",
+    "itemDeleted": "Item deleted successfully",
+    "exportSuccess": "Exported successfully",
+    "importSuccess": "Imported successfully",
+    "wrongFileType": "Wrong file type"
+  },
+  "demo": {
+    "buttons": {
+      "next": "Next",
+      "finish": "Finish tour"
+    },
+    "notification": {
+      "startTour": "Would you like to start the tour?",
+      "continueTour": "Continue the tour?",
+      "tourCompleted": "Tour completed",
+      "buttons": {
+        "start": "Start",
+        "skip": "Skip",
+        "continue": "Continue"
+      }
+    },
+    "tours": {
+      "modifyItem": {
+        "steps": {
+          "addFirstItem": "Let's add the first item",
+          "enterItemName": "Enter the name of the item",
+          "selectTags": "Choose tags from the provided list",
+          "enterCustomTags": "You can also enter custom tags",
+          "selectLaundrySymbols": "Select the symbols from the care label",
+          "confirmItemCreation": "Confirm item creation"
+        }
+      }
+    }
   }
 }

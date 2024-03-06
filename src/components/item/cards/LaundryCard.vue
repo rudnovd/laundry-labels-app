@@ -14,7 +14,7 @@
             width="48px"
             :alt="`${name.split('-').join(' ')} icon`"
           />
-          <q-tooltip anchor="top middle" :offset="[0, 42]">
+          <q-tooltip anchor="top middle" :offset="[0, 48]">
             {{ description }}
           </q-tooltip>
         </li>
@@ -62,6 +62,15 @@ const selectedSymbols = computed(() => {
   border-radius: 8px;
 }
 
+.laundry-card > img {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  object-fit: cover;
+  border-radius: 7px;
+}
+
 .laundry-card .laundry-card-data {
   display: grid;
   grid: max-content 1fr / 100%;
@@ -100,20 +109,19 @@ const selectedSymbols = computed(() => {
     align-items: end;
   }
 
-  .symbols li {
-    display: flex;
-    justify-content: center;
-    cursor: help;
-    border: 1px solid rgb(158 158 158);
-    border-radius: 12px;
-  }
-}
+  .symbols {
+    li {
+      display: flex;
+      justify-content: center;
+      cursor: help;
+      border: 1px solid rgb(158 158 158);
+      border-radius: 12px;
 
-.laundry-card > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 7px;
+      img {
+        pointer-events: none;
+      }
+    }
+  }
 }
 
 .laundry-card:has(> img) {

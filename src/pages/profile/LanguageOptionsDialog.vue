@@ -41,7 +41,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import languages from 'quasar/lang/index.json'
-import { availableLocales, type AvailableLocale } from '@/i18n'
+import { type AvailableLocale, availableLocales } from '@/i18n'
 import { userSettingsStorage } from '@/utils/localStorage'
 import { setLocale } from '@/utils/locale'
 

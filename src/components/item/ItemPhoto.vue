@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import useItems from '@/composables/useItems'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 const props = defineProps<{ path: string }>()
 

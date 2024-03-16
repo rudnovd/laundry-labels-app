@@ -55,6 +55,16 @@ module.exports = {
       },
     ],
     'vue/arrow-spacing': ['error'],
+    'sort-imports': [
+      'error',
+      {
+        allowSeparatedGroups: false,
+        ignoreCase: false,
+        ignoreDeclarationSort: true,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+      },
+    ],
   },
   overrides: [
     {

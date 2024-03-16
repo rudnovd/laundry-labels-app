@@ -85,7 +85,7 @@ import { throttle, useQuasar } from 'quasar'
 import { defineAsyncComponent, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { UserSignUpCredentials } from '@/types/user'
-import { REQUEST_THROTTLE_TIMEOUT, IS_LOCAL } from '@/constants'
+import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import { ref } from 'vue'
 import { computed } from 'vue'
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))

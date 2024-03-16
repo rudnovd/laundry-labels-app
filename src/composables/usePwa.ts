@@ -1,5 +1,5 @@
 import { watch } from 'vue'
-import { useRouter, type RouteRecordName } from 'vue-router'
+import { type RouteRecordName, useRouter } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useRegisterSW } from 'virtual:pwa-register/vue'

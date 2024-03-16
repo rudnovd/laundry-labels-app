@@ -37,17 +37,12 @@ export default function usePwa() {
   }
 
   function updateApp() {
-    loading.show({ message: 'Updating app...', spinner: QSpinnerGears, ignoreDefaults: true })
-    if (appSettingsStore.appHasUpdate) {
-      appSettingsStore.appHasUpdate = false
-    }
+    loading.show({ message: t('common.updatingApp'), spinner: QSpinnerGears, ignoreDefaults: true })
+    if (appSettingsStore.appHasUpdate) appSettingsStore.appHasUpdate = false
     updateServiceWorker()
   }
 
-  const { updateServiceWorker, needRefresh } = useRegisterSW({
-    immediate: true,
-  })
-
+  const { updateServiceWorker, needRefresh } = useRegisterSW({ immediate: true })
   watch(
     needRefresh,
     () => {

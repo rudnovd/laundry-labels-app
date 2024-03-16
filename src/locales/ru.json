@@ -143,7 +143,9 @@
     "itemDeleted": "Предмет удален успешно",
     "exportSuccess": "Экспортировано успешно",
     "importSuccess": "Импортировано успешно",
-    "wrongFileType": "Неверный тип файла"
+    "wrongFileType": "Неверный тип файла",
+    "updatingApp": "Обновление приложения"
+    "updatingApp": "Обновление приложения"
   },
   "demo": {
     "buttons": {

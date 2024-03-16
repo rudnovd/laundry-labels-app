@@ -35,7 +35,7 @@ const publicRoutes: Array<RouteRecordRaw> = [
     beforeEnter: redirectIfSignedIn,
     meta: {
       redirect: {
-        text: 'You are already sign in, redirecting...',
+        text: 'You are already sign in, redirecting',
         path: window.history.state?.back || '/',
       },
     },
@@ -47,7 +47,7 @@ const publicRoutes: Array<RouteRecordRaw> = [
     beforeEnter: redirectIfSignedIn,
     meta: {
       redirect: {
-        text: 'You are already sign in, redirecting...',
+        text: 'You are already sign in, redirecting',
         path: window.history.state?.back || '/',
       },
     },
@@ -59,7 +59,7 @@ const publicRoutes: Array<RouteRecordRaw> = [
     beforeEnter: redirectIfSignedIn,
     meta: {
       redirect: {
-        text: 'You are already signed in, redirecting...',
+        text: 'You are already signed in, redirecting',
         path: window.history.state?.back || '/',
       },
     },

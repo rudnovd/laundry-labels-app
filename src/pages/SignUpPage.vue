@@ -106,7 +106,7 @@ const captchaRef = ref<InstanceType<typeof LCaptcha> | null>(null)
 
 const isSignedUp = ref(false)
 const signUp = throttle(async () => {
-  loading.show({ message: `${t('pages.signUp.signingUp')}...` })
+  loading.show({ message: t('pages.signUp.signingUp') })
   try {
     await userStore.signUp(credentials)
     isSignedUp.value = true
@@ -118,7 +118,7 @@ const signUp = throttle(async () => {
 }, REQUEST_THROTTLE_TIMEOUT)
 
 const signUpWithGoogle = throttle(async () => {
-  loading.show({ message: `${t('pages.signUp.signingUp')}...` })
+  loading.show({ message: t('pages.signUp.signingUp') })
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
   } catch {

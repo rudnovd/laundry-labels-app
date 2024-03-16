@@ -18,7 +18,8 @@
     "or": "Or",
     "authenticating": "Authenticating",
     "saveOnServer": "Save on server",
-    "saveLocal": "Save local"
+    "saveLocal": "Save local",
+    "updatingApp": "Updating app"
   },
   "components": {
     "item": {

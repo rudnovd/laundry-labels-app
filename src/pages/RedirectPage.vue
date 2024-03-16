@@ -1,5 +1,5 @@
 <template>
-  <q-page> {{ text }} </q-page>
+  <q-page class="redirect-page"> {{ text }} </q-page>
 </template>
 
 <script setup lang="ts">
@@ -15,10 +15,20 @@ const props = withDefaults(
 )
 
 const router = useRouter()
-
 onMounted(() => {
   setTimeout(() => {
     router.replace(props.path)
   }, 5000)
 })
 </script>
+
+<style>
+.redirect-page {
+  display: grid;
+  place-content: center;
+  place-items: center;
+  font-size: 2rem;
+  color: rgb(250 250 250);
+  background: linear-gradient(135deg, rgb(9 121 46) 0%, rgb(75 8 129) 50%, rgb(9 121 46) 100%);
+}
+</style>

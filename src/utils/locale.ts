@@ -1,4 +1,4 @@
-import i18n, { availableLocales, type AvailableLocale } from '@/i18n'
+import i18n, { type AvailableLocale, availableLocales } from '@/i18n'
 import { Quasar } from 'quasar'
 import { userSettingsStorage } from '@/utils/localStorage'
 

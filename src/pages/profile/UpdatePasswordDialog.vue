@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { QInput, throttle, useQuasar, type ValidationRule } from 'quasar'
+import { QInput, type ValidationRule, throttle, useQuasar } from 'quasar'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { REQUEST_THROTTLE_TIMEOUT } from '@/constants'

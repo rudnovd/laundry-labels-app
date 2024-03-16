@@ -1,5 +1,5 @@
 import { useUserStore } from '@/store/user'
-import { createRouter, createWebHistory, type RouteRecordRaw, type NavigationGuard } from 'vue-router'
+import { type NavigationGuard, type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 import { demoStorage, userSettingsStorage } from '@/utils/localStorage'
 
 async function isUserSignedIn() {

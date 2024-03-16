@@ -50,7 +50,7 @@ import { useUserStore } from '@/store/user'
 import { throttle, useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import type { UserResetPasswordCredentials } from '@/types/user'
-import { defineAsyncComponent, ref, reactive } from 'vue'
+import { defineAsyncComponent, reactive, ref } from 'vue'
 import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 

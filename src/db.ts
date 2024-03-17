@@ -1,10 +1,10 @@
-import type { Item } from '@/types/item'
+import type { DatabaseItem } from '@/types/item'
 import Dexie, { type Table } from 'dexie'
 
 const DATABASE_VERSION = 1
 
 export class Database extends Dexie {
-  offlineItems!: Table<Item>
+  offlineItems!: Table<Omit<DatabaseItem, 'owner'>>
   upload!: Table<{ id: string; file: File | Blob }>
 
   constructor() {

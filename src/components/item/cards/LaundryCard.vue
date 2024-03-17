@@ -7,15 +7,15 @@
       </div>
 
       <ul class="symbols">
-        <li v-for="{ name, group, description } in selectedSymbols" :key="name" @click.stop>
+        <li v-for="symbol in item.symbols" :key="symbol" @click.stop>
           <img
-            :src="`/icons/laundry/${group}/${name}.svg`"
+            :src="`/icons/laundry/${symbols[symbol].group}/${symbol}.svg`"
             height="48px"
             width="48px"
-            :alt="`${name.split('-').join(' ')} icon`"
+            :alt="`${symbol.split('-').join(' ')} icon`"
           />
           <q-tooltip anchor="top middle" :offset="[0, 48]">
-            {{ description }}
+            {{ symbols[symbol].description }}
           </q-tooltip>
         </li>
       </ul>
@@ -26,30 +26,22 @@
         </li>
       </ul>
     </div>
-    <item-photo v-if="item.photos.length" :path="item.photos[0]" :alt="`${item.name} photo` ?? 'item photo'" />
+    <item-photo v-for="photo in item.photos" :key="photo" :path="photo" :alt="`${item.name} photo` ?? 'item photo'" />
   </div>
 </template>
 
 <script setup lang="ts">
 import useItems from '@/composables/useItems'
-import { type ItemSymbol, type Item } from '@/types/item'
+import { type Item } from '@/types/item'
 import { defineAsyncComponent } from 'vue'
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
 
-const props = defineProps<{ item: Item }>()
+defineProps<{ item: Item }>()
 
 const router = useRouter()
 const { symbols } = useItems()
-
-const selectedSymbols = computed(() => {
-  return props.item.symbols.reduce<Array<ItemSymbol>>((selected, symbolKey) => {
-    selected.push({ name: symbolKey, ...symbols.value[symbolKey] })
-    return selected
-  }, [])
-})
 </script>
 
 <style>

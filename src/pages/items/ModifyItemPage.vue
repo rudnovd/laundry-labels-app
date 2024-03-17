@@ -52,12 +52,12 @@ const { loading, notify } = useQuasar()
 const { items, createItem, symbolsByGroups, getItemById, editItem } = useItems()
 
 const laundrySymbolsContainer = ref<HTMLElement | null>(null)
-const modifiedItem = ref<Required<Omit<ItemBlank, 'owner'>>>({
+const modifiedItem = ref<Omit<ItemBlank, 'owner'>>({
   name: '',
-  symbols: [],
-  photos: [],
-  materials: [],
-  tags: [],
+  symbols: new Set(),
+  photos: new Set(),
+  materials: new Set(),
+  tags: new Set(),
 })
 const hasError = ref(false)
 
@@ -66,15 +66,15 @@ onBeforeMount(async () => {
 
   const currentItem = items.value.find(({ id }) => id === route.params.id)
   if (currentItem) {
-    const { name, symbols, photos, tags, materials } = currentItem
-    modifiedItem.value = { name, symbols, photos, materials, tags }
+    modifiedItem.value = cloneDeep(currentItem)
+    initialItem.value = cloneDeep(currentItem)
   } else {
     loading.isActive = true
     try {
       const item = await getItemById(route.params.id.toString())
       if (item) {
-        const { name, symbols, photos, tags, materials } = item
-        modifiedItem.value = { name, symbols, photos, materials, tags }
+        modifiedItem.value = cloneDeep(item)
+        initialItem.value = cloneDeep(item)
       } else {
         hasError.value = true
       }
@@ -84,8 +84,8 @@ onBeforeMount(async () => {
   }
 })
 
-function isSymbolsValid(symbols: Array<string>) {
-  const isSymbolsSelected = symbols.length
+function isSymbolsValid(symbols: Set<string>) {
+  const isSymbolsSelected = symbols.size
   if (!isSymbolsSelected) {
     laundrySymbolsContainer?.value?.scrollIntoView({ behavior: 'smooth' })
     notify({
@@ -99,7 +99,6 @@ function isSymbolsValid(symbols: Array<string>) {
 
 async function create() {
   if (!isSymbolsValid(modifiedItem.value.symbols)) return
-  modifiedItem.value.symbols = modifiedItem.value.symbols.filter((symbol) => symbol)
   loading.show()
   try {
     await createItem(modifiedItem.value)
@@ -115,7 +114,6 @@ async function create() {
 
 async function edit() {
   if (!isSymbolsValid(modifiedItem.value.symbols)) return
-  modifiedItem.value.symbols = modifiedItem.value.symbols.filter((symbol) => symbol)
   loading.show()
   try {
     await editItem({ ...modifiedItem.value, id: route.params.id.toString() })

@@ -27,16 +27,16 @@
       </q-input>
     </header>
 
-    <ul v-if="searchingTags.length" class="search-tags">
+    <ul v-if="searchingTags.size" class="search-tags">
       <li>
-        <item-tag class="text-white text-lowercase bg-negative" color="negative" @click="searchingTags = []">
+        <item-tag class="text-white text-lowercase bg-negative" color="negative" @click="searchingTags.clear">
           <q-icon name="delete" size="1em" />
           {{ t('common.clear') }}
         </item-tag>
       </li>
       <li v-for="tag in searchingTags" :key="tag">
         <item-tag>
-          <q-icon name="close" size="1em" @click="removeSearchTag(tag)" />
+          <q-icon name="close" size="1em" @click="searchingTags.delete(tag)" />
           <span class="ellipsis">{{ tag }}</span>
         </item-tag>
       </li>
@@ -52,7 +52,7 @@
         <laundry-card :item="item" />
       </li>
     </ul>
-    <div v-else-if="searchingTags.length && !foundItems.length" class="flex column items-center">
+    <div v-else-if="searchingTags.size && !foundItems.length" class="flex column items-center">
       {{ t('pages.items.noItemsWithSelectedTags') }}
     </div>
     <div v-else class="flex column items-center">
@@ -77,6 +77,7 @@ import { supabase } from '@/supabase'
 import { useUserStore } from '@/store/user'
 import type { Item, ItemBlank } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
+import { setIntersection } from '@/utils/set'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
 const { loading, notify } = useQuasar()
@@ -94,15 +95,13 @@ onBeforeMount(async () => {
   const demo = useDemoMode()
   try {
     const items = await getItems()
-    if (!items.length && localStorage.getItem('demo')) {
-      demo.showTourNotification()
-    }
+    if (!items.length && localStorage.getItem('demo')) demo.showTourNotification()
   } finally {
     isLoading.value = false
   }
 
   // TODO: remove after migration date is over
-  if (!userSettingsStorage.value.isMigrated && isOnline.value) {
+  if (userStore.user && !userSettingsStorage.value.isMigrated && isOnline.value) {
     itemsStore.getMigrationItems().then((migration) => {
       if (!migration.migration_date) {
         userSettingsStorage.value.isMigrated = false
@@ -131,24 +130,19 @@ onBeforeMount(async () => {
 })
 
 const search = ref('')
-const searchingTags = ref<Array<string>>([])
+const searchingTags = ref<Set<string>>(new Set())
 const foundItems = computed(() => {
-  if (!searchingTags.value.length) return items.value
-  return items.value.filter((item) => {
-    for (const searchTag of searchingTags.value) {
-      return item.tags.includes(searchTag)
-    }
-  })
+  if (!searchingTags.value.size) return items.value
+  return items.value.reduce<Array<Item>>((filteredItems, item) => {
+    if (setIntersection(searchingTags.value, item.tags).size) filteredItems.push(item)
+    return filteredItems
+  }, [])
 })
 
 function searchTag() {
   if (!search.value) return
-  searchingTags.value.push(search.value)
+  searchingTags.value.add(search.value)
   search.value = ''
-}
-
-function removeSearchTag(tag: string) {
-  searchingTags.value = searchingTags.value.filter((searchTag) => searchTag !== tag)
 }
 
 // TODO: remove after migration date is over
@@ -162,17 +156,17 @@ async function migrate(items: Array<Item>) {
     const photosPromises: Array<Promise<unknown>> = []
     const photosPaths: Array<string> = []
     for (const [index, item] of items.entries()) {
-      const newItem: Omit<ItemBlank, 'owner'> = {
+      const newItem: ItemBlank = {
         name: item.name ?? null,
-        symbols: item.symbols ?? [],
-        photos: [],
-        materials: item.materials ?? [],
-        tags: item.tags ?? [],
+        symbols: item.symbols ?? new Set<string>(),
+        photos: new Set<string>(),
+        materials: item.materials ?? new Set<string>(),
+        tags: item.tags ?? new Set<string>(),
       }
-      if (item.photos.length) {
+      for (const photo of item.photos) {
         photosPaths[index] = `${userId}/${Date.now()}-${index}`
-        photosPromises[index] = supabase.storage.from('items').move(`migration/${item.photos[0]}`, photosPaths[index])
-        newItem.photos = [`${userId}/${Date.now()}-${index}`]
+        photosPromises[index] = supabase.storage.from('items').move(`migration/${photo}`, photosPaths[index])
+        newItem.photos.add(`${userId}/${Date.now()}-${index}`)
       }
       itemsPromises.push(itemsStore.createItem(newItem))
     }

@@ -173,5 +173,50 @@
         }
       }
     }
+  },
+  "hints": {
+    "washing": [
+      "A stylized washtub is shown, and the number in the tub means the maximum wash temperature (degrees Celsius)",
+      "A bar under the tub signifies a gentler treatment in the washing machine",
+      "A double bar signifies very gentle handling",
+      "A hand in the tub signifies that only hand washing (not above 40 °C) is allowed",
+      "A cross through washtub means that the textile may not be washed under normal household conditions",
+      "In the European standard, the level of wash agitation recommended is indicated by bars below the wash tub symbol",
+      "Absence of bar indicates a maximum agitation (cotton wash), a single bar indicates medium agitation (synthetics cycle) and a double bar indicates very minimal agitation (silk/wool cycle)",
+      "The bar symbols also indicate the level of spin recommended with more bars indicating lower preferred spin speed"
+    ],
+    "bleaching": [
+      "An empty triangle allows the bleaching with chlorine or non-chlorine bleach",
+      "Two oblique lines in the triangle prohibit chlorine bleaching",
+      "A crossed triangle prohibits any bleaching"
+    ],
+    "tumble-drying": [
+      "A circle in the square symbolizes a clothes dryer",
+      "One dot requires drying at reduced temperature, two dots for normal temperature and three dots for high temperature",
+      "The crossed symbol means that the clothing does not tolerate machine drying",
+      "In the US and Japan, there are other icons for natural/line drying"
+    ],
+    "ironing": [
+      "The iron with up to three dots allows for ironing",
+      "The number of dots are assigned temperatures: one prescribes 110 °C (230 °F), two for 150 °C (302 °F) and three for 200 °C (392 °F)",
+      "An iron with a cross prohibits ironing"
+    ],
+    "dry-cleaning": [
+      "Dry cleaning is any cleaning process for clothing and textiles using a solvent other than water",
+      "Most natural fibers can be washed in water but some synthetics (e.g., viscose, lyocell, modal, and cupro) react poorly with water and should be dry-cleaned if possible"
+    ],
+    "wet-cleaning": [
+      "Wet cleaning refers to methods of professional cleaning that, in contrast to traditional dry cleaning, avoids the use of chemical solvents, the most common of which is tetrachloroethylene (commonly called perchloroethylene or 'perc')"
+    ],
+    "natural-drying": [
+      "Drying symbol: A simple square asks you to keep your items away from washing machines. They are intended to be dried naturally",
+      "Dry in the shade: The symbol is represented by two parallel and slanted lines in the upper left-hand corner of a square. It asks you to naturally dry your item while keeping it away from exposure to the sun",
+      "Line dry: A curved line connected to the upper left and right corner of a square asks you to dry your item naturally on a clothesline",
+      "Line dry in the shade: This laundry care label is portrayed by two parallel and slanted lines in the upper left-hand corner, and a curved line connected to the upper left and right corner of a square",
+      "Drip dry: A square with three vertical parallel lines indicates that your item ought to be drip dried. Otherwise, your fabric will crease",
+      "Drip dry in the shade: This laundry care symbol is represented by a square, two slanted parallel lines at the upper left-hand corner, PLUS three horizontal line at the centre. It will also crease or shrink them if you hang or tumble dry them",
+      "Dry flat: A square with a horizontal line located at the centre of a square tells you to dry your item naturally while laying it out flat. Some items may lose their shape if you leave them to dry while hanging. Follow the label recommendation, and you won't have to worry about stretching out your sweaters or knitted garments",
+      "Dry flat in the shade: When you see a square with two slanted parallel lines at the upper left-hand corner, PLUS a horizontal line at the centre, it means your item ought to be kept away from the sun. You also ought to lay out your item, so it is flat to preserve its quality"
+    ]
   }
 }

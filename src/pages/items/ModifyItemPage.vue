@@ -5,7 +5,7 @@
     <template v-else>
       <div class="item-data-container">
         <upload-item-photo v-model="modifiedItem.photos" />
-        <q-input v-model="modifiedItem.name" outlined :label="t('common.name')" />
+        <q-input v-model.trim="modifiedItem.name" :debounce="300" outlined :label="t('common.name')" />
         <input-item-tags v-model="modifiedItem.tags" />
       </div>
 
@@ -17,8 +17,10 @@
 
       <q-btn
         v-if="route.params.id"
+        :disable="!hasChanges"
         color="positive"
         class="item-create-button"
+        :class="{ sticky: hasChanges }"
         :label="userSettingsStorage.offlineMode ? t('pages.modifyItem.saveLocalItem') : t('common.save')"
         @click="edit"
       />
@@ -41,9 +43,11 @@ import { useQuasar } from 'quasar'
 import useItems from '@/composables/useItems'
 import { userSettingsStorage } from '@/utils/localStorage'
 import type { ItemBlank } from '@/types/item'
+import cloneDeep from 'lodash-es/cloneDeep'
 import LaundrySymbolsButtonGroup from '@/components/item/symbols/LaundrySymbolsButtonGroup.vue'
 import InputItemTags from '@/components/item/tags/InputItemTags.vue'
 import UploadItemPhoto from '@/components/item/UploadItemPhoto.vue'
+import { isEqualSets } from '@/utils/set'
 
 const route = useRoute()
 const router = useRouter()
@@ -60,6 +64,16 @@ const modifiedItem = ref<Omit<ItemBlank, 'owner'>>({
   tags: new Set(),
 })
 const hasError = ref(false)
+const initialItem = ref<typeof modifiedItem.value | null>(null)
+const hasChanges = computed(() => {
+  if (!initialItem.value) return false
+  const isEqualNames = initialItem.value.name === modifiedItem.value.name
+  const isEqualSymbols = isEqualSets(initialItem.value.symbols, modifiedItem.value.symbols)
+  const isEqualPhotos = isEqualSets(initialItem.value.photos, modifiedItem.value.photos)
+  const isEqualMaterials = isEqualSets(initialItem.value.materials, modifiedItem.value.materials)
+  const isEqualTags = isEqualSets(initialItem.value.tags, modifiedItem.value.tags)
+  return !isEqualNames || !isEqualPhotos || !isEqualSymbols || !isEqualMaterials || !isEqualTags
+})
 
 onBeforeMount(async () => {
   if (!route.params.id) return
@@ -159,6 +173,11 @@ async function edit() {
 
   .item-create-button {
     grid-area: button;
+
+    &.sticky {
+      position: sticky;
+      bottom: 8px;
+    }
   }
 }
 </style>

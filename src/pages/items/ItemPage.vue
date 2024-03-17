@@ -3,10 +3,10 @@
     <q-circular-progress v-if="loading.isActive" indeterminate size="50px" color="brand" />
     <template v-else-if="!loading.isActive && currentItem">
       <div class="item-photo-container">
-        <item-photo v-if="currentItem.photos.length" :path="currentItem.photos[0]" height="100%" />
+        <item-photo v-for="photo of currentItem.photos" :key="photo" :path="photo" height="100%" />
       </div>
 
-      <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.length }]">
+      <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.size }]">
         <h1 v-if="currentItem.name" class="text-h5 q-my-none">{{ currentItem.name }}</h1>
         <section class="item-symbols">
           <laundry-symbol-button
@@ -16,7 +16,7 @@
           />
         </section>
 
-        <section v-if="currentItem.tags.length" class="item-tags">
+        <section v-if="currentItem.tags.size" class="item-tags">
           <item-tag v-for="tag in currentItem.tags" :key="tag">{{ tag }}</item-tag>
         </section>
 
@@ -119,12 +119,12 @@ function showSaveOnServerDialog(item: Item) {
     const isOfflineModeEnabled = userSettingsStorage.value.offlineMode
     userSettingsStorage.value.offlineMode = false
 
-    const uploadedPhotos = []
-    if (item.photos.length) {
-      const uploadItem = await db.upload.get({ id: item.photos[0] })
+    const uploadedPhotos = new Set<string>()
+    for (const photo of item.photos) {
+      const uploadItem = await db.upload.get({ id: photo })
       if (uploadItem?.file) {
         const uploadedPhoto = await uploadPhoto(uploadItem.file)
-        uploadedPhotos.push(uploadedPhoto)
+        uploadedPhotos.add(uploadedPhoto)
       }
     }
 

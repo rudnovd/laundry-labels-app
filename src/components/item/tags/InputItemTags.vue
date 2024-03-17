@@ -5,11 +5,11 @@
       outlined
       :label="t('components.item.inputItemTags.tagsInput')"
       :maxlength="32"
-      :disable="modelValue.length >= MAX_TAGS_COUNT"
-      @keyup.enter="onAddTag(newTag)"
+      :disable="modelValue.size >= MAX_TAGS_COUNT"
+      @keyup.enter="newTag.length ? onAddTag(newTag) : void 0"
     >
       <template #append>
-        <q-icon :class="{ invisible: !newTag }" name="check" @click="onAddTag(newTag)" />
+        <q-icon :class="{ invisible: !newTag }" name="check" :disable="!newTag.length" @click="onAddTag(newTag)" />
       </template>
     </q-input>
 
@@ -19,8 +19,8 @@
         <ul>
           <li v-for="{ name: tag } in group" :key="tag">
             <item-tag
-              :disabled="modelValue.length >= MAX_TAGS_COUNT && !modelValue.includes(tag)"
-              :selected="modelValue.includes(tag)"
+              :disabled="modelValue.size >= MAX_TAGS_COUNT && !modelValue.has(tag)"
+              :selected="modelValue.has(tag)"
               @click="onClickTag(tag)"
             >
               {{ tag }}
@@ -33,39 +33,38 @@
 </template>
 
 <script setup lang="ts">
-import { defineModel, computed, ref } from 'vue'
+import { computed, defineModel, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useItems from '@/composables/useItems'
 import ItemTag from '@/components/item/tags/ItemTag.vue'
+import type { ItemTag as ItemTagType } from '@/types/item'
 
 const MAX_TAGS_COUNT = 30
 
-const modelValue = defineModel<Array<string>>({ default: [] })
+const modelValue = defineModel<Set<string>>({ default: new Set() })
 const { t } = useI18n()
 const { tags, tagsByGroups } = useItems()
 const newTag = ref('')
 const allTags = computed(() => {
-  const usersTags = modelValue.value.filter((tag) => !tags.value[tag])
-  if (!usersTags.length) return tagsByGroups.value
-
-  return new Map([...tagsByGroups.value]).set(
-    t('components.item.inputItemTags.custom'),
-    usersTags.map((tag) => ({ name: tag, group: t('components.item.inputItemTags.custom') })),
-  )
+  const userTags: Array<ItemTagType> = []
+  for (const tag of modelValue.value) {
+    if (!tags.value[tag]) userTags.push({ name: tag, group: t('components.item.inputItemTags.custom') })
+  }
+  const tagsMap = new Map([...tagsByGroups.value])
+  if (userTags.length) tagsMap.set(t('components.item.inputItemTags.custom'), userTags)
+  return tagsMap
 })
 
 const onAddTag = (tag: string) => {
-  if (!tag.length) return
   onClickTag(tag)
-  if (newTag.value) newTag.value = ''
+  newTag.value = ''
 }
 
 const onClickTag = (tag: string) => {
-  const isTagSelected = modelValue.value.includes(tag)
-  if (isTagSelected) {
-    modelValue.value = modelValue.value.filter((itemTag) => itemTag !== tag)
-  } else if (modelValue.value.length < MAX_TAGS_COUNT) {
-    modelValue.value.push(tag)
+  if (modelValue.value.has(tag)) {
+    modelValue.value.delete(tag)
+  } else if (modelValue.value.size < MAX_TAGS_COUNT) {
+    modelValue.value.add(tag)
   }
 }
 </script>

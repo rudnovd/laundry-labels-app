@@ -3,12 +3,13 @@ import Compressor from 'compressorjs'
 import { useItemsStore } from '@/store/items'
 import { useOfflineItemsStore } from '@/store/offlineItems'
 import { userSettingsStorage } from '@/utils/localStorage'
+import type { Item } from '@/types/item'
 
 export default function useItems() {
   const itemsStore = useItemsStore()
   const offlineItemsStore = useOfflineItemsStore()
 
-  const items = computed(() => [...itemsStore.items, ...offlineItemsStore.items])
+  const items = computed<Array<Item>>(() => [...itemsStore.items, ...offlineItemsStore.items])
   const symbols = computed(() => itemsStore.symbols)
   const tags = computed(() => itemsStore.tags)
   const symbolsByGroups = computed(() => itemsStore.symbolsByGroups)

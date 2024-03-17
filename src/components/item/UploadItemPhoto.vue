@@ -1,14 +1,14 @@
 <template>
-  <q-btn v-if="!modelValue.length" class="full-width" color="brand" :disable="isLoading" @click="() => open()">
+  <q-btn v-if="!modelValue.size" class="full-width" color="brand" :disable="isLoading" @click="() => open()">
     {{ t('components.uploadItemPhoto.uploadPhoto') }}
   </q-btn>
   <q-btn v-else class="full-width q-mb-sm" color="negative" @click="onRemovePhoto">
     {{ t('components.uploadItemPhoto.removePhoto') }}
   </q-btn>
 
-  <div v-if="isLoading || modelValue.length" class="flex justify-center q-mb-md">
+  <div v-if="isLoading || modelValue.size" class="flex justify-center q-mb-md">
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
-    <item-photo v-else-if="modelValue?.length" :path="modelValue[0]" height="200px" width="200px" />
+    <item-photo v-for="photo in modelValue" :key="photo" :path="photo" height="200px" width="200px" />
   </div>
 </template>
 
@@ -21,7 +21,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ItemPhoto from './ItemPhoto.vue'
 
-const modelValue = defineModel<Array<string>>({ default: [] })
+const modelValue = defineModel<Set<string>>({ default: new Set() })
 
 const { t } = useI18n()
 const { notify } = useQuasar()
@@ -51,7 +51,7 @@ onChange(async (files) => {
         notify({ type: 'negative', message: t('notifications.uploadError') })
         continue
       }
-      modelValue.value.push(promise.value)
+      modelValue.value.add(promise.value)
     }
   } finally {
     isLoading.value = false
@@ -60,6 +60,6 @@ onChange(async (files) => {
 
 const onRemovePhoto = () => {
   reset()
-  modelValue.value.shift()
+  modelValue.value.delete(modelValue.value.values().next().value)
 }
 </script>

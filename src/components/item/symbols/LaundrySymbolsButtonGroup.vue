@@ -10,7 +10,7 @@
           :symbol="symbol"
           :styles="{
             selected: selectedSymbol === symbol.name,
-            transparent: !!modelValue.length && !!selectedSymbol && !modelValue.includes(symbol.name),
+            transparent: !!modelValue.size && !!selectedSymbol && !modelValue.has(symbol.name),
           }"
           @click="onClickSymbol(symbol.name)"
         />
@@ -28,22 +28,28 @@ import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.v
 import { useQuasar } from 'quasar'
 
 const { group } = defineProps<{ group: string }>()
+const modelValue = defineModel<Set<string>>({ required: true })
 const { dialog } = useQuasar()
 const { t, tm, rt } = useI18n()
 const { symbols, symbolsByGroups } = useItems()
-const selectedSymbol = ref<ItemSymbol['name'] | null>(
-  modelValue.value.find((symbol) => symbols.value[symbol]?.group === group) ?? null,
-)
+const selectedSymbol = ref<ItemSymbol['name'] | null>(getSelectedTag())
+
+function getSelectedTag(): ItemSymbol['name'] | null {
+  for (const symbol of modelValue.value) {
+    if (symbols.value[symbol]?.group === group) return symbol
+  }
+  return null
+}
 
 function onClickSymbol(symbol: string) {
-  if (modelValue.value.includes(symbol)) {
-    modelValue.value = modelValue.value.filter((name) => name !== symbol)
+  if (modelValue.value.has(symbol)) {
+    modelValue.value.delete(symbol)
     selectedSymbol.value = null
   } else {
     if (selectedSymbol.value) {
-      modelValue.value.splice(modelValue.value.indexOf(selectedSymbol.value), 1)
+      modelValue.value.delete(selectedSymbol.value)
     }
-    modelValue.value.push(symbol)
+    modelValue.value.add(symbol)
     selectedSymbol.value = symbol
   }
 }

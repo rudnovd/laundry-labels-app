@@ -37,8 +37,9 @@
 
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from 'vue'
+import { useEventListener } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import useItems from '@/composables/useItems'
 import { userSettingsStorage } from '@/utils/localStorage'
@@ -64,9 +65,8 @@ const modifiedItem = ref<Omit<ItemBlank, 'owner'>>({
   tags: new Set(),
 })
 const hasError = ref(false)
-const initialItem = ref<typeof modifiedItem.value | null>(null)
+const initialItem = ref<Omit<ItemBlank, 'owner'>>(cloneDeep(modifiedItem.value))
 const hasChanges = computed(() => {
-  if (!initialItem.value) return false
   const isEqualNames = initialItem.value.name === modifiedItem.value.name
   const isEqualSymbols = isEqualSets(initialItem.value.symbols, modifiedItem.value.symbols)
   const isEqualPhotos = isEqualSets(initialItem.value.photos, modifiedItem.value.photos)
@@ -136,6 +136,16 @@ async function edit() {
     loading.hide()
   }
 }
+
+useEventListener(window, 'beforeunload', (event) => {
+  if (hasChanges.value) {
+    event.preventDefault()
+    event.returnValue = ''
+  }
+})
+onBeforeRouteLeave(() => {
+  if (hasChanges.value) return window.confirm(t('alerts.unsavedChanges'))
+})
 </script>
 
 <style>

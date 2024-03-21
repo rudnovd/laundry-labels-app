@@ -218,5 +218,8 @@
       "Dry flat: A square with a horizontal line located at the centre of a square tells you to dry your item naturally while laying it out flat. Some items may lose their shape if you leave them to dry while hanging. Follow the label recommendation, and you won't have to worry about stretching out your sweaters or knitted garments",
       "Dry flat in the shade: When you see a square with two slanted parallel lines at the upper left-hand corner, PLUS a horizontal line at the centre, it means your item ought to be kept away from the sun. You also ought to lay out your item, so it is flat to preserve its quality"
     ]
+  },
+  "alerts": {
+    "unsavedChanges": "All unsaved changes will be lost. Are you sure you want to exit?"
   }
 }

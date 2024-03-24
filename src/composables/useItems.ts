@@ -12,6 +12,7 @@ export default function useItems() {
   const items = computed<Array<Item>>(() => [...itemsStore.items, ...offlineItemsStore.items])
   const symbols = computed(() => itemsStore.symbols)
   const tags = computed(() => itemsStore.tags)
+  const materials = computed(() => itemsStore.materials)
   const symbolsByGroups = computed(() => itemsStore.symbolsByGroups)
   const tagsByGroups = computed(() => itemsStore.tagsByGroups)
 
@@ -69,8 +70,9 @@ export default function useItems() {
 
   return {
     items,
-    tags,
     symbols,
+    tags,
+    materials,
     symbolsByGroups,
     tagsByGroups,
 

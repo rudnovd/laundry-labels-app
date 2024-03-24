@@ -9,6 +9,7 @@ interface ItemState {
   items: Array<Item>
   symbols: Record<string, { group: string; description: string }>
   tags: Record<string, { group: string; name: string }>
+  materials: Array<string>
 }
 
 export const useItemsStore = defineStore('items', {
@@ -16,6 +17,7 @@ export const useItemsStore = defineStore('items', {
     items: [],
     symbols: {},
     tags: {},
+    materials: [],
   }),
   getters: {
     tagsByGroups(): ReadonlyMap<string, Array<ItemTag>> {
@@ -155,6 +157,12 @@ export const useItemsStore = defineStore('items', {
       ).default
       this.symbols = symbols
       return this.symbols
+    },
+    async getStandardMaterials() {
+      const locale = userSettingsStorage.value.locale
+      const materials: Array<string> = (await import(`../assets/data/materials/${locale}.ts`)).default
+      this.materials = materials
+      return this.materials
     },
     // TODO: remove after migration date is over
     async getMigrationItems() {

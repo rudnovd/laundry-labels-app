@@ -14,7 +14,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
-          materials: string[]
+          materials: `${string}-${string}`[]
           name: string | null
           owner: string
           photos: string[]
@@ -23,7 +23,7 @@ export interface Database {
           updated_at: string | null
         }
         Insert: {
-          materials: string[]
+          materials: `${string}-${string}`[]
           name?: string | null
           owner: string
           photos: string[]
@@ -31,7 +31,7 @@ export interface Database {
           tags: string[]
         }
         Update: {
-          materials?: string[]
+          materials?: `${string}-${string}`[]
           name?: string | null
           owner?: string
           photos?: string[]

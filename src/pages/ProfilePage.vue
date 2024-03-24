@@ -97,8 +97,14 @@ const { t } = useI18n()
 const isOnline = computed(() => userStore.isOnline)
 const isAuthenticated = computed(() => userStore.user)
 const { items } = useItems()
-const { getStandardSymbols, getStandardTags } = useItemsStore()
-watch(() => userSettingsStorage.value.locale, getStandardSymbols)
+const { getStandardSymbols, getStandardTags, getStandardMaterials } = useItemsStore()
+watch(
+  () => userSettingsStorage.value.locale,
+  () => {
+    getStandardSymbols()
+    getStandardMaterials()
+  },
+)
 watch(() => userSettingsStorage.value.items.standardTagsLocale, getStandardTags)
 
 async function showSignOutDialog() {

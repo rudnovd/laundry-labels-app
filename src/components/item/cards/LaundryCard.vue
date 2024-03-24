@@ -20,7 +20,13 @@
         </li>
       </ul>
 
-      <ul class="tags">
+      <ul v-if="item.materials.size" class="materials">
+        <li v-for="material in item.materials" :key="material">
+          <item-material :value="material" />
+        </li>
+      </ul>
+
+      <ul v-if="item.tags.size" class="tags">
         <li v-for="tag in item.tags" :key="tag">
           <item-tag>{{ tag }}</item-tag>
         </li>
@@ -37,6 +43,7 @@ import { defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
+const ItemMaterial = defineAsyncComponent(() => import('@/components/item/materials/ItemMaterial.vue'))
 
 defineProps<{ item: Item }>()
 
@@ -49,7 +56,7 @@ const { symbols } = useItems()
   display: grid;
   grid: 100% / 100%;
   gap: 8px;
-  height: clamp(180px, 20vw, 250px);
+  height: clamp(200px, 22vw, 250px);
   border: 1px solid rgb(158 158 158);
   border-radius: 8px;
 }
@@ -88,7 +95,8 @@ const { symbols } = useItems()
   }
 
   .symbols,
-  .tags {
+  .tags,
+  .materials {
     display: flex;
     flex-wrap: nowrap;
     gap: 8px;
@@ -124,7 +132,7 @@ const { symbols } = useItems()
   }
 }
 
-.laundry-card .laundry-card-data:has(> .title-container) {
-  grid-template-rows: max-content max-content 1fr;
+.laundry-card .laundry-card-data:has(> .title-container):has(> .symbols):has(> .tags) {
+  grid-template-rows: repeat(3, max-content) 1fr;
 }
 </style>

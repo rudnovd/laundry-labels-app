@@ -1,5 +1,15 @@
 <template>
   <q-page class="profile-page q-pa-sm">
+    <div v-if="isAuthenticated" class="user">
+      <q-avatar>
+        <img :src="avatarUrl" :alt="`${username} avatar`" width="32px" height="32px" />
+      </q-avatar>
+      {{ username }}
+      <div v-if="!isEmailVerified">
+        <strong>Email not verified</strong>
+      </div>
+    </div>
+
     <section class="actions">
       <q-btn
         v-if="isOnline && appSettingsStore.appInstallation?.showInstallButton"
@@ -95,8 +105,15 @@ const router = useRouter()
 const { t } = useI18n()
 
 const isOnline = computed(() => userStore.isOnline)
-const isAuthenticated = computed(() => userStore.user)
+const isAuthenticated = computed(() => !!userStore.user)
 const isGoogleProvider = computed<boolean>(() => userStore.user?.app_metadata?.providers.includes('google'))
+const username = computed(() => {
+  const name: string = userStore.user?.user_metadata.full_name
+  const email = userStore.user?.email
+  return name ? `${name} (${email})` : email
+})
+const avatarUrl = computed(() => userStore.user?.user_metadata.avatar_url ?? '/favicon.svg')
+const isEmailVerified = computed(() => userStore.user?.user_metadata?.email_verified ?? false)
 const { items } = useItems()
 const { getStandardSymbols, getStandardTags, getStandardMaterials } = useItemsStore()
 watch(
@@ -164,6 +181,23 @@ async function importItems() {
   flex-direction: column;
   gap: 1rem;
   align-items: center;
+
+  .user {
+    display: grid;
+    gap: 4px;
+    place-content: center;
+    place-items: center;
+    width: 100%;
+    border-bottom: 1px solid rgb(0 0 0 / 30%);
+
+    .q-avatar img {
+      background: var(--color-brand);
+    }
+
+    strong {
+      color: rgb(255 0 0);
+    }
+  }
 
   .actions {
     display: grid;

@@ -8,7 +8,7 @@
 
   <div v-if="isLoading || modelValue.size" class="flex justify-center q-mb-md">
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
-    <item-photo v-for="photo in modelValue" :key="photo" :path="photo" height="200px" width="200px" />
+    <item-photo v-for="photo in modelValue" :key="photo" class="uploaded-photo" :path="photo" height="300px" />
   </div>
 </template>
 
@@ -63,3 +63,9 @@ const onRemovePhoto = () => {
   modelValue.value.delete(modelValue.value.values().next().value)
 }
 </script>
+
+<style>
+.uploaded-photo {
+  max-width: 600px;
+}
+</style>

@@ -157,6 +157,7 @@ function showSaveOnServerDialog(item: Item) {
   .item-photo-container {
     display: flex;
     justify-content: center;
+    height: 300px;
 
     img {
       max-width: 600px;

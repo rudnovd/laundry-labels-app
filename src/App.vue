@@ -31,10 +31,11 @@ onBeforeMount(async () => {
 usePwa()
 const stop = watch(router.currentRoute, ({ matched }) => {
   const matchedPages: Array<RouteRecordName> = ['Items parent', 'Profile parent']
-  const { getStandardSymbols, getStandardTags } = useItemsStore()
+  const { getStandardSymbols, getStandardTags, getStandardMaterials } = useItemsStore()
   if (matched.some(({ name }) => name && matchedPages.includes(name))) {
     getStandardSymbols()
     getStandardTags()
+    getStandardMaterials()
     stop()
   }
 })

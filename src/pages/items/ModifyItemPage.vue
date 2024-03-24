@@ -7,6 +7,7 @@
         <upload-item-photo v-model="modifiedItem.photos" />
         <q-input v-model.trim="modifiedItem.name" :debounce="300" outlined :label="t('common.name')" />
         <input-item-tags v-model="modifiedItem.tags" />
+        <select-item-materials v-model="modifiedItem.materials" />
       </div>
 
       <ul v-if="symbolsByGroups.size" ref="laundrySymbolsContainer" class="item-symbols-container">
@@ -48,6 +49,7 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import LaundrySymbolsButtonGroup from '@/components/item/symbols/LaundrySymbolsButtonGroup.vue'
 import InputItemTags from '@/components/item/tags/InputItemTags.vue'
 import UploadItemPhoto from '@/components/item/UploadItemPhoto.vue'
+import SelectItemMaterials from '@/components/item/materials/SelectItemMaterials.vue'
 import { isEqualSets } from '@/utils/set'
 
 const route = useRoute()
@@ -120,6 +122,7 @@ async function create() {
       type: 'positive',
       message: t('pages.modifyItem.itemAdded'),
     })
+    initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
   } finally {
     loading.hide()
@@ -131,6 +134,7 @@ async function edit() {
   loading.show()
   try {
     await editItem({ ...modifiedItem.value, id: route.params.id.toString() })
+    initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
   } finally {
     loading.hide()

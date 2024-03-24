@@ -7,7 +7,7 @@ export interface Item {
   readonly name: string | null
   readonly symbols: Set<string>
   readonly photos: Set<string>
-  readonly materials: Set<string>
+  readonly materials: Set<ItemMaterial>
   readonly tags: Set<string>
   readonly created_at: string
   readonly updated_at: string | null
@@ -16,7 +16,7 @@ export interface ItemBlank {
   name: string | null
   symbols: Set<string>
   photos: Set<string>
-  materials: Set<string>
+  materials: Set<ItemMaterial>
   tags: Set<string>
 }
 
@@ -25,4 +25,5 @@ export interface ItemSymbol {
   group: string
   name: string
 }
+export type ItemMaterial = `${string}-${string}`
 export type ItemTag = RowType<'items_tags'>

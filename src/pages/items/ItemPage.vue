@@ -8,19 +8,25 @@
 
       <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.size }]">
         <h1 v-if="currentItem.name" class="text-h5 q-my-none">{{ currentItem.name }}</h1>
-        <section class="item-symbols">
-          <laundry-symbol-button
-            v-for="symbol in currentItem.symbols"
-            :key="symbol"
-            :symbol="{ ...symbols[symbol], name: symbol }"
-          />
-        </section>
+        <ul class="item-symbols">
+          <li v-for="symbol in currentItem.symbols" :key="symbol">
+            <laundry-symbol-button :symbol="{ ...symbols[symbol], name: symbol }" />
+          </li>
+        </ul>
 
-        <section v-if="currentItem.tags.size" class="item-tags">
-          <item-tag v-for="tag in currentItem.tags" :key="tag">{{ tag }}</item-tag>
-        </section>
+        <ul class="item-materials">
+          <li v-for="material of currentItem.materials" :key="material">
+            <item-material :value="material" />
+          </li>
+        </ul>
 
-        <section class="flex justify-between">
+        <ul v-if="currentItem.tags.size" class="item-tags">
+          <li v-for="tag in currentItem.tags" :key="tag">
+            <item-tag>{{ tag }}</item-tag>
+          </li>
+        </ul>
+
+        <div class="flex justify-between">
           <q-btn
             color="negative"
             outline
@@ -35,7 +41,7 @@
             icon="edit"
             @click="router.push(`/items/edit/${currentItem?.id}`)"
           />
-        </section>
+        </div>
 
         <q-btn
           v-if="userStore.isOnline && userStore.user && isOfflineItem(currentItem.id)"
@@ -65,6 +71,7 @@ import { userSettingsStorage } from '@/utils/localStorage'
 import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
 const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
+const ItemMaterial = defineAsyncComponent(() => import('@/components/item/materials/ItemMaterial.vue'))
 
 const { loading, dialog, notify } = useQuasar()
 const router = useRouter()
@@ -162,7 +169,8 @@ function showSaveOnServerDialog(item: Item) {
     gap: 16px;
   }
 
-  .item-tags {
+  .item-tags,
+  .items-materials {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;

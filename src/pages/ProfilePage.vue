@@ -28,7 +28,7 @@
         :to="{ name: 'Language options', replace: true }"
       />
       <q-btn
-        v-if="isOnline && isAuthenticated"
+        v-if="isOnline && isAuthenticated && !isGoogleProvider"
         color="primary"
         :label="t('pages.profile.updatePassword')"
         icon="password"
@@ -96,6 +96,7 @@ const { t } = useI18n()
 
 const isOnline = computed(() => userStore.isOnline)
 const isAuthenticated = computed(() => userStore.user)
+const isGoogleProvider = computed<boolean>(() => userStore.user?.app_metadata?.providers.includes('google'))
 const { items } = useItems()
 const { getStandardSymbols, getStandardTags, getStandardMaterials } = useItemsStore()
 watch(

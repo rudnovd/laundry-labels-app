@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-beta.1](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-beta.0...v0.0.0-beta.1) (2024-03-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* use Set instead Array for symbols, photos, materials and tags
+
+### Features
+
+* add item materials ([d1c2ad3](https://github.com/rudnovd/laundry-labels-app/commit/d1c2ad3f62e8555afc3937fbc4f30272c59ce469))
+* **LaundrySymbolsButtonGroup:** add hints for symbols groups ([240f11a](https://github.com/rudnovd/laundry-labels-app/commit/240f11ab64d7ae62fe0fcaa57a60b84ae0b5a84f))
+* **ModifyItemPage:** disable 'edit' button if item has no changes ([a7b4e0c](https://github.com/rudnovd/laundry-labels-app/commit/a7b4e0cb079d06d66345df1a91bbdd237f92dfcd))
+* **ModifyItemPage:** display confirmation alert when leave with unsaved changes ([75a583e](https://github.com/rudnovd/laundry-labels-app/commit/75a583ef6d3b50ec88fe9ccb5f72ab6a8cdb3c9a))
+* **RedirectPage:** update page styles ([0d0eb21](https://github.com/rudnovd/laundry-labels-app/commit/0d0eb21ce08a1ca30823ade61aef61aff0be8e14))
+* use Set instead Array for symbols, photos, materials and tags ([18421dc](https://github.com/rudnovd/laundry-labels-app/commit/18421dc26b56eda83152b44b64ab50fe220a16c3))
+* **UserProfile:** display current user ([5ebae71](https://github.com/rudnovd/laundry-labels-app/commit/5ebae710d9b56b68e678c34e045862297e1d1ac9))
+
+
+### Bug Fixes
+
+* **ItemPage:** fix photo sizes ([3fe1f0e](https://github.com/rudnovd/laundry-labels-app/commit/3fe1f0ed98a195feaab897911b0918e8f4a340fd))
+* **ItemsPage:** fix migration types ([a4e1d5a](https://github.com/rudnovd/laundry-labels-app/commit/a4e1d5a440c815dd92ff2e34993d0bb0588c6fad))
+* **ProfilePage:** disable password changing for 'google' provider ([cbe720f](https://github.com/rudnovd/laundry-labels-app/commit/cbe720fc877903c4c790e885ad6b71ea97f75abe))
+
 ## [0.0.0-beta.0](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-alpha.11...v0.0.0-beta.0) (2024-03-06)
 
 

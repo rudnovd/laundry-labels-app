@@ -167,7 +167,7 @@ export const useItemsStore = defineStore('items', {
     // TODO: remove after migration date is over
     async getMigrationItems() {
       const userStore = useUserStore()
-      if (!userStore.user) throw new Error('Authorization required')
+      if (!userStore.user?.email) throw new Error('Authorization required')
       const { data, error } = await supabase
         .from('items_migration')
         .select('items, migration_date')
@@ -179,7 +179,7 @@ export const useItemsStore = defineStore('items', {
     // TODO: remove after migration date is over
     async updateMigrationDate() {
       const userStore = useUserStore()
-      if (!userStore.user) throw new Error('Authorization required')
+      if (!userStore.user?.email) throw new Error('Authorization required')
       const { data, error } = await supabase
         .from('items_migration')
         .update({ migration_date: new Date().toISOString() })

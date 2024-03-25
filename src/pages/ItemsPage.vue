@@ -75,9 +75,10 @@ import { ITEMS_LIMIT } from '@/constants'
 import { defineAsyncComponent } from 'vue'
 import { supabase } from '@/supabase'
 import { useUserStore } from '@/store/user'
-import type { Item, ItemBlank } from '@/types/item'
+import type { Item, ItemBlank, ItemMaterial } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
 import { setIntersection } from '@/utils/set'
+import type { RowType } from '@/types/supabase'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
 const { loading, notify } = useQuasar()
@@ -146,7 +147,7 @@ function searchTag() {
 }
 
 // TODO: remove after migration date is over
-async function migrate(items: Array<Item>) {
+async function migrate(items: RowType<'items_migration'>['items']) {
   const userId = userStore.user?.id
   if (!userId) return notify({ type: 'negative', message: 'Authorization required' })
 
@@ -158,10 +159,10 @@ async function migrate(items: Array<Item>) {
     for (const [index, item] of items.entries()) {
       const newItem: ItemBlank = {
         name: item.name ?? null,
-        symbols: item.symbols ?? new Set<string>(),
+        symbols: new Set(item.symbols),
         photos: new Set<string>(),
-        materials: item.materials ?? new Set<string>(),
-        tags: item.tags ?? new Set<string>(),
+        materials: new Set<ItemMaterial>(item.materials),
+        tags: new Set<string>(item.tags),
       }
       for (const photo of item.photos) {
         photosPaths[index] = `${userId}/${Date.now()}-${index}`

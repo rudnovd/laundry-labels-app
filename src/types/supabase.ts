@@ -139,6 +139,20 @@ export interface Database {
         }
         Relationships: []
       }
+      items_migration: {
+        Row: {
+          owner_email: string
+          items: RowType<'items'>[]
+          migration_date: string
+        }
+        Insert: {
+          [_ in never]: never
+        }
+        Update: {
+          migration_date: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,7 +1,7 @@
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
-import { CacheFirst, NetworkFirst } from 'workbox-strategies'
+import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -18,16 +18,23 @@ cleanupOutdatedCaches()
 // to allow work offline
 registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')), new CacheFirst())
 
-// Return cached items object when user is offline
+// Supabase items cache
 registerRoute(
-  ({ url }) => url.pathname === '/api/items',
+  ({ url }) => url.pathname === '/rest/v1/items',
+  // Return cached items when user is offline
   new NetworkFirst({
-    cacheName: 'items',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [200],
-      }),
-    ],
+    cacheName: 'supabase-items-rest',
+    plugins: [new CacheableResponsePlugin({ statuses: [200] })],
+  }),
+  'GET',
+)
+
+// Supabase items photos cache
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/storage/v1/object/public/items'),
+  new StaleWhileRevalidate({
+    cacheName: 'supabase-items-storage',
+    plugins: [new CacheableResponsePlugin({ statuses: [200] })],
   }),
   'GET',
 )
@@ -36,11 +43,7 @@ registerRoute(
   ({ url }) => url.pathname.startsWith('/icons'),
   new CacheFirst({
     cacheName: 'icons',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-    ],
+    plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
   }),
   'GET',
 )
@@ -49,10 +52,6 @@ registerRoute(
   ({ request }) => request.destination === 'font',
   new CacheFirst({
     cacheName: 'fonts',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-    ],
+    plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
   }),
 )

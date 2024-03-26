@@ -20,7 +20,7 @@
         </li>
       </ul>
 
-      <ul v-if="item.materials.size" class="materials">
+      <ul v-if="item.materials.length" class="materials">
         <li v-for="material in item.materials" :key="material">
           <item-material :value="material" />
         </li>

@@ -82,7 +82,7 @@ export const useItemsStore = defineStore('items', {
           symbols: [...itemBlank.symbols],
           tags: [...itemBlank.tags],
           photos: [...itemBlank.photos],
-          materials: [...itemBlank.materials],
+          materials: itemBlank.materials,
           owner: userStore.user.id,
         })
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
@@ -102,7 +102,7 @@ export const useItemsStore = defineStore('items', {
           symbols: [...editedItem.symbols],
           tags: [...editedItem.tags],
           photos: [...editedItem.photos],
-          materials: [...editedItem.materials],
+          materials: editedItem.materials,
           owner: userStore.user.id,
         })
         .eq('owner', userStore.user?.id)

@@ -7,7 +7,7 @@ export interface Item {
   readonly name: string | null
   readonly symbols: Set<string>
   readonly photos: Set<string>
-  readonly materials: Set<ItemMaterial>
+  readonly materials: Array<ItemMaterial>
   readonly tags: Set<string>
   readonly created_at: string
   readonly updated_at: string | null
@@ -16,7 +16,7 @@ export interface ItemBlank {
   name: string | null
   symbols: Set<string>
   photos: Set<string>
-  materials: Set<ItemMaterial>
+  materials: Array<ItemMaterial>
   tags: Set<string>
 }
 

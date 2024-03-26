@@ -6,7 +6,7 @@
         <item-photo v-for="photo of currentItem.photos" :key="photo" :path="photo" height="100%" />
       </div>
 
-      <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.size }]">
+      <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.length }]">
         <h1 v-if="currentItem.name" class="text-h5 q-my-none">{{ currentItem.name }}</h1>
         <ul class="item-symbols">
           <li v-for="symbol in currentItem.symbols" :key="symbol">
@@ -126,12 +126,12 @@ function showSaveOnServerDialog(item: Item) {
     const isOfflineModeEnabled = userSettingsStorage.value.offlineMode
     userSettingsStorage.value.offlineMode = false
 
-    const uploadedPhotos = new Set<string>()
+    const uploadedPhotos: Array<string> = []
     for (const photo of item.photos) {
       const uploadItem = await db.upload.get({ id: photo })
       if (uploadItem?.file) {
         const uploadedPhoto = await uploadPhoto(uploadItem.file)
-        uploadedPhotos.add(uploadedPhoto)
+        uploadedPhotos.push(uploadedPhoto)
       }
     }
 

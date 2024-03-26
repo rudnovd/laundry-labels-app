@@ -6,7 +6,7 @@ export function convertItem(item: Omit<DatabaseItem, 'owner'>) {
     name: item.name,
     symbols: new Set(item.symbols),
     tags: new Set(item.tags),
-    photos: new Set(item.photos),
+    photos: item.photos,
     materials: item.materials,
     created_at: item.created_at,
     updated_at: item.updated_at,

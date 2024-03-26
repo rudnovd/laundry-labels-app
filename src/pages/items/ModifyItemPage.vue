@@ -46,6 +46,7 @@ import useItems from '@/composables/useItems'
 import { userSettingsStorage } from '@/utils/localStorage'
 import type { ItemBlank } from '@/types/item'
 import cloneDeep from 'lodash-es/cloneDeep'
+import isEqual from 'lodash-es/isEqual'
 import LaundrySymbolsButtonGroup from '@/components/item/symbols/LaundrySymbolsButtonGroup.vue'
 import InputItemTags from '@/components/item/tags/InputItemTags.vue'
 import UploadItemPhoto from '@/components/item/UploadItemPhoto.vue'
@@ -63,16 +64,16 @@ const modifiedItem = ref<Omit<ItemBlank, 'owner'>>({
   name: '',
   symbols: new Set(),
   photos: new Set(),
-  materials: new Set(),
+  materials: [],
   tags: new Set(),
 })
-const hasError = ref(false)
 const initialItem = ref<Omit<ItemBlank, 'owner'>>(cloneDeep(modifiedItem.value))
+const hasError = ref(false)
 const hasChanges = computed(() => {
   const isEqualNames = initialItem.value.name === modifiedItem.value.name
   const isEqualSymbols = isEqualSets(initialItem.value.symbols, modifiedItem.value.symbols)
   const isEqualPhotos = isEqualSets(initialItem.value.photos, modifiedItem.value.photos)
-  const isEqualMaterials = isEqualSets(initialItem.value.materials, modifiedItem.value.materials)
+  const isEqualMaterials = isEqual(initialItem.value.materials, modifiedItem.value.materials)
   const isEqualTags = isEqualSets(initialItem.value.tags, modifiedItem.value.tags)
   return !isEqualNames || !isEqualPhotos || !isEqualSymbols || !isEqualMaterials || !isEqualTags
 })

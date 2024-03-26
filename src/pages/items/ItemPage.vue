@@ -171,7 +171,7 @@ function showSaveOnServerDialog(item: Item) {
   }
 
   .item-tags,
-  .items-materials {
+  .item-materials {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;

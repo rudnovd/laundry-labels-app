@@ -75,7 +75,7 @@ import { ITEMS_LIMIT } from '@/constants'
 import { defineAsyncComponent } from 'vue'
 import { supabase } from '@/supabase'
 import { useUserStore } from '@/store/user'
-import type { Item, ItemBlank, ItemMaterial } from '@/types/item'
+import type { Item, ItemBlank } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
 import { setIntersection } from '@/utils/set'
 import type { RowType } from '@/types/supabase'
@@ -161,7 +161,7 @@ async function migrate(items: RowType<'items_migration'>['items']) {
         name: item.name ?? null,
         symbols: new Set(item.symbols),
         photos: new Set<string>(),
-        materials: new Set<ItemMaterial>(item.materials),
+        materials: item.materials,
         tags: new Set<string>(item.tags),
       }
       for (const photo of item.photos) {

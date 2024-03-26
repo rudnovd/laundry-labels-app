@@ -33,7 +33,7 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
         symbols: [...itemBlank.symbols],
         tags: [...itemBlank.tags],
         photos: [...itemBlank.photos],
-        materials: [...itemBlank.materials],
+        materials: itemBlank.materials,
         created_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
         updated_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
       })
@@ -48,7 +48,7 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
         symbols: [...editedItem.symbols],
         tags: [...editedItem.tags],
         photos: [...editedItem.photos],
-        materials: [...editedItem.materials],
+        materials: editedItem.materials,
         updated_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS'),
       }
       await db.offlineItems.update(editedItem.id, Dexie.deepClone(databaseEditedItem))

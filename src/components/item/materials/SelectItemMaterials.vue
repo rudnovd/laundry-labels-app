@@ -11,8 +11,9 @@ import { defineModel, ref } from 'vue'
 import useItems from '@/composables/useItems'
 import ItemMaterialCheckbox from '@/components/item/materials/ItemMaterialCheckbox.vue'
 import { watch } from 'vue'
+import type { ItemMaterial } from '@/types/item'
 
-const modelValue = defineModel<Set<string>>({ default: new Set() })
+const modelValue = defineModel<Array<ItemMaterial>>({ default: [] })
 const { materials } = useItems()
 const materialsPercents = ref<Record<string, number>>(initMaterialsModels())
 
@@ -31,11 +32,12 @@ function initMaterialsModels() {
 watch(
   materialsPercents,
   () => {
-    modelValue.value.clear()
+    const newModel: Array<ItemMaterial> = []
     for (const material in materialsPercents.value) {
       if (!materialsPercents.value[material]) continue
-      modelValue.value.add(`${material}-${materialsPercents.value[material]}`)
+      newModel.push(`${material}-${materialsPercents.value[material]}`)
     }
+    modelValue.value = newModel
   },
   { deep: true },
 )

@@ -63,7 +63,7 @@ const laundrySymbolsContainer = ref<HTMLElement | null>(null)
 const modifiedItem = ref<Omit<ItemBlank, 'owner'>>({
   name: '',
   symbols: new Set(),
-  photos: new Set(),
+  photos: [],
   materials: [],
   tags: new Set(),
 })
@@ -72,7 +72,7 @@ const hasError = ref(false)
 const hasChanges = computed(() => {
   const isEqualNames = initialItem.value.name === modifiedItem.value.name
   const isEqualSymbols = isEqualSets(initialItem.value.symbols, modifiedItem.value.symbols)
-  const isEqualPhotos = isEqualSets(initialItem.value.photos, modifiedItem.value.photos)
+  const isEqualPhotos = isEqual(initialItem.value.photos, modifiedItem.value.photos)
   const isEqualMaterials = isEqual(initialItem.value.materials, modifiedItem.value.materials)
   const isEqualTags = isEqualSets(initialItem.value.tags, modifiedItem.value.tags)
   return !isEqualNames || !isEqualPhotos || !isEqualSymbols || !isEqualMaterials || !isEqualTags

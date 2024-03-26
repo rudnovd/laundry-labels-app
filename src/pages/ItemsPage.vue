@@ -160,14 +160,14 @@ async function migrate(items: RowType<'items_migration'>['items']) {
       const newItem: ItemBlank = {
         name: item.name ?? null,
         symbols: new Set(item.symbols),
-        photos: new Set<string>(),
+        photos: [],
         materials: item.materials,
         tags: new Set<string>(item.tags),
       }
       for (const photo of item.photos) {
         photosPaths[index] = `${userId}/${Date.now()}-${index}`
         photosPromises[index] = supabase.storage.from('items').move(`migration/${photo}`, photosPaths[index])
-        newItem.photos.add(`${userId}/${Date.now()}-${index}`)
+        newItem.photos.push(`${userId}/${Date.now()}-${index}`)
       }
       itemsPromises.push(itemsStore.createItem(newItem))
     }

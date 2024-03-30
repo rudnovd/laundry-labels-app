@@ -1,1 +1,1 @@
-export default ['Cotton', 'Flax', 'Wool', 'Silk', 'Viscose', 'Polyester', 'Elastane', 'Polyamide', 'Nylon'] as const
+export default ['cotton', 'flax', 'wool', 'silk', 'viscose', 'polyester', 'elastane', 'polyamide', 'nylon'] as const

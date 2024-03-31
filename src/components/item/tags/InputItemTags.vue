@@ -79,7 +79,7 @@ function onAddTag(tag: string) {
     shakeTagElement(tag)
     notify({ type: 'negative', message: t('components.item.inputItemTags.tagAlreadyAdded') })
   } else {
-  onClickTag(tag)
+    onClickTag(tag)
   }
   newTag.value = ''
 }
@@ -125,9 +125,11 @@ function shakeTagElement(tag: string) {
 
   .tags {
     display: grid;
-    gap: 8px;
+    gap: 16px;
     max-height: 170px;
+    padding-bottom: 4px;
     overflow: hidden auto;
+    border-bottom: 1px solid rgb(0 0 0 / 30%);
 
     @media (width >= 1024px) {
       max-height: fit-content;
@@ -146,7 +148,8 @@ function shakeTagElement(tag: string) {
       span {
         display: inline-block;
         flex: 100%;
-        padding-left: 0.5rem;
+        padding-left: 0.25rem;
+        font-size: 1.125rem;
         font-weight: 600;
       }
     }

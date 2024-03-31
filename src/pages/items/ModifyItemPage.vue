@@ -183,7 +183,7 @@ onBeforeRouteLeave(() => {
   .item-symbols-container {
     display: grid;
     grid-area: symbols;
-    gap: 16px;
+    gap: 32px;
   }
 
   .item-create-button {

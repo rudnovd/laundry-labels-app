@@ -13,11 +13,25 @@
       </template>
     </q-input>
 
-    <ul class="tags">
-      <li v-for="[groupKey, group] in allTags" :key="groupKey" class="tag-group">
+    <ul ref="tagsRef" class="tags">
+      <li v-if="userTags.size" :data-id="userCustomTagsGroup" class="tag-group">
+        <span>{{ userCustomTagsGroup }}</span>
+        <ul>
+          <li v-for="tag in userTags" :key="tag" :data-tag="tag">
+            <item-tag
+              :disabled="modelValue.size >= MAX_TAGS_COUNT && !modelValue.has(tag)"
+              :selected="modelValue.has(tag)"
+              @click="onClickTag(tag)"
+            >
+              {{ tag }}
+            </item-tag>
+          </li>
+        </ul>
+      </li>
+      <li v-for="[groupKey, group] in tagsByGroups" :key="groupKey" :data-id="groupKey" class="tag-group">
         <span>{{ groupKey }}</span>
         <ul>
-          <li v-for="{ name: tag } in group" :key="tag">
+          <li v-for="{ name: tag } in group" :key="tag" :data-tag="tag">
             <item-tag
               :disabled="modelValue.size >= MAX_TAGS_COUNT && !modelValue.has(tag)"
               :selected="modelValue.has(tag)"
@@ -37,34 +51,69 @@ import { computed, defineModel, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useItems from '@/composables/useItems'
 import ItemTag from '@/components/item/tags/ItemTag.vue'
-import type { ItemTag as ItemTagType } from '@/types/item'
-
-const MAX_TAGS_COUNT = 30
+import { useQuasar } from 'quasar'
+import { useWindowSize } from '@vueuse/core'
 
 const modelValue = defineModel<Set<string>>({ default: new Set() })
+const { notify } = useQuasar()
 const { t } = useI18n()
+const { width } = useWindowSize()
 const { tags, tagsByGroups } = useItems()
+
+const isScrollable = computed(() => width.value < 1024)
+const userCustomTagsGroup = computed(() => t('components.item.inputItemTags.custom'))
+const tagsRef = ref<HTMLElement | null>(null)
 const newTag = ref('')
-const allTags = computed(() => {
-  const userTags: Array<ItemTagType> = []
+const userTags = computed<Set<string>>(() => {
+  const userTags: Set<string> = new Set()
   for (const tag of modelValue.value) {
-    if (!tags.value[tag]) userTags.push({ name: tag, group: t('components.item.inputItemTags.custom') })
+    if (!tags.value[tag]) userTags.add(tag)
   }
-  const tagsMap = new Map([...tagsByGroups.value])
-  if (userTags.length) tagsMap.set(t('components.item.inputItemTags.custom'), userTags)
-  return tagsMap
+  return userTags
 })
 
-const onAddTag = (tag: string) => {
+function onAddTag(tag: string) {
+  const group = tags.value[tag]?.group ?? userCustomTagsGroup.value
+  if (isScrollable.value) scrollToGroup(group)
+  if (modelValue.value.has(tag)) {
+    shakeTagElement(tag)
+    notify({ type: 'negative', message: t('components.item.inputItemTags.tagAlreadyAdded') })
+  } else {
   onClickTag(tag)
+  }
   newTag.value = ''
 }
 
-const onClickTag = (tag: string) => {
+const MAX_TAGS_COUNT = 30
+function onClickTag(tag: string) {
   if (modelValue.value.has(tag)) {
     modelValue.value.delete(tag)
   } else if (modelValue.value.size < MAX_TAGS_COUNT) {
     modelValue.value.add(tag)
+  }
+}
+
+function scrollToGroup(group: string) {
+  for (const groupLiNode of tagsRef.value!.children) {
+    if (groupLiNode instanceof HTMLElement && groupLiNode.dataset.id === group) {
+      return groupLiNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+}
+const shakeAnimation = [0, 10, 0, -10, 0].map((deg) => ({ transform: `rotate(${deg}deg)` }))
+const shakeAnimationOptions = computed<Parameters<HTMLElement['animate']>[1]>(() => {
+  return { duration: 300, delay: isScrollable.value ? 500 : 0 }
+})
+function shakeTagElement(tag: string) {
+  for (const groupLiNode of tagsRef.value!.children) {
+    const group = tags.value[tag]?.group ?? userCustomTagsGroup.value
+    if (groupLiNode instanceof HTMLElement && groupLiNode.dataset.id !== group) continue
+    const tagsUlNode = groupLiNode.children[1]
+    for (const tagLiNode of tagsUlNode.children) {
+      if (tagLiNode instanceof HTMLElement && tagLiNode.dataset.tag === tag) {
+        return tagLiNode.animate(shakeAnimation, shakeAnimationOptions.value)
+      }
+    }
   }
 }
 </script>

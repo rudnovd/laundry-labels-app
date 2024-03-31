@@ -76,7 +76,7 @@ function showHint(group: string) {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.125rem;
+    font-size: 1.75rem;
     font-weight: 500;
     text-align: center;
     text-transform: capitalize;

@@ -1,5 +1,9 @@
 export default [
   {
+    group: 'Custom',
+    items: [],
+  },
+  {
     group: 'Colors',
     items: ['black', 'blue', 'brown', 'gray', 'green', 'orange', 'pink', 'purple', 'red', 'yellow', 'white'],
   },

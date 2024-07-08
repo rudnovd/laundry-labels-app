@@ -11,7 +11,7 @@ export function getBrowserLocale(): AvailableLocale {
 
 export async function setLocale(locale: AvailableLocale) {
   userSettingsStorage.value.locale = locale
-  const quasarLocaleData = import(`../../node_modules/quasar/lang/${locale}.mjs`)
+  const quasarLocaleData = import(`../../node_modules/quasar/lang/${locale}.js`)
   const appLocaleData = import(`../locales/${locale}.json`)
   const [quasarMessages, appMessages] = await Promise.all([quasarLocaleData, appLocaleData])
   Quasar.lang.set(quasarMessages.default)

@@ -65,14 +65,6 @@ const publicRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: 'new-version-announcement',
-    name: 'New version announcement',
-    components: {
-      default: () => import('@/pages/HomePage.vue'),
-      dialog: () => import('@/pages/NewVersionAnnouncementDialog.vue'),
-    },
-  },
-  {
     path: '/redirect',
     name: 'Redirect',
     component: () => import('@/pages/RedirectPage.vue'),

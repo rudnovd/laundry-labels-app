@@ -105,29 +105,5 @@ export const useItemsStore = defineStore('items', {
       if (error) throw error
       return data.path
     },
-    // TODO: remove after migration date is over
-    async getMigrationItems() {
-      const userStore = useUserStore()
-      if (!userStore.user?.email) throw new Error('Authorization required')
-      const { data, error } = await supabase
-        .from('items_migration')
-        .select('items, migration_date')
-        .eq('owner_email', userStore.user.email)
-        .single()
-      if (error) throw error
-      return data
-    },
-    // TODO: remove after migration date is over
-    async updateMigrationDate() {
-      const userStore = useUserStore()
-      if (!userStore.user?.email) throw new Error('Authorization required')
-      const { data, error } = await supabase
-        .from('items_migration')
-        .update({ migration_date: new Date().toISOString() })
-        .eq('owner_email', userStore.user.email)
-        .select('migration_date')
-      if (error) throw error
-      return data
-    },
   },
 })

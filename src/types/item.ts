@@ -21,9 +21,11 @@ export interface ItemBlank {
 }
 
 export interface ItemSymbol {
-  description: string
-  group: string
-  name: string
+  readonly description: string
+  readonly group: string
+  readonly name: string
 }
-export type ItemMaterial = `${string}-${string}`
+export type ItemMaterialName = string
+export type ItemMaterialPercent = string
+export type ItemMaterial = `${ItemMaterialName}-${ItemMaterialPercent}`
 export type ItemTag = RowType<'items_tags'>

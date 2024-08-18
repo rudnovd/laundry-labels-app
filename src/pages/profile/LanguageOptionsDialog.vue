@@ -1,10 +1,10 @@
 <template>
-  <q-dialog v-model="isActive" persistent>
+  <q-dialog v-model="isActive" @hide="router.replace({ name: 'Profile' })">
     <q-card class="settings-card">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
         <q-space />
-        <q-btn v-close-popup icon="close" flat round dense @click="router.replace({ name: 'Profile' })" />
+        <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>
 
       <q-card-section>

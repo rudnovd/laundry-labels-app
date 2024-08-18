@@ -1,18 +1,14 @@
 <template>
-  <div class="item-material">{{ parsedMaterial.percent }}% {{ parsedMaterial.material }}</div>
+  <div class="item-material">{{ Number(percent) ?? 100 }}% {{ materialName }}</div>
 </template>
 
 <script setup lang="ts">
 import type { ItemMaterial } from '@/types/item'
-import { computed } from 'vue'
 
 const props = defineProps<{
-  value: ItemMaterial
+  material: ItemMaterial
 }>()
-const parsedMaterial = computed(() => {
-  const [material, percent] = props.value.split('-')
-  return { material, percent: Number(percent) ?? 100 }
-})
+const [materialName, percent] = props.material.split('-')
 </script>
 
 <style>
@@ -29,6 +25,7 @@ const parsedMaterial = computed(() => {
   white-space: nowrap;
   background: rgb(224 224 224);
   border: none;
+  border-radius: 16px;
   outline: 0;
 }
 </style>

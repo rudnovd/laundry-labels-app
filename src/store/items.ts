@@ -1,50 +1,17 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/supabase'
-import type { Item, ItemBlank, ItemSymbol, ItemTag } from '@/types/item.ts'
+import type { Item, ItemBlank } from '@/types/item.ts'
 import { useUserStore } from '@/store/user'
-import { userSettingsStorage } from '@/utils/localStorage'
 import { convertItem } from '@/utils/items'
 
 interface ItemState {
   items: Array<Item>
-  symbols: Record<string, { group: string; description: string }>
-  tags: Record<string, { group: string; name: string }>
-  materials: Array<string>
 }
 
 export const useItemsStore = defineStore('items', {
   state: (): ItemState => ({
     items: [],
-    symbols: {},
-    tags: {},
-    materials: [],
   }),
-  getters: {
-    tagsByGroups(): ReadonlyMap<string, Array<ItemTag>> {
-      const tagsByGroups: Map<string, Array<ItemTag>> = new Map([])
-      for (const tag in this.tags) {
-        const group = this.tags[tag].group
-        tagsByGroups.set(group, [...(tagsByGroups.get(group) ?? []), this.tags[tag]])
-      }
-      return tagsByGroups
-    },
-    symbolsByGroups(): ReadonlyMap<string, Array<ItemSymbol>> {
-      const symbolsByGroups: Map<string, Array<ItemSymbol>> = new Map([
-        ['washing', []],
-        ['bleaching', []],
-        ['ironing', []],
-        ['tumble-drying', []],
-        ['dry-cleaning', []],
-        ['wet-cleaning', []],
-        ['natural-drying', []],
-      ])
-      for (const symbolKey in this.symbols) {
-        const symbol = this.symbols[symbolKey]
-        symbolsByGroups.get(symbol.group)?.push({ ...symbol, name: symbolKey })
-      }
-      return symbolsByGroups
-    },
-  },
   actions: {
     async getItems(): Promise<Array<Item>> {
       const userStore = useUserStore()
@@ -137,32 +104,6 @@ export const useItemsStore = defineStore('items', {
       const { data, error } = await supabase.storage.from('items').upload(`${userStore.user.id}/${Date.now()}`, file)
       if (error) throw error
       return data.path
-    },
-    async getStandardTags() {
-      this.tags = {}
-      const standardTagsLocale = userSettingsStorage.value.items.standardTagsLocale
-      const tags: Array<{ group: string; items: Array<string> }> = (
-        await import(`../assets/data/tags/${standardTagsLocale}.ts`)
-      ).default
-      for (const { items, group } of tags) {
-        for (const tag of items) this.tags[tag] = { name: tag, group }
-      }
-      return this.tags
-    },
-    async getStandardSymbols() {
-      this.symbols = {}
-      const locale = userSettingsStorage.value.locale
-      const symbols: Record<string, { group: string; description: string }> = (
-        await import(`../assets/data/laundry-icons/${locale}.ts`)
-      ).default
-      this.symbols = symbols
-      return this.symbols
-    },
-    async getStandardMaterials() {
-      const locale = userSettingsStorage.value.locale
-      const materials: Array<string> = (await import(`../assets/data/materials/${locale}.ts`)).default
-      this.materials = materials
-      return this.materials
     },
     // TODO: remove after migration date is over
     async getMigrationItems() {

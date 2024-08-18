@@ -23,8 +23,9 @@ export default function useItems() {
     return new Promise<File | Blob>((resolve, reject) => {
       new Compressor(file, {
         quality: 0.3,
+        maxWidth: 1200,
         mimeType: 'image/webp',
-        convertSize: 2_097_152,
+        convertSize: 1_024_000,
         success: resolve,
         error: reject,
       })

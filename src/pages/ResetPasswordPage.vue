@@ -20,7 +20,10 @@
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length || t('pages.signIn.validation.email')]"
+          :rules="[
+            (v) => validation.notEmpty(v) || t('pages.signIn.validation.emailEmpty'),
+            (v) => validation.isEmail(v) || t('pages.signIn.validation.emailPattern'),
+          ]"
         />
         <l-captcha v-if="!IS_LOCAL" class="q-mb-md full-width" @verify="credentials.captchaToken = $event" />
         <q-btn
@@ -52,6 +55,7 @@ import { useI18n } from 'vue-i18n'
 import type { UserResetPasswordCredentials } from '@/types/user'
 import { defineAsyncComponent, reactive, ref } from 'vue'
 import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
+import { validation } from '@/utils/validation'
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
 const { notify, loading } = useQuasar()

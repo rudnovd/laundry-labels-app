@@ -33,7 +33,10 @@
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length || t('pages.signIn.validation.email')]"
+          :rules="[
+            (v) => validation.notEmpty(v) || t('pages.signIn.validation.emailEmpty'),
+            (v) => validation.isEmail(v) || t('pages.signIn.validation.emailPattern'),
+          ]"
         />
         <q-input
           v-model="credentials.password"
@@ -45,7 +48,7 @@
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length || t('pages.signIn.validation.password')]"
+          :rules="[(v) => validation.notEmpty(v) || t('pages.signIn.validation.password')]"
         />
         <l-captcha
           v-if="!IS_LOCAL"
@@ -85,6 +88,7 @@ import { useRouter } from 'vue-router'
 import type { UserSignInCredentials } from '@/types/user'
 import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import LIcon from '@/components/LIcon.vue'
+import { validation } from '@/utils/validation'
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
 const { notify, loading } = useQuasar()

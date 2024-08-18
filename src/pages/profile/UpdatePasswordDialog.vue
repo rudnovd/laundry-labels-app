@@ -65,6 +65,7 @@ import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import { computed } from 'vue'
+import { validation } from '@/utils/validation'
 
 const { notify, loading } = useQuasar()
 const { t } = useI18n()
@@ -78,13 +79,14 @@ const passwords = reactive({
 })
 const newPasswordRef = ref<InstanceType<typeof QInput> | null>(null)
 const confirmedPasswordRef = ref<InstanceType<typeof QInput> | null>(null)
-const isPasswordsEqual = computed(() => passwords.new === passwords.confirmed)
 const validationRules = computed<Record<string, ValidationRule<string>>>(() => {
+  const notEmptyMessage = t('pages.profile.dialogs.updatePassword.validation.passwordEmpty')
+  const minLengthMessage = t('pages.profile.dialogs.updatePassword.validation.minLength')
+  const isEqualMessage = t('pages.profile.dialogs.updatePassword.validation.passwordsNotMatch')
   return {
-    notEmpty: (value) => !!value?.length || t('pages.profile.dialogs.updatePassword.validation.passwordEmpty'),
-    minLength: (value) => value?.length >= 6 || t('pages.profile.dialogs.updatePassword.validation.minLength'),
-    equalPassword: () =>
-      isPasswordsEqual.value || t('pages.profile.dialogs.updatePassword.validation.passwordsNotMatch'),
+    notEmpty: (value) => validation.notEmpty(value) || notEmptyMessage,
+    minLength: (value) => validation.minLength(value, 6) || minLengthMessage,
+    equalPassword: () => validation.isEqual(passwords.new, passwords.confirmed) || isEqualMessage,
   }
 })
 const hasValidationErrors = computed(() => {

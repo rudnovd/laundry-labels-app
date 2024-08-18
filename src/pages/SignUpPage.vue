@@ -38,7 +38,10 @@
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length || t('pages.signUp.validation.email')]"
+          :rules="[
+            (v) => validation.notEmpty(v) || t('pages.signUp.validation.emailEmpty'),
+            (v) => validation.isEmail(v) || t('pages.signUp.validation.emailPattern'),
+          ]"
         />
         <q-input
           v-model="credentials.password"
@@ -50,7 +53,7 @@
           bg-color="grey-1"
           filled
           lazy-rules
-          :rules="[(v) => v?.length >= 6 || t('pages.signUp.validation.email')]"
+          :rules="[(v) => validation.minLength(v, 6) || t('pages.signUp.validation.email')]"
         />
         <l-captcha
           v-if="!IS_LOCAL"
@@ -88,6 +91,7 @@ import type { UserSignUpCredentials } from '@/types/user'
 import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import { ref } from 'vue'
 import { computed } from 'vue'
+import { validation } from '@/utils/validation'
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 

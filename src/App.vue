@@ -20,7 +20,7 @@ const router = useRouter()
 
 onBeforeMount(async () => {
   await setLocale(userSettingsStorage.value.locale)
-  loading.show({ message: t('common.authenticating') })
+  loading.show({ message: t('common.authenticating'), delay: 2000 })
   try {
     await userStore.getSession()
   } finally {

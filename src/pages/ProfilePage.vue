@@ -93,7 +93,7 @@ import { useUserStore } from '@/store/user'
 import useItems from '@/composables/useItems'
 import { userSettingsStorage } from '@/utils/localStorage'
 import type { Item } from '@/types/item'
-import { useItemsStore } from '@/store/items'
+import { useLaundryDataStore } from '@/store/laundryData'
 const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
 
 const appVersion = import.meta.env.__APP_VERSION__
@@ -115,7 +115,7 @@ const username = computed(() => {
 const avatarUrl = computed(() => userStore.user?.user_metadata.avatar_url ?? '/favicon.svg')
 const isEmailVerified = computed(() => userStore.user?.user_metadata?.email_verified ?? false)
 const { items } = useItems()
-const { getStandardSymbols, getStandardTags, getStandardMaterials } = useItemsStore()
+const { getStandardSymbols, getStandardTags, getStandardMaterials } = useLaundryDataStore()
 watch(
   () => userSettingsStorage.value.locale,
   () => {

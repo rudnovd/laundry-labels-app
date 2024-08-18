@@ -10,8 +10,8 @@ import { useQuasar } from 'quasar'
 import { useUserStore } from '@/store/user'
 import usePwa from '@/composables/usePwa'
 import { setLocale } from '@/utils/locale'
-import { useItemsStore } from '@/store/items'
 import { userSettingsStorage } from '@/utils/localStorage'
+import { useLaundryDataStore } from './store/laundryData'
 
 const { loading } = useQuasar()
 const userStore = useUserStore()
@@ -31,7 +31,7 @@ onBeforeMount(async () => {
 usePwa()
 const stop = watch(router.currentRoute, ({ matched }) => {
   const matchedPages: Array<RouteRecordName> = ['Items parent', 'Profile parent']
-  const { getStandardSymbols, getStandardTags, getStandardMaterials } = useItemsStore()
+  const { getStandardSymbols, getStandardTags, getStandardMaterials } = useLaundryDataStore()
   if (matched.some(({ name }) => name && matchedPages.includes(name))) {
     getStandardSymbols()
     getStandardTags()

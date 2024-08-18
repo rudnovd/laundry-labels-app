@@ -3,18 +3,21 @@ import Compressor from 'compressorjs'
 import { useItemsStore } from '@/store/items'
 import { useOfflineItemsStore } from '@/store/offlineItems'
 import { userSettingsStorage } from '@/utils/localStorage'
-import type { Item } from '@/types/item'
+import { useLaundryDataStore } from '@/store/laundryData'
+import { storeToRefs } from 'pinia'
 
 export default function useItems() {
   const itemsStore = useItemsStore()
   const offlineItemsStore = useOfflineItemsStore()
+  const laundryDataStore = useLaundryDataStore()
 
   const items = computed<Array<Item>>(() => [...itemsStore.items, ...offlineItemsStore.items])
-  const symbols = computed(() => itemsStore.symbols)
-  const tags = computed(() => itemsStore.tags)
-  const materials = computed(() => itemsStore.materials)
-  const symbolsByGroups = computed(() => itemsStore.symbolsByGroups)
-  const tagsByGroups = computed(() => itemsStore.tagsByGroups)
+  const symbols = computed(() => laundryDataStore.symbols)
+  const tags = computed(() => laundryDataStore.tags)
+  const tagsRecord = computed(() => laundryDataStore.tagsRecord)
+  const { customTagGroup } = storeToRefs(laundryDataStore)
+  const materials = computed(() => laundryDataStore.materials)
+  const symbolsByGroups = computed(() => laundryDataStore.symbolsByGroups)
 
   function compressPhoto(file: File | Blob) {
     return new Promise<File | Blob>((resolve, reject) => {
@@ -72,9 +75,10 @@ export default function useItems() {
     items,
     symbols,
     tags,
+    tagsRecord,
     materials,
     symbolsByGroups,
-    tagsByGroups,
+    customTagGroup,
 
     isOfflineItem,
     getItems,

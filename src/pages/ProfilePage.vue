@@ -129,7 +129,9 @@ async function showSignOutDialog() {
   dialog({
     title: t('common.signOut'),
     message: t('pages.profile.signOut'),
-    cancel: t('common.cancel'),
+    cancel: t('common.stay'),
+    ok: t('common.signOut'),
+    focus: 'none',
   }).onOk(async () => {
     loading.show({ message: t('pages.profile.signingOut') })
     try {

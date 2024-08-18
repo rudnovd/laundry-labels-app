@@ -22,7 +22,7 @@
 
       <ul v-if="item.materials.length" class="materials">
         <li v-for="material in item.materials" :key="material">
-          <item-material :value="material" />
+          <item-material :material />
         </li>
       </ul>
 
@@ -70,9 +70,14 @@ const { symbols } = useItems()
   border-radius: 7px;
 }
 
-.laundry-card .laundry-card-data {
+.laundry-card > .laundry-card-data {
   display: grid;
-  grid: max-content 1fr / 100%;
+  grid: repeat(3, max-content) 1fr / 100%;
+  grid-template-areas:
+    'title'
+    'symbols'
+    'materials'
+    'tags';
   gap: 4px;
   padding: 8px;
 
@@ -84,6 +89,7 @@ const { symbols } = useItems()
     overflow: hidden;
 
     .title {
+      grid-area: title;
       overflow: hidden;
       font-size: 1.25rem;
       font-weight: 500;
@@ -105,11 +111,9 @@ const { symbols } = useItems()
     scrollbar-width: thin;
   }
 
-  .tags {
-    align-items: end;
-  }
-
   .symbols {
+    grid-area: symbols;
+
     li {
       display: flex;
       justify-content: center;
@@ -122,6 +126,15 @@ const { symbols } = useItems()
       }
     }
   }
+
+  .materials {
+    grid-area: materials;
+  }
+
+  .tags {
+    grid-area: tags;
+    align-items: end;
+  }
 }
 
 .laundry-card:has(> img) {
@@ -130,9 +143,5 @@ const { symbols } = useItems()
   .laundry-card-data {
     padding: 8px 0 8px 8px;
   }
-}
-
-.laundry-card .laundry-card-data:has(> .title-container):has(> .symbols):has(> .tags) {
-  grid-template-rows: repeat(3, max-content) 1fr;
 }
 </style>

@@ -1,66 +1,64 @@
 <template>
-  <teleport to="body">
-    <q-dialog v-model="isActive" persistent>
-      <q-card class="update-password-dialog-card">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">{{ t('pages.profile.dialogs.updatePassword.updatePassword') }}</div>
-          <q-space />
-          <q-btn icon="close" flat round dense @click="router.replace({ name: 'Profile' })" />
-        </q-card-section>
+  <q-dialog ref="dialogRef" v-model="isActive" :transition-duration="DIALOG_TRANSITION_DURATION" persistent>
+    <q-card class="update-password-dialog-card">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">{{ t('pages.profile.dialogs.updatePassword.updatePassword') }}</div>
+        <q-space />
+        <q-btn icon="close" flat round dense @click="backToProfile" />
+      </q-card-section>
 
-        <q-card-section>
-          <q-form
+      <q-card-section>
+        <q-form
+          class="q-mb-md"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="off"
+          spellcheck="false"
+          @submit="updatePassword"
+        >
+          <q-input
+            ref="newPasswordRef"
+            v-model="passwords.new"
+            outlined
             class="q-mb-md"
-            autocorrect="off"
-            autocapitalize="off"
-            autocomplete="off"
-            spellcheck="false"
-            @submit="updatePassword"
-          >
-            <q-input
-              ref="newPasswordRef"
-              v-model="passwords.new"
-              outlined
-              class="q-mb-md"
-              type="password"
-              :label="t('pages.profile.dialogs.updatePassword.newPassword')"
-              maxlength="72"
-              bg-color="grey-1"
-              filled
-              lazy-rules
-              :rules="[validationRules.notEmpty, validationRules.minLength]"
-            />
-            <q-input
-              ref="confirmedPasswordRef"
-              v-model="passwords.confirmed"
-              outlined
-              class="q-mb-md"
-              type="password"
-              :label="t('pages.profile.dialogs.updatePassword.confirmPassword')"
-              maxlength="72"
-              bg-color="grey-1"
-              filled
-              lazy-rules
-              :rules="[validationRules.notEmpty, validationRules.minLength, validationRules.equalPassword]"
-            />
-            <q-btn
-              class="full-width"
-              :label="t('pages.profile.dialogs.updatePassword.updatePassword')"
-              :disable="hasValidationErrors || loading.isActive"
-              type="submit"
-              color="positive"
-            />
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-  </teleport>
+            type="password"
+            :label="t('pages.profile.dialogs.updatePassword.newPassword')"
+            maxlength="72"
+            bg-color="grey-1"
+            filled
+            lazy-rules
+            :rules="[validationRules.notEmpty, validationRules.minLength]"
+          />
+          <q-input
+            ref="confirmedPasswordRef"
+            v-model="passwords.confirmed"
+            outlined
+            class="q-mb-md"
+            type="password"
+            :label="t('pages.profile.dialogs.updatePassword.confirmPassword')"
+            maxlength="72"
+            bg-color="grey-1"
+            filled
+            lazy-rules
+            :rules="[validationRules.notEmpty, validationRules.minLength, validationRules.equalPassword]"
+          />
+          <q-btn
+            class="full-width"
+            :label="t('pages.profile.dialogs.updatePassword.updatePassword')"
+            :disable="hasValidationErrors || loading.isActive"
+            type="submit"
+            color="positive"
+          />
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { QInput, type ValidationRule, throttle, useQuasar } from 'quasar'
+import { type QDialog, QInput, type ValidationRule, throttle, useQuasar } from 'quasar'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { REQUEST_THROTTLE_TIMEOUT } from '@/constants'
@@ -109,6 +107,13 @@ const updatePassword = throttle(async () => {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
+
+const DIALOG_TRANSITION_DURATION = 300
+const dialogRef = ref<InstanceType<typeof QDialog> | null>(null)
+function backToProfile() {
+  dialogRef.value?.hide()
+  setTimeout(() => router.replace({ name: 'Profile' }), DIALOG_TRANSITION_DURATION)
+}
 </script>
 
 <style>

@@ -19,9 +19,7 @@
     "lint:ts": "vue-tsc --build --force",
     "lint:css": "stylelint **/*{.scss,.vue}",
     "lint:css:fix": "npm run lint:css -- --fix",
-    "lint:all": "npm run lint && npm run lint:ts && npm run lint:css",
-    "localazy:upload": "localazy upload -k localazy.keys.json",
-    "localazy:download": "localazy download -k localazy.keys.json"
+    "lint:all": "npm run lint && npm run lint:ts && npm run lint:css"
   },
   "dependencies": {
     "@floating-ui/vue": "^1.0.6",

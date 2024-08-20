@@ -3,8 +3,10 @@ import Compressor from 'compressorjs'
 import { useItemsStore } from '@/store/items'
 import { useOfflineItemsStore } from '@/store/offlineItems'
 import { userSettingsStorage } from '@/utils/localStorage'
+import type { Item, ItemTag } from '@/types/item'
 import { useLaundryDataStore } from '@/store/laundryData'
 import { storeToRefs } from 'pinia'
+import { collectItemCustomTags } from '@/utils/items'
 
 export default function useItems() {
   const itemsStore = useItemsStore()
@@ -32,6 +34,13 @@ export default function useItems() {
     })
   }
 
+  function isCustomTag(tag: ItemTag['name']) {
+    for (const { items } of tags.value) {
+      if (items.has(tag)) return false
+    }
+    return true
+  }
+
   function isOfflineItem(id: string) {
     return id.includes('offline-')
   }
@@ -40,11 +49,19 @@ export default function useItems() {
     const requests = [offlineItemsStore.getItems()]
     if (!userSettingsStorage.value.offlineMode) requests.push(itemsStore.getItems())
     const items = await Promise.all(requests)
-    return items.flat()
+    const flattenItems = items.flat()
+    for (const item of flattenItems) {
+      const customTags = collectItemCustomTags(item, laundryDataStore.tagsRecord)
+      customTags.forEach((tag) => laundryDataStore.customTagGroup.items.add(tag))
+    }
+    return flattenItems
   }
 
   async function getItemById(id: Parameters<typeof itemsStore.getItemById>[0]) {
-    return isOfflineItem(id) ? await offlineItemsStore.getItemById(id) : await itemsStore.getItemById(id)
+    const item = isOfflineItem(id) ? await offlineItemsStore.getItemById(id) : await itemsStore.getItemById(id)
+    const customTags = collectItemCustomTags(item, laundryDataStore.tagsRecord)
+    customTags.forEach((tag) => laundryDataStore.customTagGroup.items.add(tag))
+    return item
   }
 
   function createItem(itemBlank: Parameters<typeof itemsStore.createItem>[0]) {
@@ -81,6 +98,7 @@ export default function useItems() {
     symbolsByGroups,
     customTagGroup,
 
+    isCustomTag,
     isOfflineItem,
     getItems,
     getItemById,

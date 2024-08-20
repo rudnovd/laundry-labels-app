@@ -6,6 +6,8 @@
     "resetPassword": "Сбросить пароль",
     "email": "Email",
     "password": "Пароль",
+    "search": "Поиск",
+    "apply": "Применить",
     "save": "Сохранить",
     "delete": "Удалить",
     "add": "Добавить",
@@ -16,15 +18,23 @@
     "clear": "Очистить",
     "continue": "Продолжить",
     "or": "Или",
+    "stay": "Остаться",
     "authenticating": "Аутентификация",
     "saveOnServer": "Сохранить на сервере",
-    "saveLocal": "Сохранить локально"
+    "saveLocal": "Сохранить локально",
+    "tags": "Тэги",
+    "materials": "Материалы",
+    "symbols": "Символы",
+    "pluralization": {
+      "filters": "фильтр | {n} фильтра | {n} фильтров"
+    }
   },
   "components": {
     "item": {
       "inputItemTags": {
         "tagsInput": "Введите или выберите теги (до 30)",
-        "custom": "Пользовательские"
+        "custom": "Пользовательские",
+        "tagAlreadyAdded": "Тег уже добавлен"
       }
     },
     "uploadItemPhoto": {
@@ -39,7 +49,8 @@
       "signInWithGoogle": "Войти с помощью Google",
       "resetPassword": "Сбросить пароль",
       "validation": {
-        "email": "Email не заполнен",
+        "emailEmpty": "Email не заполнен",
+        "emailPattern": "Строка должна быть действительным адресом электронной почты",
         "password": "Пароль не заполнен"
       }
     },
@@ -50,7 +61,8 @@
       "signingUp": "Регистрация",
       "accountRegistered": "Аккаунт зарегистрирован. Пожалуйста, проверьте свою электронную почту для подтверждения аккаунта",
       "validation": {
-        "email": "Email не заполнен",
+        "emailEmpty": "Email не заполнен",
+        "emailPattern": "Строка должна быть действительным адресом электронной почты",
         "password": "Пожалуйста, используйте пароль от 6 символов"
       }
     },
@@ -101,7 +113,7 @@
       "saveOnServer": "Сохранить на сервере"
     },
     "items": {
-      "searchTags": "Поиск по тегам",
+      "search": "Поиск по имени, тегам, материалам или символам",
       "noItemsAdded": "Пока не добавлено ни одного предмета",
       "addFirstItem": "Добавить первый предмет",
       "noItemsWithSelectedTags": "Нет предметов с указанными тегами",
@@ -114,6 +126,15 @@
         "symbolsRequired": "Необходимо выбрать хотя бы один значок по уходу"
       },
       "itemAdded": "Предмет добавлен успешно"
+    },
+    "filterItemsDialog": {
+      "filteringItems": "Фильтрация предметов",
+      "combinedFilters": "Объединенные фильтры",
+      "filters": {
+        "colored": "Цветные",
+        "white": "Белые",
+        "withPhoto": "С фотографией"
+      }
     },
     "error": {
       "pageNotFound": "Страница не найдена",

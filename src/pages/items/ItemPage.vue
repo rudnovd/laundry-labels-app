@@ -157,11 +157,14 @@ function showSaveOnServerDialog(item: Item) {
   .item-photo-container {
     display: flex;
     justify-content: center;
-    height: 300px;
+    height: 400px;
+    margin-bottom: 8px;
 
     img {
+      width: 100%;
       max-width: 600px;
-      max-height: 300px;
+      max-height: 400px;
+      object-fit: cover;
     }
   }
 

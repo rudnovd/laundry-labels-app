@@ -21,7 +21,7 @@
         dense
         color="primary"
         icon="filter_alt"
-        @click="router.replace({ name: 'Filter items', query: router.currentRoute.value.query })"
+        @click="router.push({ name: 'Filter items', query: router.currentRoute.value.query })"
       />
       <q-input
         v-model.trim="search"

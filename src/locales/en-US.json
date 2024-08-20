@@ -6,6 +6,8 @@
     "resetPassword": "Reset password",
     "email": "Email",
     "password": "Password",
+    "search": "Search",
+    "apply": "Apply",
     "save": "Save",
     "delete": "Delete",
     "add": "Add",
@@ -16,16 +18,24 @@
     "clear": "Clear",
     "continue": "Continue",
     "or": "Or",
+    "stay": "Stay",
     "authenticating": "Authenticating",
     "saveOnServer": "Save on server",
     "saveLocal": "Save local",
-    "updatingApp": "Updating app"
+    "updatingApp": "Updating app",
+    "tags": "Tags",
+    "materials": "Materials",
+    "symbols": "Symbols",
+    "pluralization": {
+      "filters": "filter | {n} filters"
+    }
   },
   "components": {
     "item": {
       "inputItemTags": {
         "tagsInput": "Enter or input tags (up to 30)",
-        "custom": "Custom"
+        "custom": "Custom",
+        "tagAlreadyAdded": "Tag already added"
       }
     },
     "uploadItemPhoto": {
@@ -40,7 +50,8 @@
       "signInWithGoogle": "Sign in with Google",
       "resetPassword": "Reset password",
       "validation": {
-        "email": "The email field is not filled",
+        "emailEmpty": "The email field is not filled",
+        "emailPattern": "The string must be a valid email",
         "password": "The password field is not filled"
       }
     },
@@ -51,7 +62,8 @@
       "signingUp": "Signing up",
       "accountRegistered": "Account registered. Please check your email to confirm your account.",
       "validation": {
-        "email": "The email field is not filled",
+        "emailEmpty": "The email field is not filled",
+        "emailPattern": "The string must be a valid email",
         "password": "Please use minimum 6 characters"
       }
     },
@@ -102,7 +114,7 @@
       "saveOnServer": "Save on server"
     },
     "items": {
-      "searchTags": "Search tags",
+      "search": "Search by name, tags, materials or symbols",
       "noItemsAdded": "No items added yet",
       "addFirstItem": "Add first item",
       "noItemsWithSelectedTags": "No items with selected tags",
@@ -115,6 +127,15 @@
         "symbolsRequired": "At least one laundry symbol is required"
       },
       "itemAdded": "Item added successfully"
+    },
+    "filterItemsDialog": {
+      "filteringItems": "Filtering items",
+      "combinedFilters": "Combined filters",
+      "filters": {
+        "colored": "Colored",
+        "white": "White",
+        "withPhoto": "With photo"
+      }
     },
     "error": {
       "pageNotFound": "Page not found",

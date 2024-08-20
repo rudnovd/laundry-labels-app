@@ -87,6 +87,13 @@ const routes: Array<RouteRecordRaw> = [
         path: '',
         name: 'Items',
         component: () => import('@/pages/ItemsPage.vue'),
+        children: [
+          {
+            path: 'filter',
+            name: 'Filter items',
+            component: () => import('@/pages/items/FilterItemsDialog.vue'),
+          },
+        ],
       },
       {
         path: 'create',

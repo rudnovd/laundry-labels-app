@@ -2,44 +2,61 @@
   <q-page class="items-page">
     <header>
       <q-btn
+        v-if="!isItemsLimitReached"
+        class="add-new-item"
+        padding="sm"
         color="primary"
-        :size="isMaxItems ? 'sm' : undefined"
-        :icon="isMaxItems ? undefined : 'add'"
+        icon="add"
         :to="{ name: 'Create item' }"
-        :disable="isMaxItems || isLoading"
+        :disable="isLoading"
       >
-        {{ t(isMaxItems ? 'pages.items.itemsLimitReached' : 'common.add') }}
+        {{ t('common.add') }}
       </q-btn>
-
+      <q-btn v-else color="negative" icon="not_interested" disable>
+        {{ t('pages.items.itemsLimitReached') }}
+      </q-btn>
+      <q-btn
+        :disable="!items.length"
+        square
+        dense
+        color="primary"
+        icon="filter_alt"
+        @click="router.replace({ name: 'Filter items', query: router.currentRoute.value.query })"
+      />
       <q-input
         v-model.trim="search"
+        class="search-input"
         rounded
         outlined
-        :label="t('pages.items.searchTags')"
+        :label="t('pages.items.search')"
         dense
-        :disable="isLoading"
+        :disable="!items.length || isLoading"
         :maxlength="32"
-        @keyup.enter="searchTag"
+        @keyup.enter="search ? searchAny() : void 0"
       >
         <template #append>
-          <q-icon :class="{ invisible: !search }" name="check" @click="searchTag" />
+          <q-icon :class="{ invisible: !search }" name="check" @click="searchAny" />
         </template>
       </q-input>
     </header>
 
-    <ul v-if="searchingTags.size" class="search-tags">
+    <ul v-if="hasRouterQuery" class="search-tags">
       <li>
-        <item-tag class="text-white text-lowercase bg-negative" color="negative" @click="searchingTags.clear">
+        <item-tag class="text-white text-lowercase bg-negative" color="negative" @click="resetFilters">
           <q-icon name="delete" size="1em" />
           {{ t('common.clear') }}
         </item-tag>
       </li>
-      <li v-for="tag in searchingTags" :key="tag">
-        <item-tag>
-          <q-icon name="close" size="1em" @click="searchingTags.delete(tag)" />
-          <span class="ellipsis">{{ tag }}</span>
-        </item-tag>
-      </li>
+      <ul v-for="(record, recordKey) in searchRecord" :key="recordKey">
+        <li v-for="recordElement in record" :key="recordElement">
+          <item-tag>
+            <q-icon name="close" size="1em" @click="deleteQuery(recordKey, recordElement)" />
+            <span class="ellipsis">
+              {{ searchElementTitle(recordKey) }}: {{ searchElementValue(recordKey, recordElement) }}
+            </span>
+          </item-tag>
+        </li>
+      </ul>
     </ul>
 
     <ul v-if="isLoading" class="items-cards">
@@ -52,20 +69,21 @@
         <laundry-card :item="item" />
       </li>
     </ul>
-    <div v-else-if="searchingTags.size && !foundItems.length" class="flex column items-center">
+    <div v-else-if="Object.keys(searchRecord).length" class="flex column items-center">
       {{ t('pages.items.noItemsWithSelectedTags') }}
     </div>
     <div v-else class="flex column items-center">
       <span class="text-h6">{{ t('pages.items.noItemsAdded') }}</span>
       <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">{{ t('pages.items.addFirstItem') }}</q-btn>
     </div>
+
+    <router-view />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useQuasar } from 'quasar'
 import { useItemsStore } from '@/store/items'
 import LaundryCard from '@/components/item/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/item/cards/LaundryCardSkeleton.vue'
@@ -73,152 +91,149 @@ import useDemoMode from '@/composables/useDemoMode'
 import useItems from '@/composables/useItems'
 import { ITEMS_LIMIT } from '@/constants'
 import { defineAsyncComponent } from 'vue'
-import { supabase } from '@/supabase'
+import type { Item } from '@/types/item'
+import { useRouter } from 'vue-router'
+import { ALLOWED_ITEM_FILTERS } from '@/constants/items'
 import { useUserStore } from '@/store/user'
-import type { Item, ItemBlank } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
-import { setIntersection } from '@/utils/set'
-import type { RowType } from '@/types/supabase'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
-const { loading, notify } = useQuasar()
 const { t } = useI18n()
-const { items, getItems } = useItems()
+const { items, symbols, getItems } = useItems()
 const itemsStore = useItemsStore()
-const userStore = useUserStore()
+const router = useRouter()
+const query = computed(() => router.currentRoute.value.query)
+const hasRouterQuery = computed(() => {
+  for (const key of ALLOWED_ITEM_FILTERS) {
+    if (query.value[key]) return true
+  }
+  return false
+})
 
 const isLoading = ref(false)
-const isMaxItems = computed(() => itemsStore.items.length >= ITEMS_LIMIT)
-const isOnline = computed(() => userStore.isOnline)
+const isItemsLimitReached = computed(() => itemsStore.items.length >= ITEMS_LIMIT)
 
+const userStore = useUserStore()
 onBeforeMount(async () => {
-  isLoading.value = true
+  if (userStore.isOnline && !userSettingsStorage.value.offlineMode) {
+    isLoading.value = true
+  }
   const demo = useDemoMode()
   try {
     const items = await getItems()
     if (!items.length && localStorage.getItem('demo')) demo.showTourNotification()
+    else if (items.length && router.currentRoute.value.query.demo) {
+      router.replace({
+        name: 'Items',
+        query: { ...router.currentRoute.value.query, demo: undefined },
+      })
+    }
   } finally {
     isLoading.value = false
   }
 
-  // TODO: remove after migration date is over
-  if (userStore.user && !userSettingsStorage.value.isMigrated && isOnline.value) {
-    itemsStore.getMigrationItems().then((migration) => {
-      if (!migration.migration_date) {
-        userSettingsStorage.value.isMigrated = false
-        notify({
-          message:
-            'Welcome to the new version of the app! Please complete the migration and copy items from the old version',
-          color: 'brand',
-          timeout: 60_000,
-          actions: [
-            {
-              label: 'Skip',
-              color: 'black',
-            },
-            {
-              label: t('demo.notification.buttons.start'),
-              color: 'black',
-              handler: () => migrate(migration.items),
-            },
-          ],
-        })
-      } else {
-        userSettingsStorage.value.isMigrated = true
+  if (hasRouterQuery.value) {
+    for (const key of ALLOWED_ITEM_FILTERS) {
+      if (!query.value[key]) continue
+      const queryItem = query.value[key]
+      const queryValues = Array.isArray(queryItem) ? queryItem : [queryItem]
+      for (const value of queryValues) {
+        if (!value) continue
+        if (!searchRecord[key]) searchRecord[key] = []
+        searchRecord[key].push(value)
       }
-    })
+    }
   }
 })
 
 const search = ref('')
-const searchingTags = ref<Set<string>>(new Set())
+const searchRecord = reactive<Record<string, Array<string>>>({})
+watch(searchRecord, (newSearchRecord) => {
+  router.replace({ query: newSearchRecord })
+})
+watch(router.currentRoute, ({ query }, { name: previousPage }) => {
+  if (previousPage !== 'Filter items') return
+  for (const key of ALLOWED_ITEM_FILTERS) {
+    if (searchRecord[key]) delete searchRecord[key]
+    const value = query[key]
+    const queryArray = Array.isArray(value) ? value : [value]
+    for (const queryItem of queryArray) {
+      if (!queryItem) continue
+      if (!searchRecord[key]) searchRecord[key] = []
+      searchRecord[key].push(queryItem)
+    }
+  }
+})
+
 const foundItems = computed(() => {
-  if (!searchingTags.value.size) return items.value
+  if (!hasRouterQuery.value) return items.value
   return items.value.reduce<Array<Item>>((filteredItems, item) => {
-    if (setIntersection(searchingTags.value, item.tags).size) filteredItems.push(item)
+    if (query.value.search) {
+      const querySearch = Array.isArray(query.value.search) ? query.value.search : [query.value.search]
+      for (const queryItem of querySearch) {
+        if (!queryItem) continue
+        if (filterByAny(item, queryItem)) filteredItems.push(item)
+      }
+    }
+    if (query.value.tags) {
+      const queryTags = Array.isArray(query.value.tags) ? query.value.tags : [query.value.tags]
+      const queryTagsSet = new Set<string>(queryTags.map((tag) => tag?.toString() ?? ''))
+      if (queryTagsSet.intersection(item.tags).size) filteredItems.push(item)
+    }
+    if (query.value.symbols) {
+      const querySymbols = Array.isArray(query.value.symbols) ? query.value.symbols : [query.value.symbols]
+      const querySymbolsSet = new Set<string>(querySymbols.map((symbol) => symbol?.toString() ?? ''))
+      if (querySymbolsSet.intersection(item.symbols).size) filteredItems.push(item)
+    }
+    if (query.value.materials) {
+      const queryMaterials = Array.isArray(query.value.materials) ? query.value.materials : [query.value.materials]
+      for (const queryMaterial of queryMaterials) {
+        if (!queryMaterial) continue
+        if (item.materials.some((material) => material.includes(queryMaterial))) filteredItems.push(item)
+      }
+    }
     return filteredItems
   }, [])
 })
 
-function searchTag() {
-  if (!search.value) return
-  searchingTags.value.add(search.value)
+function searchAny() {
+  if (!searchRecord.search) searchRecord.search = []
+  const searchQuery = search.value.toLowerCase()
+  if (searchRecord.search.includes(searchQuery)) {
+    search.value = ''
+    return
+  }
+  searchRecord.search = [...searchRecord.search, searchQuery]
   search.value = ''
 }
-
-// TODO: remove after migration date is over
-async function migrate(items: RowType<'items_migration'>['items']) {
-  const userId = userStore.user?.id
-  if (!userId) return notify({ type: 'negative', message: 'Authorization required' })
-
-  try {
-    loading.show({ message: 'Migration', delay: 0 })
-    const itemsPromises: Array<Promise<Item>> = []
-    const photosPromises: Array<Promise<unknown>> = []
-    const photosPaths: Array<string> = []
-    for (const [index, item] of items.entries()) {
-      const newItem: ItemBlank = {
-        name: item.name ?? null,
-        symbols: new Set(item.symbols),
-        photos: [],
-        materials: item.materials,
-        tags: new Set<string>(item.tags),
-      }
-      for (const photo of item.photos) {
-        photosPaths[index] = `${userId}/${Date.now()}-${index}`
-        photosPromises[index] = supabase.storage.from('items').move(`migration/${photo}`, photosPaths[index])
-        newItem.photos.push(`${userId}/${Date.now()}-${index}`)
-      }
-      itemsPromises.push(itemsStore.createItem(newItem))
-    }
-    const results = await Promise.allSettled(itemsPromises)
-    await Promise.allSettled(photosPromises)
-    const createdItems: Array<Item> = []
-    for (const result of results) {
-      if (result.status === 'fulfilled') createdItems.push(result.value)
-    }
-    loading.hide()
-    if (createdItems.length !== items.length) {
-      notify({
-        type: 'negative',
-        message: `${createdItems.length} of ${items.length} migrated successfully, try migrate items with errors?`,
-        actions: [
-          {
-            label: 'Skip',
-            color: 'black',
-          },
-          {
-            label: t('demo.notification.buttons.start'),
-            color: 'black',
-            handler: () => migrate(items.filter((item) => createdItems.find(({ id }) => id !== item.id))),
-          },
-        ],
-      })
-    } else {
-      await itemsStore.updateMigrationDate()
-      userSettingsStorage.value.isMigrated = true
-      notify({
-        type: 'positive',
-        message: 'Migration completed successfully',
-      })
-    }
-  } catch (error) {
-    notify({
-      type: 'negative',
-      message: `something went wrong, try migrate again?`,
-      actions: [
-        {
-          label: 'Skip',
-          color: 'black',
-        },
-        {
-          label: t('demo.notification.buttons.start'),
-          color: 'black',
-          handler: () => migrate(items),
-        },
-      ],
-    })
+function filterByAny(item: Item, query: string): Item | null {
+  if (item.name?.toLowerCase().includes(query)) return item
+  for (const tag of item.tags) {
+    if (tag.includes(query)) return item
   }
+  for (const symbol of item.symbols) {
+    if (symbols.value[symbol].description.toLowerCase().includes(query)) return item
+  }
+  for (const material of item.materials) {
+    if (material.includes(query)) return item
+  }
+  return null
+}
+function deleteQuery(key: string, value: string) {
+  searchRecord[key] = searchRecord[key].filter((queryItem) => queryItem !== value)
+  if (!searchRecord[key].length) delete searchRecord[key]
+}
+function resetFilters() {
+  for (const key in searchRecord) delete searchRecord[key]
+}
+function searchElementTitle(recordKey: string) {
+  return t(`common.${recordKey}`).toLowerCase()
+}
+function searchElementValue(recordKey: string, recordElement: string) {
+  let value: string = ''
+  if (recordKey === 'symbols') value = symbols.value[recordElement].short
+  else value = recordElement
+  return value.toLowerCase()
 }
 </script>
 
@@ -232,16 +247,43 @@ async function migrate(items: RowType<'items_migration'>['items']) {
 
   header {
     display: grid;
-    grid-template-columns: auto 160px;
+    grid-template-rows: max-content max-content;
+    grid-template-columns: max-content max-content;
+    gap: 8px 0;
     justify-content: space-between;
+
+    .search-input {
+      grid-column: 1 / -1;
+    }
+
+    @media (width >= 576px) {
+      display: grid;
+      grid-template-rows: max-content;
+      grid-template-columns: 1fr max-content 250px;
+      gap: 8px;
+
+      .add-new-item {
+        gap: 8px;
+        max-width: 150px;
+      }
+
+      .search-input {
+        grid-column: unset;
+      }
+    }
   }
 
   .search-tags {
     display: flex;
     gap: 8px;
     padding-bottom: 6px;
-    overflow-x: auto;
+    overflow: auto hidden;
     scrollbar-width: thin;
+
+    ul {
+      display: inherit;
+      gap: inherit;
+    }
   }
 
   .items-cards {

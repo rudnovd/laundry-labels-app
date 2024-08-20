@@ -14,31 +14,17 @@
     </q-input>
 
     <ul ref="tagsRef" class="tags">
-      <li v-if="userTags.size" :data-id="userCustomTagsGroup" class="tag-group">
-        <span>{{ userCustomTagsGroup }}</span>
+      <li v-for="{ group, items } in notEmptyTagsGroups" :key="group" :data-id="group" class="tag-group">
+        <span>{{ group }}</span>
         <ul>
-          <li v-for="tag in userTags" :key="tag" :data-tag="tag">
-            <item-tag
+          <li v-for="tag in items" :key="tag" :data-tag="tag">
+            <item-tag-component
               :disabled="modelValue.size >= MAX_TAGS_COUNT && !modelValue.has(tag)"
               :selected="modelValue.has(tag)"
               @click="onClickTag(tag)"
             >
               {{ tag }}
-            </item-tag>
-          </li>
-        </ul>
-      </li>
-      <li v-for="[groupKey, group] in tagsByGroups" :key="groupKey" :data-id="groupKey" class="tag-group">
-        <span>{{ groupKey }}</span>
-        <ul>
-          <li v-for="{ name: tag } in group" :key="tag" :data-tag="tag">
-            <item-tag
-              :disabled="modelValue.size >= MAX_TAGS_COUNT && !modelValue.has(tag)"
-              :selected="modelValue.has(tag)"
-              @click="onClickTag(tag)"
-            >
-              {{ tag }}
-            </item-tag>
+            </item-tag-component>
           </li>
         </ul>
       </li>
@@ -47,33 +33,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineModel, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useItems from '@/composables/useItems'
-import ItemTag from '@/components/item/tags/ItemTag.vue'
+import ItemTagComponent from '@/components/item/tags/ItemTag.vue'
 import { useQuasar } from 'quasar'
 import { useWindowSize } from '@vueuse/core'
+import type { ItemTag } from '@/types/item'
 
-const modelValue = defineModel<Set<string>>({ default: new Set() })
+const modelValue = defineModel<Set<ItemTag['name']>>({ default: new Set<ItemTag['name']>() })
 const { notify } = useQuasar()
 const { t } = useI18n()
-const { width } = useWindowSize()
-const { tags, tagsByGroups } = useItems()
+const { tags, tagsRecord, customTagGroup } = useItems()
+const notEmptyTagsGroups = computed(() => tags.value.filter(({ items }) => items.size))
 
+const { width } = useWindowSize()
 const isScrollable = computed(() => width.value < 1024)
-const userCustomTagsGroup = computed(() => t('components.item.inputItemTags.custom'))
-const tagsRef = ref<HTMLElement | null>(null)
-const newTag = ref('')
-const userTags = computed<Set<string>>(() => {
-  const userTags: Set<string> = new Set()
-  for (const tag of modelValue.value) {
-    if (!tags.value[tag]) userTags.add(tag)
-  }
-  return userTags
-})
+const tagsRef = ref<HTMLUListElement | null>(null)
+const newTag = ref<ItemTag['name']>('')
 
 function onAddTag(tag: string) {
-  const group = tags.value[tag]?.group ?? userCustomTagsGroup.value
+  const group = tagsRecord.value[tag]?.group ?? customTagGroup.value
+  const isNewCustomTag = !tagsRecord.value[tag]?.group
+  if (isNewCustomTag) customTagGroup.value.items.add(tag)
   if (isScrollable.value) scrollToGroup(group)
   if (modelValue.value.has(tag)) {
     shakeTagElement(tag)
@@ -106,7 +88,7 @@ const shakeAnimationOptions = computed<Parameters<HTMLElement['animate']>[1]>(()
 })
 function shakeTagElement(tag: string) {
   for (const groupLiNode of tagsRef.value!.children) {
-    const group = tags.value[tag]?.group ?? userCustomTagsGroup.value
+    const group = tagsRecord.value[tag]?.group ?? customTagGroup.value
     if (groupLiNode instanceof HTMLElement && groupLiNode.dataset.id !== group) continue
     const tagsUlNode = groupLiNode.children[1]
     for (const tagLiNode of tagsUlNode.children) {

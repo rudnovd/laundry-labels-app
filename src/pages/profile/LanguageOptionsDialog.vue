@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isActive" :transition-duration="DIALOG_TRANSITION_DURATION" @before-hide="backToProfile">
+  <q-dialog v-model="isActive" @hide="router.replace({ name: 'Profile' })">
     <q-card class="settings-card">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
@@ -55,8 +55,4 @@ const { t } = useI18n()
 const router = useRouter()
 
 const isActive = ref(true)
-const DIALOG_TRANSITION_DURATION = 300
-function backToProfile() {
-  setTimeout(() => router.replace({ name: 'Profile' }), DIALOG_TRANSITION_DURATION)
-}
 </script>

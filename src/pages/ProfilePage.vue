@@ -77,7 +77,9 @@
 
     <teleport to="body">
       <import-items-dialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
-      <router-view />
+      <router-view v-slot="{ Component, route }">
+        <component :is="Component" v-if="modalsRoutes.has(route.name?.toString() ?? '')" />
+      </router-view>
     </teleport>
   </q-page>
 </template>
@@ -104,6 +106,7 @@ const appSettingsStore = useAppSettingsStore()
 const router = useRouter()
 const { t } = useI18n()
 
+const modalsRoutes = new Set(['Core options', 'Language options', 'Update password'])
 const isOnline = computed(() => userStore.isOnline)
 const isAuthenticated = computed(() => !!userStore.user)
 const isGoogleProvider = computed<boolean>(() => userStore.user?.app_metadata?.providers.includes('google'))

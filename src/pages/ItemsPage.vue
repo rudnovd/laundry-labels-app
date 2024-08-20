@@ -77,7 +77,9 @@
       <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">{{ t('pages.items.addFirstItem') }}</q-btn>
     </div>
 
-    <router-view />
+    <router-view v-slot="{ Component, route }">
+      <component :is="Component" v-if="route.name === 'Filter items'" />
+    </router-view>
   </q-page>
 </template>
 

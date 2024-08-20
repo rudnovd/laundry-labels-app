@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialogRef" v-model="isActive" :transition-duration="DIALOG_TRANSITION_DURATION" persistent>
+  <q-dialog ref="dialogRef" v-model="isActive" persistent>
     <q-card class="update-password-dialog-card">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ t('pages.profile.dialogs.updatePassword.updatePassword') }}</div>
@@ -108,11 +108,10 @@ const updatePassword = throttle(async () => {
   }
 }, REQUEST_THROTTLE_TIMEOUT)
 
-const DIALOG_TRANSITION_DURATION = 300
 const dialogRef = ref<InstanceType<typeof QDialog> | null>(null)
 function backToProfile() {
   dialogRef.value?.hide()
-  setTimeout(() => router.replace({ name: 'Profile' }), DIALOG_TRANSITION_DURATION)
+  router.replace({ name: 'Profile' })
 }
 </script>
 

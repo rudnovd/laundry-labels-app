@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineModel, ref } from 'vue'
+import { ref } from 'vue'
 import useItems from '@/composables/useItems'
 import ItemMaterialCheckbox from '@/components/item/materials/ItemMaterialCheckbox.vue'
 import { watch } from 'vue'

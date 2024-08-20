@@ -10,7 +10,6 @@ export const validation = {
   },
   isEmail(value: string | number) {
     const emailRegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    console.log(emailRegExp.test(String(value).toLowerCase()))
     return emailRegExp.test(String(value).toLowerCase())
   },
 }

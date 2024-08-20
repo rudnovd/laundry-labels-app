@@ -16,7 +16,7 @@
 
         <ul class="item-materials">
           <li v-for="material of currentItem.materials" :key="material">
-            <item-material :value="material" />
+            <item-material :material />
           </li>
         </ul>
 

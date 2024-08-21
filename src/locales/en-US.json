@@ -93,6 +93,8 @@
       "updatePassword": "Update password",
       "exportItems": "Export items",
       "importItems": "Import items",
+      "emailNotVerified": "Email not verified",
+      "verifyEmail": "Verify email",
       "dialogs": {
         "updatePassword": {
           "updatePassword": "Update password",
@@ -165,7 +167,8 @@
     "itemDeleted": "Item deleted successfully",
     "exportSuccess": "Exported successfully",
     "importSuccess": "Imported successfully",
-    "wrongFileType": "Wrong file type"
+    "wrongFileType": "Wrong file type",
+    "confirmationEmailSent": "Confirmation email sent"
   },
   "demo": {
     "buttons": {

@@ -92,6 +92,8 @@
       "updatePassword": "Обновить пароль",
       "exportItems": "Экспортировать предметы",
       "importItems": "Импортировать предметы",
+      "emailNotVerified": "Почта не подтверждена",
+      "verifyEmail": "Подтвердить почту",
       "dialogs": {
         "updatePassword": {
           "updatePassword": "Обновить пароль",
@@ -165,7 +167,8 @@
     "exportSuccess": "Экспортировано успешно",
     "importSuccess": "Импортировано успешно",
     "wrongFileType": "Неверный тип файла",
-    "updatingApp": "Обновление приложения"
+    "updatingApp": "Обновление приложения",
+    "confirmationEmailSent": "Письмо для подтверждения отправлено"
   },
   "demo": {
     "buttons": {

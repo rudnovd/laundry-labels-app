@@ -57,6 +57,20 @@ export const useUserStore = defineStore('user', {
 
       return this.user
     },
+    async sendEmailConfirmation(captchaToken: string) {
+      if (!this.user?.email) throw new Error('Email not found')
+      const { data, error } = await supabase.auth.resend({
+        type: 'signup',
+        email: this.user.email,
+        options: {
+          captchaToken,
+          emailRedirectTo: window.location.origin,
+        },
+      })
+      if (error) throw error
+
+      return data.messageId
+    },
     async signOut() {
       const { error } = await supabase.auth.signOut()
       if (error) throw error

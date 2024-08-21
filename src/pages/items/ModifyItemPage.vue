@@ -1,7 +1,6 @@
 <template>
   <q-page class="modify-item-page">
-    <q-circular-progress v-if="loading.isActive" indeterminate size="50px" color="brand" />
-    <span v-else-if="hasError"> Item not found </span>
+    <span v-if="hasError"> Item not found </span>
     <template v-else>
       <div class="item-data-container">
         <upload-item-photo v-model="modifiedItem.photos" />
@@ -86,7 +85,7 @@ onBeforeMount(async () => {
     modifiedItem.value = cloneDeep(currentItem)
     initialItem.value = cloneDeep(currentItem)
   } else {
-    loading.isActive = true
+    loading.show()
     try {
       const item = await getItemById(route.params.id.toString())
       if (item) {
@@ -96,7 +95,7 @@ onBeforeMount(async () => {
         hasError.value = true
       }
     } finally {
-      loading.isActive = false
+      loading.hide()
     }
   }
 })

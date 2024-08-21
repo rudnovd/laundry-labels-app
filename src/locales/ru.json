@@ -22,6 +22,7 @@
     "authenticating": "Аутентификация",
     "saveOnServer": "Сохранить на сервере",
     "saveLocal": "Сохранить локально",
+    "updatingApp": "Обновление приложения",
     "tags": "Тэги",
     "materials": "Материалы",
     "symbols": "Символы",
@@ -167,7 +168,6 @@
     "exportSuccess": "Экспортировано успешно",
     "importSuccess": "Импортировано успешно",
     "wrongFileType": "Неверный тип файла",
-    "updatingApp": "Обновление приложения",
     "confirmationEmailSent": "Письмо для подтверждения отправлено"
   },
   "demo": {

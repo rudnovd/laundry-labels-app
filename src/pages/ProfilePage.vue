@@ -5,8 +5,20 @@
         <img :src="avatarUrl" :alt="`${username} avatar`" width="32px" height="32px" />
       </q-avatar>
       {{ username }}
-      <div v-if="!isEmailVerified">
-        <strong>Email not verified</strong>
+      <div v-if="!isEmailVerified" class="user-not-verified">
+        <strong>{{ t('pages.profile.emailNotVerified') }}</strong>
+        <q-btn
+          color="primary"
+          :label="t('pages.profile.verifyEmail')"
+          :disable="showEmailConfirmationCaptcha && !emailConfirmationCaptchaToken"
+          icon="email"
+          @click="showEmailConfirmationCaptcha ? sendEmailConfirmation() : (showEmailConfirmationCaptcha = true)"
+        />
+        <l-captcha
+          v-if="showEmailConfirmationCaptcha"
+          ref="captchaRef"
+          @verify="emailConfirmationCaptchaToken = $event"
+        />
       </div>
     </div>
 
@@ -97,6 +109,7 @@ import { userSettingsStorage } from '@/utils/localStorage'
 import type { Item } from '@/types/item'
 import { useLaundryDataStore } from '@/store/laundryData'
 const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
+const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
 const appVersion = import.meta.env.__APP_VERSION__
 
@@ -178,6 +191,24 @@ async function importItems() {
     console.error(error)
   }
 }
+
+const showEmailConfirmationCaptcha = ref(false)
+const emailConfirmationCaptchaToken = ref<string | null>(null)
+const captchaRef = ref<InstanceType<typeof LCaptcha> | null>(null)
+async function sendEmailConfirmation() {
+  try {
+    if (!emailConfirmationCaptchaToken.value) {
+      throw new Error('Captcha token not found')
+    }
+    await userStore.sendEmailConfirmation(emailConfirmationCaptchaToken.value)
+    showEmailConfirmationCaptcha.value = false
+    emailConfirmationCaptchaToken.value = null
+    notify({ type: 'positive', message: t('notifications.confirmationEmailSent') })
+  } catch {
+    captchaRef.value?.resetCaptcha()
+    emailConfirmationCaptchaToken.value = null
+  }
+}
 </script>
 
 <style>
@@ -199,13 +230,25 @@ async function importItems() {
       background: var(--color-brand);
     }
 
-    strong {
-      color: rgb(255 0 0);
+    .user-not-verified {
+      display: grid;
+      gap: 8px;
+      place-items: center;
+      margin-bottom: 8px;
+
+      strong {
+        color: rgb(255 0 0);
+      }
+
+      button {
+        width: 300px;
+      }
     }
   }
 
   .actions {
     display: grid;
+    grid-template-columns: 300px;
     gap: 1rem;
   }
 

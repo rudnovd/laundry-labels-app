@@ -167,35 +167,36 @@ watch(router.currentRoute, ({ query }, { name: previousPage }) => {
   }
 })
 
-const foundItems = computed(() => {
+const foundItems = computed<Item[]>(() => {
   if (!hasRouterQuery.value) return items.value
-  return items.value.reduce<Array<Item>>((filteredItems, item) => {
+  const filteredIds = items.value.reduce<Set<Item['id']>>((ids, item) => {
     if (query.value.search) {
       const querySearch = Array.isArray(query.value.search) ? query.value.search : [query.value.search]
       for (const queryItem of querySearch) {
         if (!queryItem) continue
-        if (filterByAny(item, queryItem)) filteredItems.push(item)
+        if (filterByAny(item, queryItem)) ids.add(item.id)
       }
     }
     if (query.value.tags) {
       const queryTags = Array.isArray(query.value.tags) ? query.value.tags : [query.value.tags]
       const queryTagsSet = new Set<string>(queryTags.map((tag) => tag?.toString() ?? ''))
-      if (queryTagsSet.intersection(item.tags).size) filteredItems.push(item)
+      if (queryTagsSet.intersection(item.tags).size) ids.add(item.id)
     }
     if (query.value.symbols) {
       const querySymbols = Array.isArray(query.value.symbols) ? query.value.symbols : [query.value.symbols]
       const querySymbolsSet = new Set<string>(querySymbols.map((symbol) => symbol?.toString() ?? ''))
-      if (querySymbolsSet.intersection(item.symbols).size) filteredItems.push(item)
+      if (querySymbolsSet.intersection(item.symbols).size) ids.add(item.id)
     }
     if (query.value.materials) {
       const queryMaterials = Array.isArray(query.value.materials) ? query.value.materials : [query.value.materials]
       for (const queryMaterial of queryMaterials) {
         if (!queryMaterial) continue
-        if (item.materials.some((material) => material.includes(queryMaterial))) filteredItems.push(item)
+        if (item.materials.some((material) => material.includes(queryMaterial))) ids.add(item.id)
       }
     }
-    return filteredItems
-  }, [])
+    return ids
+  }, new Set<Item['id']>())
+  return items.value.filter((item) => filteredIds.has(item.id))
 })
 
 function searchAny() {

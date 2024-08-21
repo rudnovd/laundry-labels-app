@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-beta.1](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-beta.0...v0.0.0-beta.1) (2024-08-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* use Set instead Array for symbols, photos, materials and tags
+
+### Features
+
+* add item materials ([d1c2ad3](https://github.com/rudnovd/laundry-labels-app/commit/d1c2ad3f62e8555afc3937fbc4f30272c59ce469))
+* **App:** delay initial app loading displaying ([0fb498f](https://github.com/rudnovd/laundry-labels-app/commit/0fb498fee55c61516bacca400011f2643e28bea5))
+* **components:** add chip component ([9067e0b](https://github.com/rudnovd/laundry-labels-app/commit/9067e0b72201434a779958dbc270b1f631d76f1e))
+* **constants:** add allowed item filters keys ([3545aa8](https://github.com/rudnovd/laundry-labels-app/commit/3545aa8862d8a8f05a295a3b7fecc964d2d0d78d))
+* **constants:** update items limit ([fe5ea7c](https://github.com/rudnovd/laundry-labels-app/commit/fe5ea7c82330b00d47a1084e1832e172d0e20fc1))
+* **data:** add laundry symbols short description ([c9bc08f](https://github.com/rudnovd/laundry-labels-app/commit/c9bc08f2b69b3d41b957cf3052bdfc4bda160b3f))
+* **i18n:** add ru plural rule ([34d2ba5](https://github.com/rudnovd/laundry-labels-app/commit/34d2ba560a61180e514716d547962b2f87b4d87c))
+* **InputItemTags:** update component ([a48a9d7](https://github.com/rudnovd/laundry-labels-app/commit/a48a9d78d646c216b115f20452a3f9c474138ded))
+* **InputItemTags:** update component ([80816ae](https://github.com/rudnovd/laundry-labels-app/commit/80816ae03cc408d5c3e0d211a06b14e6aa29ae25))
+* **items:** fill custom tags after get items ([c7b34be](https://github.com/rudnovd/laundry-labels-app/commit/c7b34bedf75a41d6eab08edd39d07871c41fb98c))
+* **ItemsPage:** add filters handling ([5c40df9](https://github.com/rudnovd/laundry-labels-app/commit/5c40df9fc7a46e884ecfdee30c14b28d2a8a6a48))
+* **LaundrySymbolsButtonGroup:** add hints for symbols groups ([240f11a](https://github.com/rudnovd/laundry-labels-app/commit/240f11ab64d7ae62fe0fcaa57a60b84ae0b5a84f))
+* **locales:** update locales ([9c81aef](https://github.com/rudnovd/laundry-labels-app/commit/9c81aefe431edcda5c749234a478254750fda2a0))
+* **ModifyItemPage:** disable 'edit' button if item has no changes ([a7b4e0c](https://github.com/rudnovd/laundry-labels-app/commit/a7b4e0cb079d06d66345df1a91bbdd237f92dfcd))
+* **ModifyItemPage:** display confirmation alert when leave with unsaved changes ([75a583e](https://github.com/rudnovd/laundry-labels-app/commit/75a583ef6d3b50ec88fe9ccb5f72ab6a8cdb3c9a))
+* **pages:** add filter items dialog ([478be1f](https://github.com/rudnovd/laundry-labels-app/commit/478be1fa39a4ce3558b6a277cf443db28c2a7726))
+* **ProfilePage:** add email confirmation button ([53eb479](https://github.com/rudnovd/laundry-labels-app/commit/53eb47966369730008a3c5397c7156d2a5717716))
+* **RedirectPage:** update page styles ([0d0eb21](https://github.com/rudnovd/laundry-labels-app/commit/0d0eb21ce08a1ca30823ade61aef61aff0be8e14))
+* **service-worker:** cache items and photos ([06dec2c](https://github.com/rudnovd/laundry-labels-app/commit/06dec2c143b7246c40fc8583ad2eaf5fc445fdd4))
+* **store:** move laundry data from items store ([efef2e1](https://github.com/rudnovd/laundry-labels-app/commit/efef2e1cd52027883d0dcd5543eb329ec8e2100d))
+* use Set instead Array for symbols, photos, materials and tags ([18421dc](https://github.com/rudnovd/laundry-labels-app/commit/18421dc26b56eda83152b44b64ab50fe220a16c3))
+* **UserProfile:** display current user ([5ebae71](https://github.com/rudnovd/laundry-labels-app/commit/5ebae710d9b56b68e678c34e045862297e1d1ac9))
+
+
+### Bug Fixes
+
+* **CoreOptionsDialog:** remove persistent ([21248df](https://github.com/rudnovd/laundry-labels-app/commit/21248df7681d1dd20ae581e70fef20b7558e6408))
+* fix dialogs closing ([03ef756](https://github.com/rudnovd/laundry-labels-app/commit/03ef756c21bc194f810bd3240783adde926a68d0))
+* **ItemMaterialCheckbox:** fix component input ([6262143](https://github.com/rudnovd/laundry-labels-app/commit/626214331bc2a939a749be83f9982da0b4ff3033))
+* **ItemPage:** fix component styles ([7a9f274](https://github.com/rudnovd/laundry-labels-app/commit/7a9f274da199983674efa5aca762fa1557005cc7))
+* **ItemPage:** fix loading spinner styles ([d82c8ba](https://github.com/rudnovd/laundry-labels-app/commit/d82c8ba9035e9a9a3ab5850df997760e6622cbc1))
+* **ItemPage:** fix photo sizes ([3fe1f0e](https://github.com/rudnovd/laundry-labels-app/commit/3fe1f0ed98a195feaab897911b0918e8f4a340fd))
+* **ItemsPage:** fix migration types ([a4e1d5a](https://github.com/rudnovd/laundry-labels-app/commit/a4e1d5a440c815dd92ff2e34993d0bb0588c6fad))
+* **ItemsPage:** fix repetitive filtering items ([e8e81c7](https://github.com/rudnovd/laundry-labels-app/commit/e8e81c7806cdbf8aa68889d621d832add227b994))
+* **items:** set max width and change compressed photo max size ([70f897a](https://github.com/rudnovd/laundry-labels-app/commit/70f897ac8bec8a958c52f31a061fdc0945e1f868))
+* **LanguageOptionsDialog:** remove persistent ([180b776](https://github.com/rudnovd/laundry-labels-app/commit/180b7764f811be193684de61015612f96b4bf8fb))
+* **LaundryCard:** fix component styles ([f84cc07](https://github.com/rudnovd/laundry-labels-app/commit/f84cc07d7bfe703fd0578e14a0413ed89a748e95))
+* **locales:** fix wrong 'updating app' key path ([2cd073e](https://github.com/rudnovd/laundry-labels-app/commit/2cd073ed00895166199c67ae36f4b6ac7f53f452))
+* **materials:** lowercase materials data ([37a90ae](https://github.com/rudnovd/laundry-labels-app/commit/37a90ae2b9f0637ea7d3d1ab67ed3a29fc28f9a8))
+* **ProfilePage:** correct text of sign out dialog ([c3554b6](https://github.com/rudnovd/laundry-labels-app/commit/c3554b665fcb84ad34e30b4b24036400e060a42c))
+* **ProfilePage:** disable password changing for 'google' provider ([cbe720f](https://github.com/rudnovd/laundry-labels-app/commit/cbe720fc877903c4c790e885ad6b71ea97f75abe))
+* **router-view:** fix pages rendering in every router-view component ([e0a18af](https://github.com/rudnovd/laundry-labels-app/commit/e0a18afe1d6dd2a5030b98a65c15687b2847b511))
+
 ## [0.0.0-beta.1](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-beta.0...v0.0.0-beta.1) (2024-03-25)
 
 

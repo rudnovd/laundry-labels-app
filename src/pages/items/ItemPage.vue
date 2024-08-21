@@ -1,7 +1,7 @@
 <template>
-  <q-page :class="['item-page', { 'centered-container': loading.isActive || !currentItem }]">
-    <q-circular-progress v-if="loading.isActive" indeterminate size="50px" color="brand" />
-    <template v-else-if="!loading.isActive && currentItem">
+  <q-page :class="['item-page', { 'centered-container': isLoading || loading.isActive || !currentItem }]">
+    <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
+    <template v-else-if="!isLoading && currentItem">
       <div class="item-photo-container">
         <item-photo v-for="photo of currentItem.photos" :key="photo" :path="photo" height="100%" />
       </div>
@@ -79,6 +79,7 @@ const { t } = useI18n()
 const route = useRoute()
 const { items, deleteItem, getItemById, createItem, uploadPhoto, symbols, isOfflineItem } = useItems()
 const userStore = useUserStore()
+const isLoading = ref(false)
 
 const currentItem = ref<Item | null>(null)
 
@@ -89,11 +90,11 @@ onBeforeMount(async () => {
     return
   }
 
-  loading.isActive = true
+  isLoading.value = true
   try {
     currentItem.value = await getItemById(route.params.id.toString())
   } finally {
-    loading.isActive = false
+    isLoading.value = false
   }
 })
 

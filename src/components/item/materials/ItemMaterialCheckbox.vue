@@ -17,7 +17,16 @@
       5
       <div class="current-progress">
         <span v-if="!isEditing">{{ modelValue }}%</span>
-        <input v-else :value="modelValue" :min="1" :max="100" type="number" @input="onInputPercent" />
+        <input
+          v-else
+          ref="inputRef"
+          :value="modelValue"
+          :min="1"
+          :max="100"
+          type="number"
+          @input="onInputPercent"
+          @keyup.enter="isEditing = false"
+        />
         <q-btn
           size="sm"
           padding="0"
@@ -33,21 +42,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { whenever } from '@vueuse/core'
+import { nextTick, ref } from 'vue'
 
 defineProps<{ material: string }>()
 const modelValue = defineModel<number>({ default: 0 })
 
 const isSelected = ref(modelValue.value > 0)
+const inputRef = ref<HTMLInputElement | null>(null)
 const isEditing = ref(false)
+whenever(isEditing, () => nextTick(() => inputRef.value?.focus()))
 function onInputPercent(event: Event) {
   if (!event.target) return
   const input = event.target as HTMLInputElement
   let number = Number(input.value)
-  if (number < 1) number = 1
+  if (number < 1) number = 0
   else if (number > 100) number = 100
   modelValue.value = number
-  input.value = number.toString()
+  input.value = number ? number.toString() : ''
 }
 function onCheck(isEnabled: boolean) {
   modelValue.value = isEnabled ? 50 : 0

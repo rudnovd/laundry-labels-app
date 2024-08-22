@@ -1,5 +1,5 @@
 <template>
-  <q-page :class="['item-page', { 'centered-container': isLoading || loading.isActive || !currentItem }]">
+  <q-page :class="['item-page', { 'centered-container': isLoading || !currentItem }]">
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
     <template v-else-if="!isLoading && currentItem">
       <div class="item-photo-container">

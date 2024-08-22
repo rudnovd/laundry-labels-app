@@ -128,7 +128,8 @@
       "validation": {
         "symbolsRequired": "At least one laundry symbol is required"
       },
-      "itemAdded": "Item added successfully"
+      "itemAdded": "Item added successfully",
+      "itemUpdated": "Item updated successfully"
     },
     "filterItemsDialog": {
       "filteringItems": "Filtering items",

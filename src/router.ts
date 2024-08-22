@@ -152,19 +152,16 @@ const router = createRouter({
   history: createWebHistory('/'),
   routes,
   scrollBehavior(to, _, savedPosition) {
-    return new Promise((resolve) => {
-      if (savedPosition) {
-        return resolve(savedPosition)
-      } else if (to.hash) {
-        const ignoredHashes = ['#access_token', '#error']
-        const hashName = to.hash.split('=').shift()
-        if (hashName && ignoredHashes.includes(hashName)) return resolve()
-
-        return document.querySelector(to.hash) ?? resolve({ el: to.hash })
-      } else {
-        return resolve({ left: 0, top: 0 })
-      }
-    })
+    if (savedPosition) {
+      return savedPosition
+    } else if (to.hash) {
+      const ignoredHashes = ['#access_token', '#error']
+      const hashName = to.hash.split('=').shift()
+      if (hashName && ignoredHashes.includes(hashName)) return { top: 0 }
+      return document.querySelector(to.hash) ? { el: to.hash, behavior: 'smooth' } : undefined
+    } else {
+      return { top: 0 }
+    }
   },
 })
 

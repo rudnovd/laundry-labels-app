@@ -128,7 +128,8 @@
       "validation": {
         "symbolsRequired": "Необходимо выбрать хотя бы один значок по уходу"
       },
-      "itemAdded": "Предмет добавлен успешно"
+      "itemAdded": "Предмет добавлен успешно",
+      "itemUpdated": "Предмет обновлен успешно"
     },
     "filterItemsDialog": {
       "filteringItems": "Фильтрация предметов",

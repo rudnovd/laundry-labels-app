@@ -134,6 +134,10 @@ async function edit() {
   loading.show()
   try {
     await editItem({ ...modifiedItem.value, id: route.params.id.toString() })
+    notify({
+      type: 'positive',
+      message: t('pages.modifyItem.itemUpdated'),
+    })
     initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
   } finally {

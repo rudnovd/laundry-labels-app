@@ -106,7 +106,7 @@ const credentials = reactive<UserSignInCredentials>({
 const captchaRef = ref<InstanceType<typeof LCaptcha> | null>(null)
 
 const signIn = throttle(async () => {
-  loading.show()
+  loading.show({ message: t('pages.signIn.signingIn') })
   try {
     await userStore.signIn(credentials)
     notify({
@@ -122,7 +122,7 @@ const signIn = throttle(async () => {
 }, REQUEST_THROTTLE_TIMEOUT)
 
 const signInWithGoogle = throttle(async () => {
-  loading.show()
+  loading.show({ message: t('pages.signIn.signingIn') })
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
   } catch {

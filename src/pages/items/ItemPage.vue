@@ -104,7 +104,7 @@ async function showDeleteDialog(item: Item) {
     message: item.name ?? 'item',
     cancel: t('common.cancel'),
   }).onOk(async () => {
-    loading.show()
+    loading.show({ message: t('loading.deletingItem') })
     try {
       await deleteItem(route.params.id.toString())
       notify({ color: 'positive', message: t('notifications.itemDeleted') })
@@ -122,7 +122,7 @@ function showSaveOnServerDialog(item: Item) {
     cancel: t('common.cancel'),
     ok: t('common.save'),
   }).onOk(async () => {
-    loading.show()
+    loading.show({ message: t('loading.creatingItem') })
 
     const isOfflineModeEnabled = userSettingsStorage.value.offlineMode
     userSettingsStorage.value.offlineMode = false

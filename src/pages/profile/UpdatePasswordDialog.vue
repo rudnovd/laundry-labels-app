@@ -95,7 +95,7 @@ const hasValidationErrors = computed(() => {
 })
 
 const updatePassword = throttle(async () => {
-  loading.show()
+  loading.show({ message: t('loading.sendingRequest') })
   try {
     await userStore.update({ password: passwords.new })
     notify({

@@ -69,7 +69,7 @@ const credentials = reactive<UserResetPasswordCredentials>({
 })
 
 const resetPassword = throttle(async () => {
-  loading.show()
+  loading.show({ message: t('loading.sendingRequest') })
   try {
     await userStore.resetPassword(credentials)
     notify({

@@ -246,5 +246,12 @@
   },
   "alerts": {
     "unsavedChanges": "All unsaved changes will be lost. Are you sure you want to exit?"
+  },
+  "loading": {
+    "sendingRequest": "Sending request",
+    "fetchingItem": "Fetching item",
+    "creatingItem": "Creating item",
+    "updatingItem": "Updating item",
+    "deletingItem": "Deleting item"
   }
 }

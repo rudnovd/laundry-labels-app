@@ -18,7 +18,7 @@
                 icon="cloud_download"
                 :loading="isItemSaving(item.id)"
                 :disable="isItemSaved(item.id)"
-                :label="t('common.saveOnServer')"
+                :label="t('common.saveInCloud')"
                 @click="saveItem(item, false)"
               />
               <q-btn

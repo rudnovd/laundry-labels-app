@@ -48,7 +48,7 @@
           class="full-width"
           color="primary"
           outline
-          :label="t('pages.item.saveOnServer')"
+          :label="t('pages.item.saveInCloud')"
           icon="sync"
           @click="showSaveOnServerDialog(currentItem)"
         />
@@ -101,7 +101,7 @@ onBeforeMount(async () => {
 async function showDeleteDialog(item: Item) {
   dialog({
     title: t('pages.item.deleteItem'),
-    message: item.name ?? 'item',
+    message: item.name ?? undefined,
     cancel: t('common.cancel'),
   }).onOk(async () => {
     loading.show({ message: t('loading.deletingItem') })
@@ -119,8 +119,8 @@ async function showDeleteDialog(item: Item) {
 
 function showSaveOnServerDialog(item: Item) {
   dialog({
-    title: t('pages.item.saveOnServer'),
-    message: item.name ?? 'item',
+    title: t('pages.item.saveInCloud'),
+    message: item.name ?? undefined,
     cancel: t('common.cancel'),
     ok: t('common.save'),
   }).onOk(async () => {

@@ -25,20 +25,20 @@
             (v) => validation.isEmail(v) || t('pages.signIn.validation.emailPattern'),
           ]"
         />
-        <l-captcha v-if="!IS_LOCAL" class="q-mb-md full-width" @verify="credentials.captchaToken = $event" />
+        <l-captcha v-if="!IS_LOCAL_SUPABASE" class="q-mb-md full-width" @verify="credentials.captchaToken = $event" />
         <q-btn
           class="full-width"
           :label="t('common.resetPassword')"
-          :disable="!credentials.email || !credentials.captchaToken"
+          :disable="isResetPasswordButtonDisabled"
           type="submit"
           color="positive"
         />
       </q-form>
 
       <section class="links">
-        <router-link class="link-light" :to="{ name: 'Sign in' }">{{
-          t('pages.resetPassword.backToSignIn')
-        }}</router-link>
+        <router-link class="link-light" :to="{ name: 'Sign in' }">
+          {{ t('pages.resetPassword.backToSignIn') }}
+        </router-link>
       </section>
     </section>
     <section v-else class="request-sended">
@@ -53,8 +53,8 @@ import { useUserStore } from '@/store/user'
 import { throttle, useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import type { UserResetPasswordCredentials } from '@/types/user'
-import { defineAsyncComponent, reactive, ref } from 'vue'
-import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
+import { computed, defineAsyncComponent, reactive, ref } from 'vue'
+import { IS_LOCAL_SUPABASE, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import { validation } from '@/utils/validation'
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
@@ -78,6 +78,9 @@ const resetPassword = throttle(async () => {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
+const isResetPasswordButtonDisabled = computed(() => {
+  return loading.isActive || !credentials.email || (!IS_LOCAL_SUPABASE && !credentials.captchaToken)
+})
 </script>
 
 <style>

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, watch } from 'vue'
+import { computed, onBeforeMount, watch } from 'vue'
 import { type RouteRecordName, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
@@ -27,6 +27,10 @@ onBeforeMount(async () => {
   } finally {
     loading.hide()
   }
+})
+const isOnline = computed(() => userStore.isOnline)
+watch(isOnline, (online) => {
+  userSettingsStorage.value.offlineMode = online ? userSettingsStorage.value.previousOfflineMode : true
 })
 
 usePwa()

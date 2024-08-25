@@ -1,5 +1,5 @@
 <template>
-  <div class="item-material">{{ Number(percent) ?? 100 }}% {{ materialName }}</div>
+  <button v-ripple class="item-material">{{ Number(percent) ?? 100 }}% {{ materialName }}</button>
 </template>
 
 <script setup lang="ts">

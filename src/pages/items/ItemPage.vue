@@ -32,25 +32,41 @@
             outline
             :label="t('common.delete')"
             icon="delete"
+            :disable="!allowModifyItem"
             @click="showDeleteDialog(currentItem)"
-          />
+          >
+            <q-tooltip v-if="!allowModifyItem">
+              {{ t('pages.item.cannotDeleteTooltipText') }}
+            </q-tooltip>
+          </q-btn>
           <q-btn
             color="primary"
             outline
             :label="t('common.edit')"
             icon="edit"
+            :disable="!allowModifyItem"
             @click="router.push(`/items/edit/${currentItem?.id}`)"
-          />
+          >
+            <q-tooltip v-if="!allowModifyItem">
+              {{ t('pages.item.cannotEditTooltipText') }}
+            </q-tooltip>
+          </q-btn>
         </div>
 
         <q-btn
-          v-if="userStore.isOnline && userStore.user && isOfflineItem(currentItem.id)"
+          v-if="userStore.isAuthenticated && isCurrentItemOfflineItem"
           class="full-width"
           color="primary"
           outline
           :label="t('pages.item.saveInCloud')"
+          :disabled="!userStore.isOnline"
           icon="sync"
           @click="showSaveInCloudDialog(currentItem)"
+        >
+          <q-tooltip v-if="!userStore.isOnline">
+            {{ t('pages.item.cannotSaveInCloudTooltipText') }}
+          </q-tooltip>
+        </q-btn>
       </section>
     </template>
     <span v-else> Item not found </span>
@@ -59,7 +75,7 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { defineAsyncComponent, onBeforeMount, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import useItems from '@/composables/useItems'
@@ -81,6 +97,8 @@ const userStore = useUserStore()
 const isLoading = ref(false)
 
 const currentItem = ref<Item | null>(null)
+const isCurrentItemOfflineItem = computed(() => (currentItem.value ? isOfflineItem(currentItem.value.id) : false))
+const allowModifyItem = computed(() => isCurrentItemOfflineItem.value || userStore.isOnline)
 
 onBeforeMount(async () => {
   const item = items.value.find(({ id }) => id === route.params.id)

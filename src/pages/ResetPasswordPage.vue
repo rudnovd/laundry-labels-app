@@ -72,10 +72,7 @@ const resetPassword = throttle(async () => {
   loading.show({ message: t('loading.sendingRequest') })
   try {
     await userStore.resetPassword(credentials)
-    notify({
-      type: 'positive',
-      message: t('notifications.passwordResetSuccess'),
-    })
+    notify({ type: 'positive', message: t('notifications.passwordResetRequestSended') })
     isRequestSended.value = true
   } finally {
     loading.hide()

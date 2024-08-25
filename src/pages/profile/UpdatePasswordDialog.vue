@@ -98,10 +98,7 @@ const updatePassword = throttle(async () => {
   loading.show({ message: t('loading.sendingRequest') })
   try {
     await userStore.update({ password: passwords.new })
-    notify({
-      type: 'positive',
-      message: t('pages.profile.notifications.passwordUpdated'),
-    })
+    notify({ type: 'positive', message: t('pages.profile.notifications.passwordUpdated') })
     router.replace({ name: 'Profile' })
   } finally {
     loading.hide()

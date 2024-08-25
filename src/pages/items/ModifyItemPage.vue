@@ -104,10 +104,7 @@ function isSymbolsValid(symbols: Set<string>) {
   const isSymbolsSelected = symbols.size
   if (!isSymbolsSelected) {
     laundrySymbolsContainer?.value?.scrollIntoView({ behavior: 'smooth' })
-    notify({
-      type: 'negative',
-      message: t('pages.modifyItem.validation.symbolsRequired'),
-    })
+    notify({ type: 'negative', message: t('pages.modifyItem.validation.symbolsRequired') })
     return false
   }
   return true
@@ -118,10 +115,7 @@ async function create() {
   loading.show({ message: t('loading.creatingItem') })
   try {
     await createItem(modifiedItem.value)
-    notify({
-      type: 'positive',
-      message: t('pages.modifyItem.itemAdded'),
-    })
+    notify({ type: 'positive', message: t('pages.modifyItem.itemAdded') })
     initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
   } finally {
@@ -134,10 +128,7 @@ async function edit() {
   loading.show({ message: t('loading.updatingItem') })
   try {
     await editItem({ ...modifiedItem.value, id: route.params.id.toString() })
-    notify({
-      type: 'positive',
-      message: t('pages.modifyItem.itemUpdated'),
-    })
+    notify({ type: 'positive', message: t('pages.modifyItem.itemUpdated') })
     initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
   } finally {

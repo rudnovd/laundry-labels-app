@@ -109,10 +109,7 @@ const signIn = throttle(async () => {
   loading.show({ message: t('pages.signIn.signingIn') })
   try {
     await userStore.signIn(credentials)
-    notify({
-      type: 'positive',
-      message: t('notifications.signInSuccess'),
-    })
+    notify({ type: 'positive', message: t('notifications.signInSuccess') })
     router.push({ name: 'Items' })
   } catch {
     captchaRef.value?.resetCaptcha()

@@ -50,8 +50,7 @@
           outline
           :label="t('pages.item.saveInCloud')"
           icon="sync"
-          @click="showSaveOnServerDialog(currentItem)"
-        />
+          @click="showSaveInCloudDialog(currentItem)"
       </section>
     </template>
     <span v-else> Item not found </span>
@@ -99,30 +98,35 @@ onBeforeMount(async () => {
 })
 
 async function showDeleteDialog(item: Item) {
-  dialog({
+  const deleteDialog = dialog({
     title: t('pages.item.deleteItem'),
     message: item.name ?? undefined,
     cancel: t('common.cancel'),
+    ok: t('common.delete'),
+    focus: 'none',
   }).onOk(async () => {
     loading.show({ message: t('loading.deletingItem') })
     try {
       await deleteItem(route.params.id.toString())
       notify({ color: 'positive', message: t('notifications.itemDeleted') })
+      deleteDialog.hide()
       router.replace({ name: 'Items' })
     } catch {
       notify({ color: 'negative', message: t('notifications.itemDeleteFailed') })
+      deleteDialog.hide()
     } finally {
       loading.hide()
     }
   })
 }
 
-function showSaveOnServerDialog(item: Item) {
-  dialog({
+function showSaveInCloudDialog(item: Item) {
+  const saveDialog = dialog({
     title: t('pages.item.saveInCloud'),
     message: item.name ?? undefined,
     cancel: t('common.cancel'),
     ok: t('common.save'),
+    focus: 'none',
   }).onOk(async () => {
     loading.show({ message: t('loading.creatingItem') })
 
@@ -139,11 +143,15 @@ function showSaveOnServerDialog(item: Item) {
     }
 
     try {
+    try {
       await createItem({ ...item, photos: uploadedPhotos })
       } catch {
+        saveDialog.hide()
         notify({ color: 'negative', message: t('notifications.itemCreateFailed') })
       }
+      deleteItem(item.id).catch(() => notify({ color: 'negative', message: t('notifications.itemDeleteFailed') }))
       userSettingsStorage.value.offlineMode = isOfflineModeEnabled
+      saveDialog.hide()
       notify({ color: 'positive', message: t('notifications.itemSaved') })
       router.replace({ name: 'Items' })
     } finally {

@@ -16,7 +16,7 @@ export const useItemsStore = defineStore('items', {
     async getItems(): Promise<Array<Item>> {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { data: items, error } = await supabase
+      const { data: items, error } = await supabase!
         .from('items')
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
         .eq('owner', userStore.user.id)
@@ -28,7 +28,7 @@ export const useItemsStore = defineStore('items', {
     async getItemById(id: Item['id']): Promise<Item> {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { data: item, error } = await supabase
+      const { data: item, error } = await supabase!
         .from('items')
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
         .eq('owner', userStore.user.id)
@@ -42,7 +42,7 @@ export const useItemsStore = defineStore('items', {
     async createItem(itemBlank: ItemBlank): Promise<Item> {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { data: item, error } = await supabase
+      const { data: item, error } = await supabase!
         .from('items')
         .insert({
           ...itemBlank,
@@ -62,7 +62,7 @@ export const useItemsStore = defineStore('items', {
     async editItem(editedItem: Omit<Item, 'owner' | 'created_at' | 'updated_at'>): Promise<Array<Item>> {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { data: updatedItem, error } = await supabase
+      const { data: updatedItem, error } = await supabase!
         .from('items')
         .update({
           ...editedItem,
@@ -84,7 +84,7 @@ export const useItemsStore = defineStore('items', {
     async deleteItem(id: Item['id']): Promise<Array<Item>> {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { error } = await supabase.from('items').delete().eq('owner', userStore.user?.id).eq('id', id)
+      const { error } = await supabase!.from('items').delete().eq('owner', userStore.user?.id).eq('id', id)
       if (error) throw error
       const itemForDeleteIndex = this.items.findIndex((item) => item.id === id)
       this.items.splice(itemForDeleteIndex, 1)
@@ -95,13 +95,13 @@ export const useItemsStore = defineStore('items', {
       if (!userStore.user) throw new Error('Authorization required')
       const {
         data: { publicUrl },
-      } = supabase.storage.from('items').getPublicUrl(path)
+      } = supabase!.storage.from('items').getPublicUrl(path)
       return publicUrl
     },
     async uploadPhoto(file: File | Blob) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')
-      const { data, error } = await supabase.storage.from('items').upload(`${userStore.user.id}/${Date.now()}`, file)
+      const { data, error } = await supabase!.storage.from('items').upload(`${userStore.user.id}/${Date.now()}`, file)
       if (error) throw error
       return data.path
     },

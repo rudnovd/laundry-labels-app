@@ -2,7 +2,7 @@
   <q-page class="home-page">
     <header>
       <l-icon icon="logo" width="clamp(50px, 3vw, 80px)" height="clamp(50px, 3vw, 80px)" />
-      <nav>
+      <nav v-if="!IS_OFFLINE_APP">
         <q-btn :to="{ name: 'Sign in' }" :label="t('common.signIn')" flat />
         <q-btn :to="{ name: 'Sign up' }" :label="t('common.signUp')" flat />
         <q-btn icon="share" :title="t('pages.home.share')" flat @click="share" />
@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { IS_OFFLINE_APP } from '@/constants'
 import { defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))

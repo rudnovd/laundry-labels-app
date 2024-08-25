@@ -1,3 +1,5 @@
+import { IS_OFFLINE_APP } from '@/constants'
+import { supabase } from '@/supabase'
 import { createPinia } from 'pinia'
 import { Notify } from 'quasar'
 
@@ -9,7 +11,11 @@ interface ErrorResponse {
 
 const pinia = createPinia()
 pinia.use(({ store }) => {
-  store.$onAction(({ name, args, onError }) => {
+  store.$onAction(({ name, store: { $id }, args, onError }) => {
+    if (($id === 'items' || $id === 'user') && !IS_OFFLINE_APP && !supabase) {
+      throw new Error('Supabase not initialized')
+    }
+
     // catch errors from all store actions
     onError((storeError) => {
       const error: ErrorResponse = storeError as ErrorResponse

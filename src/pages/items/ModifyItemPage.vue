@@ -1,7 +1,7 @@
 <template>
   <q-page class="modify-item-page">
     <span v-if="hasError"> Item not found </span>
-    <template v-else>
+    <template v-else-if="!loading.isActive">
       <div class="item-data-container">
         <upload-item-photo v-model="modifiedItem.photos" />
         <q-input v-model.trim="modifiedItem.name" :debounce="300" outlined :label="t('common.name')" />
@@ -21,14 +21,14 @@
         color="positive"
         class="item-create-button"
         :class="{ sticky: hasChanges }"
-        :label="userSettingsStorage.offlineMode ? t('pages.modifyItem.saveLocalItem') : t('common.save')"
+        :label="userStore.isOfflineMode ? t('pages.modifyItem.saveLocalItem') : t('common.save')"
         @click="edit"
       />
       <q-btn
         v-else
         color="positive"
         class="item-create-button"
-        :label="userSettingsStorage.offlineMode ? t('pages.modifyItem.createLocalItem') : t('common.create')"
+        :label="userStore.isOfflineMode ? t('pages.modifyItem.createLocalItem') : t('common.create')"
         @click="create"
       />
     </template>
@@ -42,7 +42,6 @@ import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import useItems from '@/composables/useItems'
-import { userSettingsStorage } from '@/utils/localStorage'
 import type { ItemBlank } from '@/types/item'
 import cloneDeep from 'lodash-es/cloneDeep'
 import isEqual from 'lodash-es/isEqual'
@@ -51,12 +50,14 @@ import InputItemTags from '@/components/item/tags/InputItemTags.vue'
 import UploadItemPhoto from '@/components/item/UploadItemPhoto.vue'
 import SelectItemMaterials from '@/components/item/materials/SelectItemMaterials.vue'
 import { isEqualSets } from '@/utils/set'
+import { useUserStore } from '@/store/user'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const { loading, notify } = useQuasar()
 const { items, createItem, symbolsByGroups, getItemById, editItem } = useItems()
+const userStore = useUserStore()
 
 const laundrySymbolsContainer = ref<HTMLElement | null>(null)
 const modifiedItem = ref<Omit<ItemBlank, 'owner'>>({
@@ -122,7 +123,6 @@ async function create() {
     loading.hide()
   }
 }
-
 async function edit() {
   if (!isSymbolsValid(modifiedItem.value.symbols)) return
   loading.show({ message: t('loading.updatingItem') })

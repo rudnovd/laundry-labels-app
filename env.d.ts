@@ -3,6 +3,9 @@
 /// <reference types="vite-svg-loader" />
 
 interface ImportMetaEnv {
+  // disable any network requests
+  readonly VITE_APP_IF_OFFLINE: 'true' | 'false'
+
   // disable all limits on the local supabase instance
   readonly VITE_APP_IS_LOCAL_SUPABASE: 'true' | 'false'
 

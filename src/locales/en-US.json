@@ -20,13 +20,14 @@
     "or": "Or",
     "stay": "Stay",
     "authenticating": "Authenticating",
-    "saveOnServer": "Save on server",
+    "saveInCloud": "Save on server",
     "saveLocal": "Save local",
     "updatingApp": "Updating app",
     "tags": "Tags",
     "materials": "Materials",
     "symbols": "Symbols",
     "pluralization": {
+      "item": "item | {n} items",
       "filters": "filter | {n} filters"
     }
   },
@@ -48,6 +49,7 @@
       "noAccount": "Don't have an account?",
       "backToHomePage": "Back to home page",
       "signInWithGoogle": "Sign in with Google",
+      "signingIn": "Signing in",
       "resetPassword": "Reset password",
       "validation": {
         "emailEmpty": "The email field is not filled",
@@ -88,7 +90,7 @@
       "itemsTagsLanguage": "Items tags language",
       "coreSettings": "Core settings",
       "offlineMode": "Offline mode",
-      "offlineModeTooltip": "All items will be stored on the device. They can be saved to the server at any time after creation.",
+      "offlineModeTooltip": "All items will be stored on the device. You can save them to the cloud after you create them.",
       "signingOut": "Signing out",
       "updatePassword": "Update password",
       "exportItems": "Export items",
@@ -112,8 +114,13 @@
       }
     },
     "item": {
+      "itemNotFound": "Item not found",
+      "backToItems": "Back to items",
       "deleteItem": "Delete item?",
-      "saveOnServer": "Save on server"
+      "saveInCloud": "Save in cloud",
+      "cannotDeleteTooltipText": "You have to be online to remove an item",
+      "cannotEditTooltipText": "You have to be online to edit an item",
+      "cannotSaveInCloudTooltipText": "You have to be online to save an item in the cloud"
     },
     "items": {
       "search": "Search by name, tags, materials or symbols",

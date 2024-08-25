@@ -277,6 +277,7 @@ function applyFilter() {
   .filter-items-card-body {
     display: grid;
     grid-template-columns: 100%;
+    grid-auto-rows: max-content;
     gap: 16px;
     height: 100%;
     overflow-x: hidden;

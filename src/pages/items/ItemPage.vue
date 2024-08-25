@@ -69,7 +69,10 @@
         </q-btn>
       </section>
     </template>
-    <span v-else> Item not found </span>
+    <div v-else class="item-not-found-container">
+      <div>{{ t('pages.item.itemNotFound') }}</div>
+      <q-btn :to="{ name: 'Items' }" color="primary" outline>{{ t('pages.item.backToItems') }}</q-btn>
+    </div>
   </q-page>
 </template>
 
@@ -161,8 +164,8 @@ function showSaveInCloudDialog(item: Item) {
     }
 
     try {
-    try {
-      await createItem({ ...item, photos: uploadedPhotos })
+      try {
+        await createItem({ ...item, photos: uploadedPhotos })
       } catch {
         saveDialog.hide()
         notify({ color: 'negative', message: t('notifications.itemCreateFailed') })
@@ -218,6 +221,14 @@ function showSaveInCloudDialog(item: Item) {
     @media (width >= 576px) {
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
+  }
+
+  .item-not-found-container {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+    font-size: 2rem;
+    font-weight: bold;
   }
 }
 </style>

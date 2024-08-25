@@ -97,7 +97,6 @@ import type { Item } from '@/types/item'
 import { useRouter } from 'vue-router'
 import { ALLOWED_ITEM_FILTERS } from '@/constants/items'
 import { useUserStore } from '@/store/user'
-import { userSettingsStorage } from '@/utils/localStorage'
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
 const { t } = useI18n()
@@ -117,7 +116,7 @@ const isItemsLimitReached = computed(() => itemsStore.items.length >= ITEMS_LIMI
 
 const userStore = useUserStore()
 onBeforeMount(async () => {
-  if (userStore.isOnline && !userSettingsStorage.value.offlineMode) {
+  if (!userStore.isOfflineMode) {
     isLoading.value = true
   }
   const demo = useDemoMode()
@@ -150,9 +149,7 @@ onBeforeMount(async () => {
 
 const search = ref('')
 const searchRecord = reactive<Record<string, Array<string>>>({})
-watch(searchRecord, (newSearchRecord) => {
-  router.replace({ query: newSearchRecord })
-})
+watch(searchRecord, (newSearchRecord) => router.replace({ query: newSearchRecord }))
 watch(router.currentRoute, ({ query }, { name: previousPage }) => {
   if (previousPage !== 'Filter items') return
   for (const key of ALLOWED_ITEM_FILTERS) {

@@ -19,13 +19,15 @@
 
           <q-space />
 
-          <q-icon v-if="userSettingsStorage.offlineMode || !userStore.isOnline" class="q-mr-sm" name="cloud_off">
+          <q-icon v-if="userStore.isOfflineMode" class="q-mr-sm" name="cloud_off">
             <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
               <q-banner class="bg-white">
                 <q-toggle
-                  v-model="userSettingsStorage.offlineMode"
+                  :model-value="userSettingsStorage.offlineMode"
                   color="brand"
                   :label="t('pages.profile.offlineMode')"
+                  :disable="IS_OFFLINE_APP"
+                  @update:model-value="updateOfflineMode"
                 />
                 <q-btn icon="help" flat round dense size="12px">
                   <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
@@ -61,6 +63,7 @@ import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { userSettingsStorage } from '@/utils/localStorage'
+import { IS_OFFLINE_APP } from '@/constants'
 
 const keepAliveComponents = ['ItemsPage']
 
@@ -69,6 +72,7 @@ const route = useRoute()
 const appSettingsStore = useAppSettingsStore()
 const { t } = useI18n()
 const userStore = useUserStore()
+const isOfflineMode = computed(() => userStore.isOfflineMode)
 
 const previousPageLink = computed<string>(() => {
   if (window.history.state.back === router.currentRoute.value.path) {
@@ -78,10 +82,14 @@ const previousPageLink = computed<string>(() => {
   }
 })
 
-watch(
-  () => userSettingsStorage.value.offlineMode,
-  async (isOffline) => {
-    if (!isOffline) {
+function updateOfflineMode(isOffline: boolean) {
+  userSettingsStorage.value.offlineMode = isOffline
+  userSettingsStorage.value.previousOfflineMode = isOffline
+}
+
+if (!IS_OFFLINE_APP) {
+  watch(isOfflineMode, async (offlineMode) => {
+    if (!offlineMode) {
       try {
         const session = await userStore.getSession()
         if (!session) router.replace({ name: 'Sign in' })
@@ -89,8 +97,8 @@ watch(
         router.replace({ name: 'Sign in' })
       }
     }
-  },
-)
+  })
+}
 </script>
 
 <style>

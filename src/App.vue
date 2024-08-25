@@ -20,6 +20,7 @@ const router = useRouter()
 
 onBeforeMount(async () => {
   await setLocale(userSettingsStorage.value.locale)
+  if (userStore.isOfflineMode) return
   loading.show({ message: t('common.authenticating'), delay: 2000 })
   try {
     await userStore.getSession()

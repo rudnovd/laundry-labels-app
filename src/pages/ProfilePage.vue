@@ -10,7 +10,7 @@
         <q-btn
           color="primary"
           :label="t('pages.profile.verifyEmail')"
-          :disable="showEmailConfirmationCaptcha && !emailConfirmationCaptchaToken"
+          :disable="!isOnline || (showEmailConfirmationCaptcha && !emailConfirmationCaptchaToken)"
           icon="email"
           @click="showEmailConfirmationCaptcha ? sendEmailConfirmation() : (showEmailConfirmationCaptcha = true)"
         />
@@ -24,16 +24,18 @@
 
     <section class="actions">
       <q-btn
-        v-if="isOnline && appSettingsStore.appInstallation?.showInstallButton"
+        v-if="appSettingsStore.appInstallation?.showInstallButton"
         color="primary"
         :label="t('pages.profile.installApp')"
+        :disable="!isOnline"
         icon="install_mobile"
         @click="appSettingsStore.appInstallation?.event.prompt()"
       />
       <q-btn
-        v-if="isOnline && !userSettingsStorage.autoUpdateApp && appSettingsStore.appHasUpdate"
+        v-if="!userSettingsStorage.autoUpdateApp && appSettingsStore.appHasUpdate"
         color="primary"
         :label="t('pages.profile.updateApp')"
+        :disable="!isOnline"
         icon="upgrade"
         @click="updateAppFromEvent"
       />
@@ -50,10 +52,11 @@
         :to="{ name: 'Language options', replace: true }"
       />
       <q-btn
-        v-if="isOnline && isAuthenticated && !isGoogleProvider"
+        v-if="isAuthenticated && !isGoogleProvider"
         color="primary"
         :label="t('pages.profile.updatePassword')"
         icon="password"
+        :disable="!isOnline"
         :to="{ name: 'Update password', replace: true }"
       />
       <q-btn
@@ -72,9 +75,10 @@
         @click="importItems"
       />
       <q-btn
-        v-if="isOnline && isAuthenticated"
+        v-if="isAuthenticated"
         color="primary"
         :label="t('common.signOut')"
+        :disable="!isOnline"
         icon="logout"
         @click="showSignOutDialog"
       />
@@ -121,7 +125,7 @@ const { t } = useI18n()
 
 const modalsRoutes = new Set(['Core options', 'Language options', 'Update password'])
 const isOnline = computed(() => userStore.isOnline)
-const isAuthenticated = computed(() => !!userStore.user)
+const isAuthenticated = computed(() => userStore.isAuthenticated)
 const isGoogleProvider = computed<boolean>(() => userStore.user?.app_metadata?.providers.includes('google'))
 const username = computed(() => {
   const name: string = userStore.user?.user_metadata.full_name

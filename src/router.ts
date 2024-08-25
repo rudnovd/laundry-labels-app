@@ -1,11 +1,12 @@
 import { useUserStore } from '@/store/user'
 import { type NavigationGuard, type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 import { demoStorage, userSettingsStorage } from '@/utils/localStorage'
+import { IS_OFFLINE_APP } from './constants'
 
 async function isUserSignedIn() {
   const userStore = useUserStore()
   const session = await userStore.getSession()
-  return !!userStore.user || !!session
+  return !!userStore.user?.id || !!session
 }
 
 const redirectIfSignedIn: NavigationGuard = async (_from, _to, next) => {
@@ -18,59 +19,88 @@ const pushIfSignedIn: NavigationGuard = async (_from, _to, next) => {
   return isSignedIn ? next({ name: 'Items' }) : next()
 }
 
-const publicRoutes: Array<RouteRecordRaw> = [
-  {
-    path: '',
-    name: 'Home',
-    meta: {
-      title: 'Laundry Labels App',
+const publicRoutes: Array<RouteRecordRaw> = (() => {
+  const baseRoutes: Array<RouteRecordRaw> = [
+    {
+      path: '',
+      name: 'Home',
+      meta: {
+        title: 'Laundry Labels App',
+      },
+      component: () => import('@/pages/HomePage.vue'),
+      beforeEnter: IS_OFFLINE_APP ? [] : [pushIfSignedIn],
     },
-    component: () => import('@/pages/HomePage.vue'),
-    beforeEnter: pushIfSignedIn,
-  },
-  {
-    path: 'sign-in',
-    name: 'Sign in',
-    component: () => import('@/pages/SignInPage.vue'),
-    beforeEnter: redirectIfSignedIn,
-    meta: {
-      redirect: {
-        text: 'You are already sign in, redirecting',
-        path: window.history.state?.back || '/',
+
+    {
+      path: '/redirect',
+      name: 'Redirect',
+      component: () => import('@/pages/RedirectPage.vue'),
+      props: (route) => route.redirectedFrom?.meta.redirect,
+    },
+  ]
+  const onlineAppRoutes: Array<RouteRecordRaw> = [
+    {
+      path: 'sign-in',
+      name: 'Sign in',
+      component: () => import('@/pages/SignInPage.vue'),
+      beforeEnter: redirectIfSignedIn,
+      meta: {
+        redirect: {
+          text: 'You are already sign in, redirecting',
+          path: window.history.state?.back || '/',
+        },
       },
     },
-  },
-  {
-    path: 'sign-up',
-    name: 'Sign up',
-    component: () => import('@/pages/SignUpPage.vue'),
-    beforeEnter: redirectIfSignedIn,
-    meta: {
-      redirect: {
-        text: 'You are already sign in, redirecting',
-        path: window.history.state?.back || '/',
+    {
+      path: 'sign-up',
+      name: 'Sign up',
+      component: () => import('@/pages/SignUpPage.vue'),
+      beforeEnter: redirectIfSignedIn,
+      meta: {
+        redirect: {
+          text: 'You are already sign in, redirecting',
+          path: window.history.state?.back || '/',
+        },
       },
     },
-  },
-  {
-    path: 'reset-password',
-    name: 'Reset password',
-    component: () => import('@/pages/ResetPasswordPage.vue'),
-    beforeEnter: redirectIfSignedIn,
-    meta: {
-      redirect: {
-        text: 'You are already signed in, redirecting',
-        path: window.history.state?.back || '/',
+    {
+      path: 'reset-password',
+      name: 'Reset password',
+      component: () => import('@/pages/ResetPasswordPage.vue'),
+      beforeEnter: redirectIfSignedIn,
+      meta: {
+        redirect: {
+          text: 'You are already signed in, redirecting',
+          path: window.history.state?.back || '/',
+        },
       },
     },
-  },
-  {
-    path: '/redirect',
-    name: 'Redirect',
-    component: () => import('@/pages/RedirectPage.vue'),
-    props: (route) => route.redirectedFrom?.meta.redirect,
-  },
-]
+  ]
+  return baseRoutes.concat(IS_OFFLINE_APP ? [] : onlineAppRoutes)
+})()
+
+const profileChildren: Array<RouteRecordRaw> = (() => {
+  const baseRoutes: Array<RouteRecordRaw> = [
+    {
+      path: 'core-options',
+      name: 'Core options',
+      component: () => import('@/pages/profile/CoreOptionsDialog.vue'),
+    },
+    {
+      path: 'language-options',
+      name: 'Language options',
+      component: () => import('@/pages/profile/LanguageOptionsDialog.vue'),
+    },
+  ]
+  const onlineAppRoutes: Array<RouteRecordRaw> = [
+    {
+      path: 'update-password',
+      name: 'Update password',
+      component: () => import('@/pages/profile/UpdatePasswordDialog.vue'),
+    },
+  ]
+  return baseRoutes.concat(IS_OFFLINE_APP ? [] : onlineAppRoutes)
+})()
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -121,23 +151,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '',
         name: 'Profile',
         component: () => import('@/pages/ProfilePage.vue'),
-        children: [
-          {
-            path: 'update-password',
-            name: 'Update password',
-            component: () => import('@/pages/profile/UpdatePasswordDialog.vue'),
-          },
-          {
-            path: 'core-options',
-            name: 'Core options',
-            component: () => import('@/pages/profile/CoreOptionsDialog.vue'),
-          },
-          {
-            path: 'language-options',
-            name: 'Language options',
-            component: () => import('@/pages/profile/LanguageOptionsDialog.vue'),
-          },
-        ],
+        children: profileChildren,
       },
     ],
   },
@@ -167,7 +181,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, _, next) => {
   const userStore = useUserStore()
-  const isSignedIn = await isUserSignedIn()
+  const isSignedIn = IS_OFFLINE_APP ? false : await isUserSignedIn()
 
   const isFirstVisitToDemo = to.query.demo && !demoStorage.value?.active
   if (isFirstVisitToDemo) {
@@ -176,10 +190,18 @@ router.beforeEach(async (to, _, next) => {
   }
 
   const isDemoActive = demoStorage.value?.active
-  const isOfflineMode = userSettingsStorage.value.offlineMode
+  const isOfflineMode = userStore.isOfflineMode
   const isOffline = !userStore.isOnline
   const isPublicRoute = publicRoutes.some((route) => route.name === to.name)
-  if (isPublicRoute || isFirstVisitToDemo || isDemoActive || isSignedIn || isOfflineMode || isOffline) {
+  if (
+    IS_OFFLINE_APP ||
+    isPublicRoute ||
+    isFirstVisitToDemo ||
+    isDemoActive ||
+    isOfflineMode ||
+    isOffline ||
+    isSignedIn
+  ) {
     return next()
   }
   if (!isSignedIn) {
@@ -189,7 +211,7 @@ router.beforeEach(async (to, _, next) => {
 })
 
 router.beforeResolve((to) => {
-  document.title = (to.meta?.title as string) || to.name?.toString() || 'Laundry Labels App'
+  document.title = to.meta?.title?.toString() || to.name?.toString() || 'Laundry Labels App'
 })
 
 router.resolve({

@@ -2,13 +2,14 @@ import { computed } from 'vue'
 import Compressor from 'compressorjs'
 import { useItemsStore } from '@/store/items'
 import { useOfflineItemsStore } from '@/store/offlineItems'
-import { userSettingsStorage } from '@/utils/localStorage'
 import type { Item, ItemTag } from '@/types/item'
 import { useLaundryDataStore } from '@/store/laundryData'
 import { storeToRefs } from 'pinia'
 import { collectItemCustomTags } from '@/utils/items'
+import { useUserStore } from '@/store/user'
 
 export default function useItems() {
+  const userStore = useUserStore()
   const itemsStore = useItemsStore()
   const offlineItemsStore = useOfflineItemsStore()
   const laundryDataStore = useLaundryDataStore()
@@ -20,6 +21,8 @@ export default function useItems() {
   const { customTagGroup } = storeToRefs(laundryDataStore)
   const materials = computed(() => laundryDataStore.materials)
   const symbolsByGroups = computed(() => laundryDataStore.symbolsByGroups)
+
+  const isOfflineMode = computed(() => userStore.isOfflineMode)
 
   function compressPhoto(file: File | Blob) {
     return new Promise<File | Blob>((resolve, reject) => {
@@ -47,7 +50,7 @@ export default function useItems() {
 
   async function getItems() {
     const requests = [offlineItemsStore.getItems()]
-    if (!userSettingsStorage.value.offlineMode) requests.push(itemsStore.getItems())
+    if (!isOfflineMode.value) requests.push(itemsStore.getItems())
     const items = await Promise.all(requests)
     const flattenItems = items.flat()
     for (const item of flattenItems) {
@@ -65,9 +68,7 @@ export default function useItems() {
   }
 
   function createItem(itemBlank: Parameters<typeof itemsStore.createItem>[0]) {
-    return userSettingsStorage.value.offlineMode
-      ? offlineItemsStore.createItem(itemBlank)
-      : itemsStore.createItem(itemBlank)
+    return isOfflineMode.value ? offlineItemsStore.createItem(itemBlank) : itemsStore.createItem(itemBlank)
   }
 
   async function editItem(editedItem: Parameters<typeof itemsStore.editItem>[0]) {
@@ -84,9 +85,7 @@ export default function useItems() {
 
   async function uploadPhoto(file: Parameters<typeof itemsStore.uploadPhoto>[0]) {
     const compressedFile = await compressPhoto(file)
-    return userSettingsStorage.value.offlineMode
-      ? offlineItemsStore.uploadPhoto(compressedFile)
-      : itemsStore.uploadPhoto(compressedFile)
+    return isOfflineMode.value ? offlineItemsStore.uploadPhoto(compressedFile) : itemsStore.uploadPhoto(compressedFile)
   }
 
   return {

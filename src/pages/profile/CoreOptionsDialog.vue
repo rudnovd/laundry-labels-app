@@ -8,13 +8,20 @@
       </q-card-section>
 
       <q-card-section>
-        <q-toggle v-model="userSettingsStorage.autoUpdateApp" color="brand" :label="t('pages.profile.autoUpdateApp')" />
+        <q-toggle
+          v-model="userSettingsStorage.autoUpdateApp"
+          :disable="IS_OFFLINE_APP"
+          color="brand"
+          :label="t('pages.profile.autoUpdateApp')"
+        />
         <div>
           <q-toggle
-            v-model="userSettingsStorage.offlineMode"
+            :model-value="userSettingsStorage.offlineMode"
+            :disable="IS_OFFLINE_APP"
             class="q-mr-sm"
             color="brand"
             :label="t('pages.profile.offlineMode')"
+            @update:model-value="updateOfflineMode"
           />
           <q-btn icon="help" flat round dense size="12px">
             <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 20]">
@@ -32,9 +39,12 @@ import { userSettingsStorage } from '@/utils/localStorage'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
+import { IS_OFFLINE_APP } from '@/constants'
 const { t } = useI18n()
 const router = useRouter()
-
 const isActive = ref(true)
+function updateOfflineMode(isOffline: boolean) {
+  userSettingsStorage.value.offlineMode = isOffline
+  userSettingsStorage.value.previousOfflineMode = isOffline
+}
 </script>

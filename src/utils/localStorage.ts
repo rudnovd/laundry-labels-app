@@ -2,16 +2,16 @@ import type { RouteRecordName } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
 import type { AvailableLocale } from '@/i18n'
 import { getBrowserLocale } from '@/utils/locale'
+import { IS_OFFLINE_APP } from '@/constants'
 
 interface UserSettingsLocalStorage {
   locale: AvailableLocale
   autoUpdateApp: boolean
   offlineMode: boolean
+  previousOfflineMode: boolean
   items: {
     standardTagsLocale: AvailableLocale
   }
-  // TODO: remove after migration date is over
-  isMigrated: boolean
 }
 
 interface DemoLocalStorage {
@@ -24,12 +24,12 @@ export const userSettingsStorage = useLocalStorage<UserSettingsLocalStorage>(
   'user-settings',
   {
     locale: getBrowserLocale(),
-    autoUpdateApp: true,
-    offlineMode: false,
+    autoUpdateApp: !IS_OFFLINE_APP,
+    offlineMode: IS_OFFLINE_APP,
+    previousOfflineMode: IS_OFFLINE_APP,
     items: {
       standardTagsLocale: getBrowserLocale(),
     },
-    isMigrated: false,
   },
   {
     mergeDefaults(storageValue: Partial<UserSettingsLocalStorage>, defaults) {
@@ -37,11 +37,24 @@ export const userSettingsStorage = useLocalStorage<UserSettingsLocalStorage>(
         autoUpdateApp: storageValue?.autoUpdateApp ?? defaults.autoUpdateApp,
         locale: storageValue?.locale ?? defaults.locale,
         offlineMode: storageValue?.offlineMode ?? defaults.offlineMode,
+        previousOfflineMode: storageValue?.previousOfflineMode ?? defaults.previousOfflineMode,
         items: {
           standardTagsLocale: storageValue.items?.standardTagsLocale ?? defaults.items.standardTagsLocale,
         },
-        isMigrated: storageValue?.isMigrated ?? defaults.isMigrated,
       }
+    },
+    serializer: {
+      read(value) {
+        return JSON.parse(value)
+      },
+      write(value) {
+        if (IS_OFFLINE_APP) {
+          value.autoUpdateApp = true
+          value.offlineMode = true
+          value.previousOfflineMode = true
+        }
+        return JSON.stringify(value)
+      },
     },
   },
 )

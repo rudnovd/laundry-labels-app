@@ -56,7 +56,7 @@
           :rules="[(v) => validation.minLength(v, 6) || t('pages.signUp.validation.email')]"
         />
         <l-captcha
-          v-if="!IS_LOCAL"
+          v-if="!IS_LOCAL_SUPABASE"
           ref="captchaRef"
           class="q-mb-md full-width"
           @verify="credentials.options.captchaToken = $event"
@@ -64,7 +64,7 @@
         <q-btn
           class="full-width"
           :label="t('common.signUp')"
-          :disable="isSignedUpButtonDisabled"
+          :disable="isSignUpButtonDisabled"
           :loading="loading.isActive"
           type="submit"
           color="positive"
@@ -88,14 +88,14 @@ import { throttle, useQuasar } from 'quasar'
 import { defineAsyncComponent, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { UserSignUpCredentials } from '@/types/user'
-import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
+import { IS_LOCAL_SUPABASE, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import { ref } from 'vue'
 import { computed } from 'vue'
 import { validation } from '@/utils/validation'
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
-const { loading } = useQuasar()
+const { loading, notify } = useQuasar()
 const userStore = useUserStore()
 const { t } = useI18n()
 
@@ -120,7 +120,6 @@ const signUp = throttle(async () => {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
-
 const signUpWithGoogle = throttle(async () => {
   loading.show({ message: t('pages.signUp.signingUp') })
   notify({ type: 'positive', message: t('notifications.signUpSuccess') })
@@ -132,10 +131,9 @@ const signUpWithGoogle = throttle(async () => {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
-
-const isSignedUpButtonDisabled = computed(() => {
+const isSignUpButtonDisabled = computed(() => {
   const { email, password, options } = credentials
-  return loading.isActive || !email || !password || (!IS_LOCAL && !options.captchaToken)
+  return loading.isActive || !email || !password || (!IS_LOCAL_SUPABASE && !options.captchaToken)
 })
 </script>
 

@@ -123,6 +123,7 @@ const signUp = throttle(async () => {
 
 const signUpWithGoogle = throttle(async () => {
   loading.show({ message: t('pages.signUp.signingUp') })
+  notify({ type: 'positive', message: t('notifications.signUpSuccess') })
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
   } catch {

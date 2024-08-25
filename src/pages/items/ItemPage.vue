@@ -109,6 +109,8 @@ async function showDeleteDialog(item: Item) {
       await deleteItem(route.params.id.toString())
       notify({ color: 'positive', message: t('notifications.itemDeleted') })
       router.replace({ name: 'Items' })
+    } catch {
+      notify({ color: 'negative', message: t('notifications.itemDeleteFailed') })
     } finally {
       loading.hide()
     }
@@ -138,7 +140,9 @@ function showSaveOnServerDialog(item: Item) {
 
     try {
       await createItem({ ...item, photos: uploadedPhotos })
-      await deleteItem(item.id)
+      } catch {
+        notify({ color: 'negative', message: t('notifications.itemCreateFailed') })
+      }
       userSettingsStorage.value.offlineMode = isOfflineModeEnabled
       notify({ color: 'positive', message: t('notifications.itemSaved') })
       router.replace({ name: 'Items' })

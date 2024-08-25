@@ -51,7 +51,7 @@
           :rules="[(v) => validation.notEmpty(v) || t('pages.signIn.validation.password')]"
         />
         <l-captcha
-          v-if="!IS_LOCAL"
+          v-if="!IS_LOCAL_SUPABASE"
           ref="captchaRef"
           class="q-mb-md full-width"
           @verify="credentials.options.captchaToken = $event"
@@ -59,7 +59,7 @@
         <q-btn
           class="full-width"
           :label="t('common.signIn')"
-          :disable="isSignedInButtonDisabled"
+          :disable="isSignInButtonDisabled"
           type="submit"
           color="positive"
         />
@@ -86,9 +86,9 @@ import { computed, defineAsyncComponent, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import type { UserSignInCredentials } from '@/types/user'
-import { IS_LOCAL, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
-import LIcon from '@/components/LIcon.vue'
+import { IS_LOCAL_SUPABASE, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
 import { validation } from '@/utils/validation'
+const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
 const { notify, loading } = useQuasar()
@@ -117,7 +117,6 @@ const signIn = throttle(async () => {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
-
 const signInWithGoogle = throttle(async () => {
   loading.show({ message: t('pages.signIn.signingIn') })
   try {
@@ -128,10 +127,9 @@ const signInWithGoogle = throttle(async () => {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
-
-const isSignedInButtonDisabled = computed(() => {
+const isSignInButtonDisabled = computed(() => {
   const { email, password, options } = credentials
-  return loading.isActive || !email || !password || (!IS_LOCAL && !options.captchaToken)
+  return loading.isActive || !email || !password || (!IS_LOCAL_SUPABASE && !options.captchaToken)
 })
 </script>
 

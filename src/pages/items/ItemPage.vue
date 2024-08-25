@@ -2,7 +2,7 @@
   <q-page :class="['item-page', { 'centered-container': isLoading || !currentItem }]">
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
     <template v-else-if="!isLoading && currentItem">
-      <div class="item-photo-container">
+      <div v-if="currentItem.photos.length" class="item-photo-container">
         <item-photo v-for="photo of currentItem.photos" :key="photo" :path="photo" height="100%" />
       </div>
 

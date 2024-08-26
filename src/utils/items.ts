@@ -20,3 +20,11 @@ export function collectItemCustomTags(item: Item, tags: Record<ItemTag['name'], 
   }
   return customTags
 }
+
+export function sortItemsByCreatedDate(items: Item[]) {
+  return items.toSorted((a, b) => {
+    const aTime = new Date(a.created_at).getTime()
+    const bTime = new Date(b.created_at).getTime()
+    return bTime - aTime
+  })
+}

@@ -22,7 +22,7 @@ export const useItemsStore = defineStore('items', {
         .eq('owner', userStore.user.id)
         .order('created_at', { ascending: false })
       if (error) throw error
-      this.items = items.map((item) => convertItem(item))
+      this.items = items.map(convertItem)
       return this.items
     },
     async getItemById(id: Item['id']): Promise<Item> {

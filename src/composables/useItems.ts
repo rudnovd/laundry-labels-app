@@ -5,7 +5,7 @@ import { useOfflineItemsStore } from '@/store/offlineItems'
 import type { Item, ItemTag } from '@/types/item'
 import { useLaundryDataStore } from '@/store/laundryData'
 import { storeToRefs } from 'pinia'
-import { collectItemCustomTags } from '@/utils/items'
+import { collectItemCustomTags, sortItemsByCreatedDate } from '@/utils/items'
 import { useUserStore } from '@/store/user'
 
 export default function useItems() {
@@ -14,7 +14,11 @@ export default function useItems() {
   const offlineItemsStore = useOfflineItemsStore()
   const laundryDataStore = useLaundryDataStore()
 
-  const items = computed<Array<Item>>(() => [...itemsStore.items, ...offlineItemsStore.items])
+  const items = computed<Array<Item>>(() => {
+    const isSortRequired = !!itemsStore.items.length && !!offlineItemsStore.items.length
+    const mergedItems = [...itemsStore.items, ...offlineItemsStore.items]
+    return isSortRequired ? sortItemsByCreatedDate(mergedItems) : mergedItems
+  })
   const symbols = computed(() => laundryDataStore.symbols)
   const tags = computed(() => laundryDataStore.tags)
   const tagsRecord = computed(() => laundryDataStore.tagsRecord)
@@ -52,12 +56,13 @@ export default function useItems() {
     const requests = [offlineItemsStore.getItems()]
     if (!isOfflineMode.value) requests.push(itemsStore.getItems())
     const items = await Promise.all(requests)
+    const isSortRequired = !!items.at(0)?.length && !!items.at(1)?.length
     const flattenItems = items.flat()
     for (const item of flattenItems) {
       const customTags = collectItemCustomTags(item, laundryDataStore.tagsRecord)
       customTags.forEach((tag) => laundryDataStore.customTagGroup.items.add(tag))
     }
-    return flattenItems
+    return isSortRequired ? sortItemsByCreatedDate(flattenItems) : flattenItems
   }
 
   async function getItemById(id: Parameters<typeof itemsStore.getItemById>[0]) {

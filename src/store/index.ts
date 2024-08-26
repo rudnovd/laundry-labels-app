@@ -25,11 +25,7 @@ pinia.use(({ store }) => {
       if (!error.name || !error.message) throw error
 
       console.error(`${error.name}: ${error.message}`)
-      Notify.create({
-        type: 'negative',
-        message: error.message,
-        timeout: 5000,
-      })
+      Notify.create({ type: 'negative', message: error.message, timeout: 5000 })
       throw error
     })
   })

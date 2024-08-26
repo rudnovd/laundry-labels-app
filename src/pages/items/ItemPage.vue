@@ -119,7 +119,7 @@ onBeforeMount(async () => {
 })
 
 async function showDeleteDialog(item: Item) {
-  const deleteDialog = dialog({
+  dialog({
     title: t('pages.item.deleteItem'),
     message: item.name ?? undefined,
     cancel: t('common.cancel'),
@@ -130,11 +130,10 @@ async function showDeleteDialog(item: Item) {
     try {
       await deleteItem(route.params.id.toString())
       notify({ color: 'positive', message: t('notifications.itemDeleted') })
-      deleteDialog.hide()
+      notify({ type: 'positive', message: t('notifications.itemDeleted') })
       router.replace({ name: 'Items' })
     } catch {
-      notify({ color: 'negative', message: t('notifications.itemDeleteFailed') })
-      deleteDialog.hide()
+      notify({ type: 'negative', message: t('notifications.itemDeleteFailed') })
     } finally {
       loading.hide()
     }
@@ -142,7 +141,7 @@ async function showDeleteDialog(item: Item) {
 }
 
 function showSaveInCloudDialog(item: Item) {
-  const saveDialog = dialog({
+  dialog({
     title: t('pages.item.saveInCloud'),
     message: item.name ?? undefined,
     cancel: t('common.cancel'),
@@ -172,9 +171,10 @@ function showSaveInCloudDialog(item: Item) {
       }
       deleteItem(item.id).catch(() => notify({ color: 'negative', message: t('notifications.itemDeleteFailed') }))
       userSettingsStorage.value.offlineMode = isOfflineModeEnabled
-      saveDialog.hide()
-      notify({ color: 'positive', message: t('notifications.itemSaved') })
+      notify({ type: 'positive', message: t('notifications.itemSaved') })
       router.replace({ name: 'Items' })
+    } catch {
+      notify({ color: 'negative', message: t('notifications.itemCreateFailed') })
     } finally {
       loading.hide()
     }

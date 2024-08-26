@@ -56,7 +56,7 @@ export const useItemsStore = defineStore('items', {
         .single()
       if (error) throw error
       const convertedItem = convertItem(item)
-      this.items.push(convertedItem)
+      this.items.unshift(convertedItem)
       return convertedItem
     },
     async editItem(editedItem: Omit<Item, 'owner' | 'created_at' | 'updated_at'>): Promise<Array<Item>> {

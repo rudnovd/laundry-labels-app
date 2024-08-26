@@ -63,7 +63,6 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
       const item = await db.offlineItems.get({ id })
       if (!item) throw new Error(`Item with id ${id} not found`)
       await db.offlineItems.delete(id)
-      item.photos.forEach((id) => db.upload.delete(id))
       const items = await db.offlineItems.toArray()
       this.items = items.map((item) => convertItem(item))
       return this.items
@@ -72,6 +71,11 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
       const item = await db.upload.get({ id })
       if (!item) throw new Error(`Photo with id ${id} not found`)
       return URL.createObjectURL(item.file)
+    },
+    async deletePhoto(id: string) {
+      const item = await db.upload.get({ id })
+      if (!item) throw new Error(`Photo with id ${id} not found`)
+      return await db.upload.delete(id)
     },
     async uploadPhoto(file: File | Blob) {
       const id = `offline-${Date.now()}`

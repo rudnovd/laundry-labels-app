@@ -169,8 +169,8 @@ function showSaveInCloudDialog(item: Item) {
       tags: item.tags,
     }
     try {
-      const newItem = await createItem(itemBlank)
-      deleteItem(newItem.id).catch(() => notify({ color: 'negative', message: t('notifications.itemDeleteFailed') }))
+      await createItem(itemBlank)
+      deleteItem(item.id).catch(() => notify({ color: 'negative', message: t('notifications.itemDeleteFailed') }))
       userSettingsStorage.value.offlineMode = isOfflineModeEnabled
       notify({ type: 'positive', message: t('notifications.itemSaved') })
       router.replace({ name: 'Items' })

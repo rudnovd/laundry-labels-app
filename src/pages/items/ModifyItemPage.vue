@@ -101,9 +101,8 @@ onBeforeMount(async () => {
   }
 })
 
-function isSymbolsValid(symbols: Set<string>) {
-  const isSymbolsSelected = symbols.size
-  if (!isSymbolsSelected) {
+function isSymbolsSelected(symbols: Set<string>) {
+  if (!symbols.size) {
     laundrySymbolsContainer?.value?.scrollIntoView({ behavior: 'smooth' })
     notify({ type: 'negative', message: t('pages.modifyItem.validation.symbolsRequired') })
     return false
@@ -112,7 +111,7 @@ function isSymbolsValid(symbols: Set<string>) {
 }
 
 async function create() {
-  if (!isSymbolsValid(modifiedItem.value.symbols)) return
+  if (!isSymbolsSelected(modifiedItem.value.symbols)) return
   loading.show({ message: t('loading.creatingItem') })
   try {
     await createItem(modifiedItem.value)
@@ -124,7 +123,7 @@ async function create() {
   }
 }
 async function edit() {
-  if (!isSymbolsValid(modifiedItem.value.symbols)) return
+  if (!isSymbolsSelected(modifiedItem.value.symbols)) return
   loading.show({ message: t('loading.updatingItem') })
   try {
     await editItem({ ...modifiedItem.value, id: route.params.id.toString() })

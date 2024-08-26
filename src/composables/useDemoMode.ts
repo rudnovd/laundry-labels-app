@@ -163,10 +163,7 @@ export default function useDemoMode() {
 
   function complete() {
     tour.complete()
-    Notify.create({
-      message: t('demo.notification.tourCompleted'),
-      color: 'positive',
-    })
+    Notify.create({ message: t('demo.notification.tourCompleted'), type: 'positive' })
     localStorage.removeItem('demo')
   }
 

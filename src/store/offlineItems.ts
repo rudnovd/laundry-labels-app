@@ -39,7 +39,7 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
       })
       await db.offlineItems.add(newOfflineItem)
       const newConvertedItem = convertItem(newOfflineItem)
-      this.items.push(newConvertedItem)
+      this.items.unshift(newConvertedItem)
       return newConvertedItem
     },
     async editItem(editedItem: Omit<Item, 'owner' | 'created_at' | 'updated_at'>): Promise<Array<Item>> {

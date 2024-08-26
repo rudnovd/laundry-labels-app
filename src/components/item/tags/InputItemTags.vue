@@ -53,6 +53,7 @@ const tagsRef = ref<HTMLUListElement | null>(null)
 const newTag = ref<ItemTag['name']>('')
 
 function onAddTag(tag: string) {
+  tag = tag.toLowerCase()
   const group = tagsRecord.value[tag]?.group ?? customTagGroup.value
   const isNewCustomTag = !tagsRecord.value[tag]?.group
   if (isNewCustomTag) customTagGroup.value.items.add(tag)

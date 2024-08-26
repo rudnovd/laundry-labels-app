@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.0.0-beta.2](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-beta.1...v0.0.0-beta.2) (2024-08-26)
+
+
+### Features
+
+* add states for full offline mode ([92cd0db](https://github.com/rudnovd/laundry-labels-app/commit/92cd0db52d45a44349d92fc687a72297935fcb30))
+* **App:** enable offline mode if user lost network ([627e16e](https://github.com/rudnovd/laundry-labels-app/commit/627e16ecc8e38091bb3bb8f7833767033b97c207))
+* **ItemMaterial:** use button with v-ripple for component root ([e227329](https://github.com/rudnovd/laundry-labels-app/commit/e2273297711b1b817572df1be75d6608c533ba6f))
+* **ItemPage:** add disabled state for 'delete' and 'edit' buttons ([f0fe64d](https://github.com/rudnovd/laundry-labels-app/commit/f0fe64dda556fe78a8992874d5c6fb99724a4d3e))
+* **ItemPage:** update 'not found' container ([0748e6d](https://github.com/rudnovd/laundry-labels-app/commit/0748e6dd939167091e32df437b76b1a5c8fce2cd))
+* **items:** separate 'delete photo' method ([a52ec35](https://github.com/rudnovd/laundry-labels-app/commit/a52ec352752137d671a36bb874d5aefdf7b2d3e6))
+* **items:** sort items by created date (show new first) ([c9f4e43](https://github.com/rudnovd/laundry-labels-app/commit/c9f4e43af4b776ebabda9fe9a3a5aa17b2249eda))
+* **loading:** add loading messages ([3f2c6aa](https://github.com/rudnovd/laundry-labels-app/commit/3f2c6aa5e1b7a2392c771b8819e703c3b70cce7a))
+* **ModifyItemPage:** add notification after edit item ([e411d67](https://github.com/rudnovd/laundry-labels-app/commit/e411d6708f25c18908c6dcfae0d69466937f34a9))
+* **notifications:** add new messages ([544c8f9](https://github.com/rudnovd/laundry-labels-app/commit/544c8f9524c58ba4732e006d13b6ddb0dffc119a))
+
+
+### Bug Fixes
+
+* **FilterItemsDialog:** fix component styles ([bb1415c](https://github.com/rudnovd/laundry-labels-app/commit/bb1415c51688d04fa6e66dffdbc2f2149aea73aa))
+* **ItemPage:** fix component styles ([e4e991d](https://github.com/rudnovd/laundry-labels-app/commit/e4e991ddc099daf2ffa162199b745e63b9a944fb))
+* **ItemPage:** fix wrong delete after create cloud item ([f2ca8f9](https://github.com/rudnovd/laundry-labels-app/commit/f2ca8f96e832a1dfa6e8ebc73986bd4853fbe58b))
+* **ItemPage:** fix wrong payload when save offline item in cloud ([2f12dfc](https://github.com/rudnovd/laundry-labels-app/commit/2f12dfc269c2bef9de6571d3ea40c431cbd8f1fd))
+* **ItemPage:** hide photos container if item has not photos ([07af820](https://github.com/rudnovd/laundry-labels-app/commit/07af820bf13ddd013cd2afc5afbc287ab2f79fad))
+* **notifications:** fix notifications error when hide dialogs ([ef1c3a2](https://github.com/rudnovd/laundry-labels-app/commit/ef1c3a295efc8d1ae3533343a88f4a64ded026b9))
+* **ResetPasswordPage:** add disabled state for confirm button ([19c3e3f](https://github.com/rudnovd/laundry-labels-app/commit/19c3e3f83ae9535d65195e2a1fa7dbf16902b5a0))
+* **router:** fix scrollBehavior ([1a34bb6](https://github.com/rudnovd/laundry-labels-app/commit/1a34bb609def192c64262deec867efcc1d27f680))
+
 ## [0.0.0-beta.1](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-beta.0...v0.0.0-beta.1) (2024-08-21)
 
 

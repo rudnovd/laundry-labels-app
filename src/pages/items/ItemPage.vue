@@ -84,7 +84,7 @@ import { useRoute, useRouter } from 'vue-router'
 import useItems from '@/composables/useItems'
 import { db } from '@/db'
 import { useUserStore } from '@/store/user'
-import type { Item } from '@/types/item'
+import type { Item, ItemBlank } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
 import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
 const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
@@ -161,15 +161,16 @@ function showSaveInCloudDialog(item: Item) {
         uploadedPhotos.push(uploadedPhoto)
       }
     }
-
+    const itemBlank: ItemBlank = {
+      name: item.name,
+      photos: uploadedPhotos,
+      symbols: item.symbols,
+      materials: item.materials,
+      tags: item.tags,
+    }
     try {
-      try {
-        await createItem({ ...item, photos: uploadedPhotos })
-      } catch {
-        saveDialog.hide()
-        notify({ color: 'negative', message: t('notifications.itemCreateFailed') })
-      }
-      deleteItem(item.id).catch(() => notify({ color: 'negative', message: t('notifications.itemDeleteFailed') }))
+      const newItem = await createItem(itemBlank)
+      deleteItem(newItem.id).catch(() => notify({ color: 'negative', message: t('notifications.itemDeleteFailed') }))
       userSettingsStorage.value.offlineMode = isOfflineModeEnabled
       notify({ type: 'positive', message: t('notifications.itemSaved') })
       router.replace({ name: 'Items' })

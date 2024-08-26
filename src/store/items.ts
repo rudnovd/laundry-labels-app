@@ -98,6 +98,13 @@ export const useItemsStore = defineStore('items', {
       } = supabase!.storage.from('items').getPublicUrl(path)
       return publicUrl
     },
+    async deletePhoto(path: string) {
+      const userStore = useUserStore()
+      if (!userStore.user) throw new Error('Authorization required')
+      const { error } = await supabase!.storage.from('items').remove([path])
+      if (error) throw error
+      return true
+    },
     async uploadPhoto(file: File | Blob) {
       const userStore = useUserStore()
       if (!userStore.user) throw new Error('Authorization required')

@@ -95,7 +95,7 @@ const { loading, dialog, notify } = useQuasar()
 const router = useRouter()
 const { t } = useI18n()
 const route = useRoute()
-const { items, deleteItem, getItemById, createItem, uploadPhoto, symbols, isOfflineItem } = useItems()
+const { items, deleteItem, getItemById, createItem, uploadPhoto, deletePhoto, symbols, isOfflineItem } = useItems()
 const userStore = useUserStore()
 const isLoading = ref(false)
 
@@ -129,7 +129,7 @@ async function showDeleteDialog(item: Item) {
     loading.show({ message: t('loading.deletingItem') })
     try {
       await deleteItem(route.params.id.toString())
-      notify({ color: 'positive', message: t('notifications.itemDeleted') })
+      item.photos.forEach(deletePhoto)
       notify({ type: 'positive', message: t('notifications.itemDeleted') })
       router.replace({ name: 'Items' })
     } catch {

@@ -87,6 +87,9 @@ export default function useItems() {
     const compressedFile = await compressPhoto(file)
     return isOfflineMode.value ? offlineItemsStore.uploadPhoto(compressedFile) : itemsStore.uploadPhoto(compressedFile)
   }
+  async function deletePhoto(path: Parameters<typeof itemsStore.deletePhoto>[0]) {
+    return isOfflineItem(path) ? offlineItemsStore.deletePhoto(path) : itemsStore.deletePhoto(path)
+  }
 
   return {
     items,
@@ -104,7 +107,8 @@ export default function useItems() {
     createItem,
     editItem,
     deleteItem,
-    uploadPhoto,
     getPhoto,
+    uploadPhoto,
+    deletePhoto,
   }
 }

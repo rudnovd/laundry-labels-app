@@ -1,5 +1,6 @@
+import type { NavigationGuard, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/store/user'
-import { type NavigationGuard, type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 import { demoStorage, userSettingsStorage } from '@/utils/localStorage'
 import { IS_OFFLINE_APP } from './constants'
 
@@ -35,7 +36,7 @@ const publicRoutes: Array<RouteRecordRaw> = (() => {
       path: '/redirect',
       name: 'Redirect',
       component: () => import('@/pages/RedirectPage.vue'),
-      props: (route) => route.redirectedFrom?.meta.redirect,
+      props: route => route.redirectedFrom?.meta.redirect,
     },
   ]
   const onlineAppRoutes: Array<RouteRecordRaw> = [
@@ -76,7 +77,7 @@ const publicRoutes: Array<RouteRecordRaw> = (() => {
       },
     },
   ]
-  return baseRoutes.concat(IS_OFFLINE_APP ? [] : onlineAppRoutes)
+  return [...baseRoutes, ...IS_OFFLINE_APP ? [] : onlineAppRoutes]
 })()
 
 const profileChildren: Array<RouteRecordRaw> = (() => {
@@ -99,7 +100,7 @@ const profileChildren: Array<RouteRecordRaw> = (() => {
       component: () => import('@/pages/profile/UpdatePasswordDialog.vue'),
     },
   ]
-  return baseRoutes.concat(IS_OFFLINE_APP ? [] : onlineAppRoutes)
+  return [...baseRoutes, ...IS_OFFLINE_APP ? [] : onlineAppRoutes]
 })()
 
 const routes: Array<RouteRecordRaw> = [
@@ -168,12 +169,15 @@ const router = createRouter({
   scrollBehavior(to, _, savedPosition) {
     if (savedPosition) {
       return savedPosition
-    } else if (to.hash) {
+    }
+    else if (to.hash) {
       const ignoredHashes = ['#access_token', '#error']
       const hashName = to.hash.split('=').shift()
-      if (hashName && ignoredHashes.includes(hashName)) return { top: 0 }
+      if (hashName && ignoredHashes.includes(hashName))
+        return { top: 0 }
       return document.querySelector(to.hash) ? { el: to.hash, behavior: 'smooth' } : undefined
-    } else {
+    }
+    else {
       return { top: 0 }
     }
   },
@@ -192,15 +196,15 @@ router.beforeEach(async (to, _, next) => {
   const isDemoActive = demoStorage.value?.active
   const isOfflineMode = userStore.isOfflineMode
   const isOffline = !userStore.isOnline
-  const isPublicRoute = publicRoutes.some((route) => route.name === to.name)
+  const isPublicRoute = publicRoutes.some(route => route.name === to.name)
   if (
-    IS_OFFLINE_APP ||
-    isPublicRoute ||
-    isFirstVisitToDemo ||
-    isDemoActive ||
-    isOfflineMode ||
-    isOffline ||
-    isSignedIn
+    IS_OFFLINE_APP
+    || isPublicRoute
+    || isFirstVisitToDemo
+    || isDemoActive
+    || isOfflineMode
+    || isOffline
+    || isSignedIn
   ) {
     return next()
   }
@@ -213,10 +217,5 @@ router.beforeEach(async (to, _, next) => {
 router.beforeResolve((to) => {
   document.title = to.meta?.title?.toString() || to.name?.toString() || 'Laundry Labels App'
 })
-
-router.resolve({
-  name: 'Page not found',
-  params: { pathMatch: ['not', 'found'] },
-}).href
 
 export default router

@@ -1,8 +1,8 @@
+import type { DatabaseItem, Item, ItemBlank } from '@/types/item'
+import Dexie from 'dexie'
 import { defineStore } from 'pinia'
 import { date } from 'quasar'
-import Dexie from 'dexie'
 import { db } from '@/db'
-import type { DatabaseItem, Item, ItemBlank } from '@/types/item'
 import { convertItem } from '@/utils/items'
 
 interface ItemState {
@@ -21,7 +21,8 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
     },
     async getItemById(id: Item['id']): Promise<Item> {
       const item = await db.offlineItems.get({ id })
-      if (!item) throw new Error(`Item with id ${id} not found`)
+      if (!item)
+        throw new Error(`Item with id ${id} not found`)
       const convertedItem = convertItem(item)
       this.items.push(convertedItem)
       return convertedItem
@@ -53,15 +54,17 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
       }
       await db.offlineItems.update(editedItem.id, Dexie.deepClone(databaseEditedItem))
       const item = await db.offlineItems.get({ id: editedItem.id })
-      if (!item) throw new Error(`Item with id ${editedItem.id} not found`)
-      const itemForUpdateIndex = this.items.findIndex((item) => item.id === editedItem.id)
+      if (!item)
+        throw new Error(`Item with id ${editedItem.id} not found`)
+      const itemForUpdateIndex = this.items.findIndex(item => item.id === editedItem.id)
       this.items[itemForUpdateIndex].photos.forEach(URL.revokeObjectURL)
       this.items.splice(itemForUpdateIndex, 1, convertItem(item))
       return this.items
     },
     async deleteItem(id: Item['id']): Promise<Array<Item>> {
       const item = await db.offlineItems.get({ id })
-      if (!item) throw new Error(`Item with id ${id} not found`)
+      if (!item)
+        throw new Error(`Item with id ${id} not found`)
       await db.offlineItems.delete(id)
       const items = await db.offlineItems.toArray()
       this.items = items.map(convertItem)
@@ -69,12 +72,14 @@ export const useOfflineItemsStore = defineStore('offlineItems', {
     },
     async getPhoto(id: string) {
       const item = await db.upload.get({ id })
-      if (!item) throw new Error(`Photo with id ${id} not found`)
+      if (!item)
+        throw new Error(`Photo with id ${id} not found`)
       return URL.createObjectURL(item.file)
     },
     async deletePhoto(id: string) {
       const item = await db.upload.get({ id })
-      if (!item) throw new Error(`Photo with id ${id} not found`)
+      if (!item)
+        throw new Error(`Photo with id ${id} not found`)
       return await db.upload.delete(id)
     },
     async uploadPhoto(file: File | Blob) {

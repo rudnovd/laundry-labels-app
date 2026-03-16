@@ -2,7 +2,7 @@
   <q-page class="profile-page q-pa-sm">
     <div v-if="isAuthenticated" class="user">
       <q-avatar>
-        <img :src="avatarUrl" :alt="`${username} avatar`" width="32px" height="32px" />
+        <img :src="avatarUrl" :alt="`${username} avatar`" width="32px" height="32px">
       </q-avatar>
       {{ username }}
       <div v-if="!isEmailVerified" class="user-not-verified">
@@ -14,7 +14,7 @@
           icon="email"
           @click="showEmailConfirmationCaptcha ? sendEmailConfirmation() : (showEmailConfirmationCaptcha = true)"
         />
-        <l-captcha
+        <LCaptcha
           v-if="showEmailConfirmationCaptcha"
           ref="captchaRef"
           @verify="emailConfirmationCaptchaToken = $event"
@@ -87,12 +87,12 @@
     <section class="app-version">
       {{ t('pages.profile.appVersion') }}: {{ appVersion }}
       <a href="https://github.com/rudnovd/laundry-labels-app" rel="noopener" target="_blank">
-        <img src="/icons/social/github-mark.svg" width="16" />
+        <img src="/icons/social/github-mark.svg" width="16">
       </a>
     </section>
 
     <teleport to="body">
-      <import-items-dialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
+      <ImportItemsDialog v-if="showImportItemsDialog" v-model="showImportItemsDialog" :items="importedItems" />
       <router-view v-slot="{ Component, route }">
         <component :is="Component" v-if="modalsRoutes.has(route.name?.toString() ?? '')" />
       </router-view>
@@ -101,17 +101,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useQuasar } from 'quasar'
+import type { Item } from '@/types/item'
 import { useFileSystemAccess } from '@vueuse/core'
+import { useQuasar } from 'quasar'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import useItems from '@/composables/useItems'
+import { useLaundryDataStore } from '@/store/laundryData'
 import { useAppSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
-import useItems from '@/composables/useItems'
 import { userSettingsStorage } from '@/utils/localStorage'
-import type { Item } from '@/types/item'
-import { useLaundryDataStore } from '@/store/laundryData'
+
 const ImportItemsDialog = defineAsyncComponent(() => import('@/components/dialogs/ImportItemsDialog.vue'))
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
@@ -126,7 +127,11 @@ const { t } = useI18n()
 const modalsRoutes = new Set(['Core options', 'Language options', 'Update password'])
 const isOnline = computed(() => userStore.isOnline)
 const isAuthenticated = computed(() => userStore.isAuthenticated)
-const isGoogleProvider = computed<boolean>(() => userStore.user?.app_metadata?.providers.includes('google'))
+const isGoogleProvider = computed<boolean>(() => {
+  if (!userStore.user)
+    return false
+  return userStore.user.app_metadata?.providers?.includes('google') ?? false
+})
 const username = computed(() => {
   const name: string = userStore.user?.user_metadata.full_name
   const email = userStore.user?.email
@@ -158,7 +163,8 @@ async function showSignOutDialog() {
       await userStore.signOut()
       notify({ type: 'positive', message: t('notifications.signOutSuccess') })
       router.push({ name: 'Home' })
-    } finally {
+    }
+    finally {
       loading.hide()
     }
   })
@@ -174,9 +180,11 @@ async function exportItems() {
   try {
     await saveAs({ suggestedName: `laundry-labels-items-${Date.now()}.json` })
     notify({ type: 'positive', message: t('notifications.exportSuccess') })
-  } catch (error) {
+  }
+  catch (error) {
     console.info(error)
-  } finally {
+  }
+  finally {
     data.value = ''
   }
 }
@@ -191,7 +199,8 @@ async function importItems() {
     }
     for (const item of JSON.parse(data.value)) importedItems.value.push(item)
     showImportItemsDialog.value = true
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
 }
@@ -208,7 +217,8 @@ async function sendEmailConfirmation() {
     showEmailConfirmationCaptcha.value = false
     emailConfirmationCaptchaToken.value = null
     notify({ type: 'positive', message: t('notifications.confirmationEmailSent') })
-  } catch {
+  }
+  catch {
     captchaRef.value?.resetCaptcha()
     emailConfirmationCaptchaToken.value = null
   }

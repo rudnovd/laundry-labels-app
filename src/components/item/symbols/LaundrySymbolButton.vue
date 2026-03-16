@@ -1,11 +1,11 @@
 <template>
-  <button v-ripple :class="['laundry-symbol-button', styles]">
+  <button v-ripple class="laundry-symbol-button" :class="[styles]">
     <img
       :src="`/icons/laundry/${symbol.group}/${symbol.name}.svg`"
       height="64px"
       width="64px"
       :alt="`${symbol.name.split('-').join(' ')} icon`"
-    />
+    >
     <span>{{ symbol.description }}</span>
   </button>
 </template>
@@ -46,7 +46,7 @@ defineProps<{
 
   &.selected {
     font-weight: 500;
-    background-color: rgba(224 224 224);
+    background-color: rgb(224 224 224);
     border-color: rgb(97 97 97);
   }
 
@@ -57,11 +57,11 @@ defineProps<{
   & > span {
     display: -webkit-box;
     overflow: hidden;
-    line-height: 1.3;
     text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+    line-height: 1.3;
     text-wrap: balance;
     overflow-wrap: break-word;
-    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
   }
 }

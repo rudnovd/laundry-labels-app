@@ -1,7 +1,9 @@
 <template>
   <q-page class="error-page">
     <span>{{ t('pages.error.pageNotFound') }}</span>
-    <router-link :to="{ name: 'Home' }">{{ t('pages.error.backToHomePage') }}</router-link>
+    <router-link :to="{ name: 'Home' }">
+      {{ t('pages.error.backToHomePage') }}
+    </router-link>
   </q-page>
 </template>
 

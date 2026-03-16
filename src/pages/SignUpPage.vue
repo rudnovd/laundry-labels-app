@@ -1,11 +1,15 @@
 <template>
   <q-page class="sign-up-page">
     <article>
-      <h1 class="text-h3 q-mt-none">{{ t('common.signUp') }}</h1>
+      <h1 class="text-h3 q-mt-none">
+        {{ t('common.signUp') }}
+      </h1>
 
       <section v-if="isSignedUp" class="account-registered">
         <span class="text-body1">{{ t('pages.signUp.accountRegistered') }}</span>
-        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signUp.backToHomePage') }}</router-link>
+        <router-link :to="{ name: 'Home' }" class="link-light">
+          {{ t('pages.signUp.backToHomePage') }}
+        </router-link>
       </section>
       <q-form
         v-else
@@ -24,7 +28,7 @@
           text-color="black"
           @click="signUpWithGoogle"
         >
-          <l-icon class="q-mr-sm" icon="google-logo" />
+          <LIcon class="q-mr-sm" icon="google-logo" />
           {{ t('pages.signUp.signUpWithGoogle') }}
         </q-btn>
         <span class="q-mb-sm inline-block">{{ t('common.or').toLocaleLowerCase() }}</span>
@@ -55,7 +59,7 @@
           lazy-rules
           :rules="[(v) => validation.minLength(v, 6) || t('pages.signUp.validation.email')]"
         />
-        <l-captcha
+        <LCaptcha
           v-if="!IS_LOCAL_SUPABASE"
           ref="captchaRef"
           class="q-mb-md full-width"
@@ -74,24 +78,28 @@
       <section v-if="!isSignedUp">
         <div>
           {{ t('pages.signUp.alreadyRegistered') }}
-          <router-link class="link-light" :to="{ name: 'Sign in' }">{{ t('common.signIn') }}</router-link>
+          <router-link class="link-light" :to="{ name: 'Sign in' }">
+            {{ t('common.signIn') }}
+          </router-link>
         </div>
-        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signUp.backToHomePage') }}</router-link>
+        <router-link :to="{ name: 'Home' }" class="link-light">
+          {{ t('pages.signUp.backToHomePage') }}
+        </router-link>
       </section>
     </article>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/store/user'
-import { throttle, useQuasar } from 'quasar'
-import { defineAsyncComponent, reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
 import type { UserSignUpCredentials } from '@/types/user'
+import { throttle, useQuasar } from 'quasar'
+import { computed, defineAsyncComponent, reactive, ref } from 'vue'
+
+import { useI18n } from 'vue-i18n'
 import { IS_LOCAL_SUPABASE, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
-import { ref } from 'vue'
-import { computed } from 'vue'
+import { useUserStore } from '@/store/user'
 import { validation } from '@/utils/validation'
+
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
@@ -114,9 +122,11 @@ const signUp = throttle(async () => {
   try {
     await userStore.signUp(credentials)
     isSignedUp.value = true
-  } catch {
+  }
+  catch {
     captchaRef.value?.resetCaptcha()
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
@@ -125,9 +135,11 @@ const signUpWithGoogle = throttle(async () => {
   notify({ type: 'positive', message: t('notifications.signUpSuccess') })
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
-  } catch {
+  }
+  catch {
     captchaRef.value?.resetCaptcha()
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)

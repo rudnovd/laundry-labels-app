@@ -1,5 +1,5 @@
 export default {
-  wash: {
+  'wash': {
     group: 'washing',
     description: 'Стирка',
     short: 'Стирка',
@@ -84,7 +84,7 @@ export default {
     description: 'Деликатная стирка при температуре 60°C или ниже',
     short: 'Деликатная не выше 60°C',
   },
-  iron: {
+  'iron': {
     group: 'ironing',
     description: 'Глажка',
     short: 'Глажка',
@@ -119,7 +119,7 @@ export default {
     description: 'Не отпаривать',
     short: 'Не отпаривать',
   },
-  bleach: {
+  'bleach': {
     group: 'bleaching',
     description: 'Отбеливание',
     short: 'Отбеливание',
@@ -159,7 +159,7 @@ export default {
     description: 'Сушка в барабане при высокой температуре',
     short: 'Сушка в барабане при высокой°',
   },
-  dry: {
+  'dry': {
     group: 'natural-drying',
     description: 'Сушка',
     short: 'Сушка',

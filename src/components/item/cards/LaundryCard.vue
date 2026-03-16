@@ -13,7 +13,7 @@
             height="48px"
             width="48px"
             :alt="`${symbol.split('-').join(' ')} icon`"
-          />
+          >
           <q-tooltip anchor="top middle" :offset="[0, 48]">
             {{ symbols[symbol].description }}
           </q-tooltip>
@@ -22,30 +22,30 @@
 
       <ul v-if="item.materials.length" class="materials">
         <li v-for="material in item.materials" :key="material">
-          <item-material :material />
+          <ItemMaterial :material />
         </li>
       </ul>
 
       <ul v-if="item.tags.size" class="tags">
         <li v-for="tag in item.tags" :key="tag">
-          <item-tag>{{ tag }}</item-tag>
+          <ItemTag>{{ tag }}</ItemTag>
         </li>
       </ul>
     </div>
-    <item-photo v-for="photo in item.photos" :key="photo" :path="photo" :alt="`${item.name} photo` ?? 'item photo'" />
+    <ItemPhoto v-for="photo in item.photos" :key="photo" :path="photo" :alt="`${item.name} photo`" />
   </div>
 </template>
 
 <script setup lang="ts">
-import useItems from '@/composables/useItems'
-import { type Item } from '@/types/item'
+import type { Item } from '@/types/item'
 import { defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
+import useItems from '@/composables/useItems'
+
+defineProps<{ item: Item }>()
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
 const ItemMaterial = defineAsyncComponent(() => import('@/components/item/materials/ItemMaterial.vue'))
-
-defineProps<{ item: Item }>()
 
 const router = useRouter()
 const { symbols } = useItems()
@@ -91,10 +91,10 @@ const { symbols } = useItems()
     .title {
       grid-area: title;
       overflow: hidden;
+      text-overflow: ellipsis;
       font-size: 1.25rem;
       font-weight: 500;
       line-height: 2rem;
-      text-overflow: ellipsis;
       letter-spacing: 0.0125em;
       white-space: nowrap;
     }

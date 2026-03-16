@@ -8,7 +8,9 @@
   >
     <q-card class="filter-items-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ t('pages.filterItemsDialog.filteringItems') }}</div>
+        <div class="text-h6">
+          {{ t('pages.filterItemsDialog.filteringItems') }}
+        </div>
         <q-space />
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>
@@ -35,9 +37,9 @@
             <li>
               <ul class="filter-inner-list">
                 <li v-for="searchTag in filter.search" :key="searchTag">
-                  <l-chip selected @click="filter.search.delete(searchTag)">
+                  <LChip selected @click="filter.search.delete(searchTag)">
                     {{ searchTag }}
-                  </l-chip>
+                  </LChip>
                 </li>
               </ul>
             </li>
@@ -49,9 +51,9 @@
           <li v-for="[tagsGroup, groupTags] in filtering.tags" :key="tagsGroup">
             <ul class="filter-inner-list">
               <li v-for="tag in groupTags" :key="tag" @click="toggleFilter('tags', tag)">
-                <item-tag-component :selected="filter.tags.has(tag)">
+                <ItemTagComponent :selected="filter.tags.has(tag)">
                   {{ tag }}
-                </item-tag-component>
+                </ItemTagComponent>
               </li>
             </ul>
           </li>
@@ -62,9 +64,9 @@
           <li>
             <ul class="filter-inner-list">
               <li v-for="material in filtering.materials" :key="material" @click="toggleFilter('materials', material)">
-                <l-chip :selected="filter.materials.has(material)">
+                <LChip :selected="filter.materials.has(material)">
                   {{ material }}
-                </l-chip>
+                </LChip>
               </li>
             </ul>
           </li>
@@ -75,13 +77,13 @@
           <li v-for="[symbolGroup, filteringSymbols] in filtering.symbols" :key="symbolGroup" class="filter-inner-list">
             <ul class="symbols-list-group">
               <li v-for="symbol in filteringSymbols" :key="symbol">
-                <l-chip :selected="filter.symbols.has(symbol)" @click="toggleFilter('symbols', symbol)">
+                <LChip :selected="filter.symbols.has(symbol)" @click="toggleFilter('symbols', symbol)">
                   <img
                     :src="`/icons/laundry/${symbolGroup}/${symbol}.svg`"
                     :alt="`${symbol.split('-').join(' ')} icon`"
-                  />
+                  >
                   {{ symbols[symbol].short }}
-                </l-chip>
+                </LChip>
               </li>
             </ul>
           </li>
@@ -103,14 +105,15 @@
 </template>
 
 <script setup lang="ts">
-import useItems from '@/composables/useItems'
-import { ALLOWED_ITEM_FILTERS, type ItemFilterKey } from '@/constants/items'
+import type { ItemFilterKey } from '@/constants/items'
 import type { ItemMaterialName, ItemSymbol, ItemTag } from '@/types/item'
-import { onMounted, reactive } from 'vue'
-import { defineAsyncComponent } from 'vue'
-import { computed, ref } from 'vue'
+
+import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import useItems from '@/composables/useItems'
+import { ALLOWED_ITEM_FILTERS } from '@/constants/items'
+
 const ItemTagComponent = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 const LChip = defineAsyncComponent(() => import('@/components/item/LChip.vue'))
 
@@ -119,7 +122,8 @@ const router = useRouter()
 const query = computed(() => router.currentRoute.value.query)
 const hasQuery = computed(() => {
   for (const key of ALLOWED_ITEM_FILTERS) {
-    if (query.value[key]) return true
+    if (query.value[key])
+      return true
   }
   return false
 })
@@ -133,20 +137,24 @@ const filter = reactive<Record<ItemFilterKey, Set<string>>>({
   symbols: new Set<ItemSymbol['name']>(),
 })
 onMounted(() => {
-  if (!hasQuery.value) return
+  if (!hasQuery.value)
+    return
   for (const key of ALLOWED_ITEM_FILTERS) {
-    if (!query.value[key]) continue
+    if (!query.value[key])
+      continue
     const queryItem = query.value[key]
     const queryValues = Array.isArray(queryItem) ? queryItem : [queryItem]
     for (const value of queryValues) {
-      if (!value) continue
+      if (!value)
+        continue
       filter[key].add(value)
     }
   }
 })
 const filtersCount = computed(() => Object.values(filter).reduce((acc, val) => acc + val.size, 0))
 const applyFiltersText = computed(() => {
-  if (!filtersCount.value) return t('common.apply')
+  if (!filtersCount.value)
+    return t('common.apply')
   return `${t('common.apply')} ${t('common.pluralization.filters', filtersCount.value)}`
 })
 
@@ -183,7 +191,8 @@ const filtering = computed(() => {
           allTagsInitialCounter[customTagGroup.value.group][tag] = 0
         }
         allTagsInitialCounter[customTagGroup.value.group][tag]++
-      } else {
+      }
+      else {
         const tagGroup = tagsRecord.value[tag].group
         allTagsInitialCounter[tagGroup][tag]++
       }
@@ -194,7 +203,8 @@ const filtering = computed(() => {
     }
     for (const symbol of item.symbols) {
       const symbolGroup = symbols.value[symbol].group
-      if (symbolGroup) allSymbolsInitialCounterMap.get(symbolGroup)![symbol]++
+      if (symbolGroup)
+        allSymbolsInitialCounterMap.get(symbolGroup)![symbol]++
       else allSymbolsInitialCounterMap.get(customTagGroup.value.group)![symbol]++
     }
   }
@@ -205,12 +215,14 @@ const filtering = computed(() => {
     const nonEmptyTags = Object.entries(allTagsInitialCounter[groupKey])
       .filter(([, count]) => count > 0)
       .map(([tag]) => tag)
-    if (nonEmptyTags.length) userTagsMap.set(groupKey, new Set(nonEmptyTags))
+    if (nonEmptyTags.length)
+      userTagsMap.set(groupKey, new Set(nonEmptyTags))
   }
 
   const userMaterialsFilterResult = new Set<ItemMaterialName>()
   for (const [materialName, count] of Object.entries(allMaterialsInitialCounter)) {
-    if (count !== 0) userMaterialsFilterResult.add(materialName)
+    if (count !== 0)
+      userMaterialsFilterResult.add(materialName)
   }
 
   const userSymbolsResultMap = new Map<ItemSymbol['group'], Set<ItemSymbol['name']>>()
@@ -218,7 +230,8 @@ const filtering = computed(() => {
     const nonEmptySymbols = Object.entries(groupSymbols)
       .filter(([, count]) => count > 0)
       .map(([symbol]) => symbol)
-    if (nonEmptySymbols.length) userSymbolsResultMap.set(groupKey, new Set(nonEmptySymbols))
+    if (nonEmptySymbols.length)
+      userSymbolsResultMap.set(groupKey, new Set(nonEmptySymbols))
   }
 
   return {
@@ -261,7 +274,8 @@ function addSearchFilter() {
 function applyFilter() {
   const searchQuery: Partial<Record<ItemFilterKey, Array<string>>> = {}
   for (const filterKey of ALLOWED_ITEM_FILTERS) {
-    if (filter[filterKey].size) searchQuery[filterKey] = [...filter[filterKey]]
+    if (filter[filterKey].size)
+      searchQuery[filterKey] = [...filter[filterKey]]
   }
   router.push({ name: 'Items', query: searchQuery })
 }

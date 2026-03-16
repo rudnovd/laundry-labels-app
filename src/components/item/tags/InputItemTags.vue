@@ -18,13 +18,13 @@
         <span>{{ group }}</span>
         <ul>
           <li v-for="tag in items" :key="tag" :data-tag="tag">
-            <item-tag-component
+            <ItemTagComponent
               :disabled="modelValue.size >= MAX_TAGS_COUNT && !modelValue.has(tag)"
               :selected="modelValue.has(tag)"
               @click="onClickTag(tag)"
             >
               {{ tag }}
-            </item-tag-component>
+            </ItemTagComponent>
           </li>
         </ul>
       </li>
@@ -33,13 +33,13 @@
 </template>
 
 <script setup lang="ts">
+import type { ItemTag } from '@/types/item'
+import { useWindowSize } from '@vueuse/core'
+import { useQuasar } from 'quasar'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import useItems from '@/composables/useItems'
 import ItemTagComponent from '@/components/item/tags/ItemTag.vue'
-import { useQuasar } from 'quasar'
-import { useWindowSize } from '@vueuse/core'
-import type { ItemTag } from '@/types/item'
+import useItems from '@/composables/useItems'
 
 const modelValue = defineModel<Set<ItemTag['name']>>({ default: new Set<ItemTag['name']>() })
 const { notify } = useQuasar()
@@ -56,12 +56,15 @@ function onAddTag(tag: string) {
   tag = tag.toLowerCase()
   const group = tagsRecord.value[tag]?.group ?? customTagGroup.value
   const isNewCustomTag = !tagsRecord.value[tag]?.group
-  if (isNewCustomTag) customTagGroup.value.items.add(tag)
-  if (isScrollable.value) scrollToGroup(group)
+  if (isNewCustomTag)
+    customTagGroup.value.items.add(tag)
+  if (isScrollable.value)
+    scrollToGroup(group)
   if (modelValue.value.has(tag)) {
     shakeTagElement(tag)
     notify({ type: 'negative', message: t('components.item.inputItemTags.tagAlreadyAdded') })
-  } else {
+  }
+  else {
     onClickTag(tag)
   }
   newTag.value = ''
@@ -71,7 +74,8 @@ const MAX_TAGS_COUNT = 30
 function onClickTag(tag: string) {
   if (modelValue.value.has(tag)) {
     modelValue.value.delete(tag)
-  } else if (modelValue.value.size < MAX_TAGS_COUNT) {
+  }
+  else if (modelValue.value.size < MAX_TAGS_COUNT) {
     modelValue.value.add(tag)
   }
 }
@@ -83,14 +87,15 @@ function scrollToGroup(group: string) {
     }
   }
 }
-const shakeAnimation = [0, 10, 0, -10, 0].map((deg) => ({ transform: `rotate(${deg}deg)` }))
+const shakeAnimation = [0, 10, 0, -10, 0].map(deg => ({ transform: `rotate(${deg}deg)` }))
 const shakeAnimationOptions = computed<Parameters<HTMLElement['animate']>[1]>(() => {
   return { duration: 300, delay: isScrollable.value ? 500 : 0 }
 })
 function shakeTagElement(tag: string) {
   for (const groupLiNode of tagsRef.value!.children) {
     const group = tagsRecord.value[tag]?.group ?? customTagGroup.value
-    if (groupLiNode instanceof HTMLElement && groupLiNode.dataset.id !== group) continue
+    if (groupLiNode instanceof HTMLElement && groupLiNode.dataset.id !== group)
+      continue
     const tagsUlNode = groupLiNode.children[1]
     for (const tagLiNode of tagsUlNode.children) {
       if (tagLiNode instanceof HTMLElement && tagLiNode.dataset.tag === tag) {

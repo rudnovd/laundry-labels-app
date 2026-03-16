@@ -3,12 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, watch } from 'vue'
-import { type RouteRecordName, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import type { RouteRecordName } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { useUserStore } from '@/store/user'
+import { computed, onBeforeMount, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import usePwa from '@/composables/usePwa'
+import { useUserStore } from '@/store/user'
 import { setLocale } from '@/utils/locale'
 import { userSettingsStorage } from '@/utils/localStorage'
 import { useLaundryDataStore } from './store/laundryData'
@@ -20,11 +21,13 @@ const router = useRouter()
 
 onBeforeMount(async () => {
   await setLocale(userSettingsStorage.value.locale)
-  if (userStore.isOfflineMode) return
+  if (userStore.isOfflineMode)
+    return
   loading.show({ message: t('common.authenticating'), delay: 2000 })
   try {
     await userStore.getSession()
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 })

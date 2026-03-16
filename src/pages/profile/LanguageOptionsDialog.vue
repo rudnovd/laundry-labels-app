@@ -2,7 +2,9 @@
   <q-dialog v-model="isActive" @hide="router.replace({ name: 'Profile' })">
     <q-card class="settings-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ t('pages.profile.languageSettings') }}</div>
+        <div class="text-h6">
+          {{ t('pages.profile.languageSettings') }}
+        </div>
         <q-space />
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>
@@ -36,17 +38,18 @@
 </template>
 
 <script setup lang="ts">
+import type { AvailableLocale } from '@/i18n'
+import { useQuasar } from 'quasar'
+import languages from 'quasar/lang/index.json'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import languages from 'quasar/lang/index.json'
-import { type AvailableLocale, availableLocales } from '@/i18n'
-import { userSettingsStorage } from '@/utils/localStorage'
+import { availableLocales } from '@/i18n'
 import { setLocale } from '@/utils/locale'
+import { userSettingsStorage } from '@/utils/localStorage'
 
-const appLanguages = languages.filter((lang) => availableLocales.includes(lang.isoName as AvailableLocale))
-const langOptions = appLanguages.map((lang) => ({
+const appLanguages = languages.filter(lang => availableLocales.includes(lang.isoName as AvailableLocale))
+const langOptions = appLanguages.map(lang => ({
   label: lang.nativeName,
   value: lang.isoName,
 }))

@@ -2,7 +2,9 @@
   <q-dialog v-model="isActive" class="import-items-dialog" persistent>
     <q-card class="dialog-card">
       <q-card-section class="header">
-        <div class="text-h6">{{ t('pages.profile.importItems') }}</div>
+        <div class="text-h6">
+          {{ t('pages.profile.importItems') }}
+        </div>
         <q-space />
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>
@@ -10,7 +12,7 @@
       <q-card-section class="content">
         <ul>
           <li v-for="item in items" :key="item.id" :class="{ disabled: savedItemsIds.includes(item.id) }">
-            <laundry-card :item="item" @click.stop.capture />
+            <LaundryCard :item="item" @click.stop.capture />
             <div class="items-actions">
               <q-btn
                 size="sm"
@@ -40,12 +42,12 @@
 
 <script setup lang="ts">
 import type { Item, ItemBlank } from '@/types/item'
+import { useQuasar } from 'quasar'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LaundryCard from '@/components/item/cards/LaundryCard.vue'
-import { ref } from 'vue'
 import { useItemsStore } from '@/store/items'
 import { useOfflineItemsStore } from '@/store/offlineItems'
-import { useQuasar } from 'quasar'
 
 defineProps<{
   items: Array<Item>
@@ -67,7 +69,8 @@ async function saveItem(item: Item, isOffline: boolean) {
     isOffline ? await offlineItemsStore.createItem(itemBlank) : await itemsStore.createItem(itemBlank)
     savedItemsIds.value.push(id)
     notify({ type: 'positive', message: t('notifications.itemSaved') })
-  } finally {
+  }
+  finally {
     savingIds.value.splice(savingIds.value.indexOf(item.id), 1)
   }
 }

@@ -1,11 +1,12 @@
+import type { Table } from 'dexie'
 import type { DatabaseItem } from '@/types/item'
-import Dexie, { type Table } from 'dexie'
+import Dexie from 'dexie'
 
 const DATABASE_VERSION = 1
 
 export class Database extends Dexie {
   offlineItems!: Table<Omit<DatabaseItem, 'owner'>>
-  upload!: Table<{ id: string; file: File | Blob }>
+  upload!: Table<{ id: string, file: File | Blob }>
 
   constructor() {
     super('laundrylabelsapp')

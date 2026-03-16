@@ -1,7 +1,9 @@
 <template>
   <q-page class="reset-password-page">
     <section v-if="!isRequestSended" class="reset-form">
-      <h1 class="text-h3 q-mt-none">{{ t('common.resetPassword') }}</h1>
+      <h1 class="text-h3 q-mt-none">
+        {{ t('common.resetPassword') }}
+      </h1>
 
       <q-form
         class="q-mb-md"
@@ -25,7 +27,7 @@
             (v) => validation.isEmail(v) || t('pages.signIn.validation.emailPattern'),
           ]"
         />
-        <l-captcha v-if="!IS_LOCAL_SUPABASE" class="q-mb-md full-width" @verify="credentials.captchaToken = $event" />
+        <LCaptcha v-if="!IS_LOCAL_SUPABASE" class="q-mb-md full-width" @verify="credentials.captchaToken = $event" />
         <q-btn
           class="full-width"
           :label="t('common.resetPassword')"
@@ -43,19 +45,22 @@
     </section>
     <section v-else class="request-sended">
       <span class="text-body1">{{ t('pages.resetPassword.requestSended') }}</span>
-      <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signUp.backToHomePage') }}</router-link>
+      <router-link :to="{ name: 'Home' }" class="link-light">
+        {{ t('pages.signUp.backToHomePage') }}
+      </router-link>
     </section>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/store/user'
-import { throttle, useQuasar } from 'quasar'
-import { useI18n } from 'vue-i18n'
 import type { UserResetPasswordCredentials } from '@/types/user'
+import { throttle, useQuasar } from 'quasar'
 import { computed, defineAsyncComponent, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { IS_LOCAL_SUPABASE, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
+import { useUserStore } from '@/store/user'
 import { validation } from '@/utils/validation'
+
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
 const { notify, loading } = useQuasar()
@@ -74,7 +79,8 @@ const resetPassword = throttle(async () => {
     await userStore.resetPassword(credentials)
     notify({ type: 'positive', message: t('notifications.passwordResetRequestSended') })
     isRequestSended.value = true
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)

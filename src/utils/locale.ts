@@ -1,11 +1,13 @@
-import i18n, { type AvailableLocale, availableLocales } from '@/i18n'
+import type { AvailableLocale } from '@/i18n'
 import { Quasar } from 'quasar'
+import i18n, { availableLocales } from '@/i18n'
 import { userSettingsStorage } from '@/utils/localStorage'
 
 export function getBrowserLocale(): AvailableLocale {
   const userLanguage = navigator.language
+  // eslint-disable-next-line e18e/prefer-static-regex
   const languageCode = userLanguage.trim().split(/-|_/)[0]
-  const supportedLocale = availableLocales.find((language) => userLanguage === language || languageCode === language)
+  const supportedLocale = availableLocales.find(language => userLanguage === language || languageCode === language)
   return supportedLocale ?? 'en-US'
 }
 

@@ -1,12 +1,12 @@
-import { computed } from 'vue'
-import Compressor from 'compressorjs'
-import { useItemsStore } from '@/store/items'
-import { useOfflineItemsStore } from '@/store/offlineItems'
 import type { Item, ItemTag } from '@/types/item'
-import { useLaundryDataStore } from '@/store/laundryData'
+import Compressor from 'compressorjs'
 import { storeToRefs } from 'pinia'
-import { collectItemCustomTags, sortItemsByCreatedDate } from '@/utils/items'
+import { computed } from 'vue'
+import { useItemsStore } from '@/store/items'
+import { useLaundryDataStore } from '@/store/laundryData'
+import { useOfflineItemsStore } from '@/store/offlineItems'
 import { useUserStore } from '@/store/user'
+import { collectItemCustomTags, sortItemsByCreatedDate } from '@/utils/items'
 
 export default function useItems() {
   const userStore = useUserStore()
@@ -30,6 +30,7 @@ export default function useItems() {
 
   function compressPhoto(file: File | Blob) {
     return new Promise<File | Blob>((resolve, reject) => {
+      // eslint-disable-next-line no-new
       new Compressor(file, {
         quality: 0.3,
         maxWidth: 1200,
@@ -43,7 +44,8 @@ export default function useItems() {
 
   function isCustomTag(tag: ItemTag['name']) {
     for (const { items } of tags.value) {
-      if (items.has(tag)) return false
+      if (items.has(tag))
+        return false
     }
     return true
   }
@@ -54,13 +56,14 @@ export default function useItems() {
 
   async function getItems() {
     const requests = [offlineItemsStore.getItems()]
-    if (!isOfflineMode.value) requests.push(itemsStore.getItems())
+    if (!isOfflineMode.value)
+      requests.push(itemsStore.getItems())
     const items = await Promise.all(requests)
     const isSortRequired = !!items.at(0)?.length && !!items.at(1)?.length
     const flattenItems = items.flat()
     for (const item of flattenItems) {
       const customTags = collectItemCustomTags(item, laundryDataStore.tagsRecord)
-      customTags.forEach((tag) => laundryDataStore.customTagGroup.items.add(tag))
+      customTags.forEach(tag => laundryDataStore.customTagGroup.items.add(tag))
     }
     return isSortRequired ? sortItemsByCreatedDate(flattenItems) : flattenItems
   }
@@ -68,7 +71,7 @@ export default function useItems() {
   async function getItemById(id: Parameters<typeof itemsStore.getItemById>[0]) {
     const item = isOfflineItem(id) ? await offlineItemsStore.getItemById(id) : await itemsStore.getItemById(id)
     const customTags = collectItemCustomTags(item, laundryDataStore.tagsRecord)
-    customTags.forEach((tag) => laundryDataStore.customTagGroup.items.add(tag))
+    customTags.forEach(tag => laundryDataStore.customTagGroup.items.add(tag))
     return item
   }
 

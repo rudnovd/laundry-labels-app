@@ -45,10 +45,10 @@
 
     .title {
       overflow: hidden;
+      text-overflow: ellipsis;
       font-size: 1.25rem;
       font-weight: 500;
       line-height: 2rem;
-      text-overflow: ellipsis;
       letter-spacing: 0.0125em;
       white-space: nowrap;
     }

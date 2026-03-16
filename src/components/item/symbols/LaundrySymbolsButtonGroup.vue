@@ -6,7 +6,7 @@
     </div>
     <ul class="group-symbols-grid">
       <li v-for="symbol in symbolsByGroups.get(group)" :key="symbol.name">
-        <laundry-symbol-button
+        <LaundrySymbolButton
           :symbol="symbol"
           :styles="{
             selected: selectedSymbol === symbol.name,
@@ -20,12 +20,12 @@
 </template>
 
 <script setup lang="ts">
+import type { ItemSymbol } from '@/types/item'
+import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import useItems from '@/composables/useItems'
-import type { ItemSymbol } from '@/types/item'
 import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
-import { useQuasar } from 'quasar'
+import useItems from '@/composables/useItems'
 
 const { group } = defineProps<{ group: string }>()
 const modelValue = defineModel<Set<string>>({ required: true })
@@ -36,7 +36,8 @@ const selectedSymbol = ref<ItemSymbol['name'] | null>(getSelectedTag())
 
 function getSelectedTag(): ItemSymbol['name'] | null {
   for (const symbol of modelValue.value) {
-    if (symbols.value[symbol]?.group === group) return symbol
+    if (symbols.value[symbol]?.group === group)
+      return symbol
   }
   return null
 }
@@ -45,7 +46,8 @@ function onClickSymbol(symbol: string) {
   if (modelValue.value.has(symbol)) {
     modelValue.value.delete(symbol)
     selectedSymbol.value = null
-  } else {
+  }
+  else {
     if (selectedSymbol.value) {
       modelValue.value.delete(selectedSymbol.value)
     }
@@ -58,7 +60,7 @@ function showHint(group: string) {
   const messages: Array<string> = tm(`hints.${group}`)
   dialog({
     title: t(`symbolsGroup.${group}`),
-    message: messages.map((message) => `${rt(message)}.`).join('\n\n'),
+    message: messages.map(message => `${rt(message)}.`).join('\n\n'),
     ok: false,
     style: {
       whiteSpace: 'pre-line',

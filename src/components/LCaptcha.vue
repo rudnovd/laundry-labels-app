@@ -1,5 +1,5 @@
 <template>
-  <vue-hcaptcha
+  <VueHcaptcha
     ref="captchaForm"
     :sitekey="sitekey"
     @verify="verifyCaptcha"

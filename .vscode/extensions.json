@@ -3,7 +3,6 @@
     "vue.volar",
     "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
     "stylelint.vscode-stylelint",
     "syler.sass-indented"
   ]

@@ -3,15 +3,15 @@
     <span v-if="hasError"> Item not found </span>
     <template v-else-if="!loading.isActive">
       <div class="item-data-container">
-        <upload-item-photo v-model="modifiedItem.photos" />
+        <UploadItemPhoto v-model="modifiedItem.photos" />
         <q-input v-model.trim="modifiedItem.name" :debounce="300" outlined :label="t('common.name')" />
-        <input-item-tags v-model="modifiedItem.tags" />
-        <select-item-materials v-model="modifiedItem.materials" />
+        <InputItemTags v-model="modifiedItem.tags" />
+        <SelectItemMaterials v-model="modifiedItem.materials" />
       </div>
 
       <ul v-if="symbolsByGroups.size" ref="laundrySymbolsContainer" class="item-symbols-container">
         <li v-for="[group] in symbolsByGroups" :key="group">
-          <laundry-symbols-button-group v-model="modifiedItem.symbols" :group="group" />
+          <LaundrySymbolsButtonGroup v-model="modifiedItem.symbols" :group="group" />
         </li>
       </ul>
 
@@ -36,21 +36,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue'
-import { useEventListener } from '@vueuse/core'
-import { useI18n } from 'vue-i18n'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import useItems from '@/composables/useItems'
 import type { ItemBlank } from '@/types/item'
+import { useEventListener } from '@vueuse/core'
 import cloneDeep from 'lodash-es/cloneDeep'
 import isEqual from 'lodash-es/isEqual'
+import { useQuasar } from 'quasar'
+import { computed, onBeforeMount, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import SelectItemMaterials from '@/components/item/materials/SelectItemMaterials.vue'
 import LaundrySymbolsButtonGroup from '@/components/item/symbols/LaundrySymbolsButtonGroup.vue'
 import InputItemTags from '@/components/item/tags/InputItemTags.vue'
 import UploadItemPhoto from '@/components/item/UploadItemPhoto.vue'
-import SelectItemMaterials from '@/components/item/materials/SelectItemMaterials.vue'
-import { isEqualSets } from '@/utils/set'
+import useItems from '@/composables/useItems'
 import { useUserStore } from '@/store/user'
+import { isEqualSets } from '@/utils/set'
 
 const route = useRoute()
 const router = useRouter()
@@ -79,23 +79,27 @@ const hasChanges = computed(() => {
 })
 
 onBeforeMount(async () => {
-  if (!route.params.id) return
+  if (!route.params.id)
+    return
 
   const currentItem = items.value.find(({ id }) => id === route.params.id)
   if (currentItem) {
     modifiedItem.value = cloneDeep(currentItem)
     initialItem.value = cloneDeep(currentItem)
-  } else {
+  }
+  else {
     loading.show({ message: t('loading.fetchingItem') })
     try {
       const item = await getItemById(route.params.id.toString())
       if (item) {
         modifiedItem.value = cloneDeep(item)
         initialItem.value = cloneDeep(item)
-      } else {
+      }
+      else {
         hasError.value = true
       }
-    } finally {
+    }
+    finally {
       loading.hide()
     }
   }
@@ -111,26 +115,30 @@ function isSymbolsSelected(symbols: Set<string>) {
 }
 
 async function create() {
-  if (!isSymbolsSelected(modifiedItem.value.symbols)) return
+  if (!isSymbolsSelected(modifiedItem.value.symbols))
+    return
   loading.show({ message: t('loading.creatingItem') })
   try {
     await createItem(modifiedItem.value)
     notify({ type: 'positive', message: t('pages.modifyItem.itemAdded') })
     initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }
 async function edit() {
-  if (!isSymbolsSelected(modifiedItem.value.symbols)) return
+  if (!isSymbolsSelected(modifiedItem.value.symbols))
+    return
   loading.show({ message: t('loading.updatingItem') })
   try {
     await editItem({ ...modifiedItem.value, id: route.params.id.toString() })
     notify({ type: 'positive', message: t('pages.modifyItem.itemUpdated') })
     initialItem.value = cloneDeep(modifiedItem.value)
     router.push({ name: 'Items' })
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }
@@ -142,7 +150,9 @@ useEventListener(window, 'beforeunload', (event) => {
   }
 })
 onBeforeRouteLeave(() => {
-  if (hasChanges.value) return window.confirm(t('alerts.unsavedChanges'))
+  if (hasChanges.value)
+    // eslint-disable-next-line no-alert
+    return window.confirm(t('alerts.unsavedChanges'))
 })
 </script>
 

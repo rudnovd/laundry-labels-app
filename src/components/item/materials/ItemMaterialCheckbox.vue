@@ -26,7 +26,7 @@
           type="number"
           @input="onInputPercent"
           @keyup.enter="isEditing = false"
-        />
+        >
         <q-btn
           size="sm"
           padding="0"
@@ -53,11 +53,14 @@ const inputRef = ref<HTMLInputElement | null>(null)
 const isEditing = ref(false)
 whenever(isEditing, () => nextTick(() => inputRef.value?.focus()))
 function onInputPercent(event: Event) {
-  if (!event.target) return
+  if (!event.target)
+    return
   const input = event.target as HTMLInputElement
   let number = Number(input.value)
-  if (number < 1) number = 0
-  else if (number > 100) number = 100
+  if (number < 1)
+    number = 0
+  else if (number > 100)
+    number = 100
   modelValue.value = number
   input.value = number ? number.toString() : ''
 }

@@ -2,7 +2,9 @@
   <q-dialog ref="dialogRef" v-model="isActive" persistent>
     <q-card class="update-password-dialog-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ t('pages.profile.dialogs.updatePassword.updatePassword') }}</div>
+        <div class="text-h6">
+          {{ t('pages.profile.dialogs.updatePassword.updatePassword') }}
+        </div>
         <q-space />
         <q-btn icon="close" flat round dense @click="backToProfile" />
       </q-card-section>
@@ -16,7 +18,7 @@
           spellcheck="false"
           @submit="updatePassword"
         >
-          <q-input
+          <QInput
             ref="newPasswordRef"
             v-model="passwords.new"
             outlined
@@ -29,7 +31,7 @@
             lazy-rules
             :rules="[validationRules.notEmpty, validationRules.minLength]"
           />
-          <q-input
+          <QInput
             ref="confirmedPasswordRef"
             v-model="passwords.confirmed"
             outlined
@@ -56,13 +58,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import type { QDialog, ValidationRule } from 'quasar'
+import { QInput, throttle, useQuasar } from 'quasar'
+import { computed, reactive, ref } from 'vue'
+
 import { useI18n } from 'vue-i18n'
-import { type QDialog, QInput, type ValidationRule, throttle, useQuasar } from 'quasar'
-import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { REQUEST_THROTTLE_TIMEOUT } from '@/constants'
-import { computed } from 'vue'
+import { useUserStore } from '@/store/user'
 import { validation } from '@/utils/validation'
 
 const { notify, loading } = useQuasar()
@@ -82,13 +85,14 @@ const validationRules = computed<Record<string, ValidationRule<string>>>(() => {
   const minLengthMessage = t('pages.profile.dialogs.updatePassword.validation.minLength')
   const isEqualMessage = t('pages.profile.dialogs.updatePassword.validation.passwordsNotMatch')
   return {
-    notEmpty: (value) => validation.notEmpty(value) || notEmptyMessage,
-    minLength: (value) => validation.minLength(value, 6) || minLengthMessage,
+    notEmpty: value => validation.notEmpty(value) || notEmptyMessage,
+    minLength: value => validation.minLength(value, 6) || minLengthMessage,
     equalPassword: () => validation.isEqual(passwords.new, passwords.confirmed) || isEqualMessage,
   }
 })
 const hasValidationErrors = computed(() => {
-  if (!newPasswordRef.value || !confirmedPasswordRef.value) return true
+  if (!newPasswordRef.value || !confirmedPasswordRef.value)
+    return true
   const hasNewPasswordError = !newPasswordRef.value.modelValue || newPasswordRef.value.hasError
   const hasConfirmedPasswordError = !confirmedPasswordRef.value.modelValue || confirmedPasswordRef.value.hasError
   return hasNewPasswordError || hasConfirmedPasswordError
@@ -100,7 +104,8 @@ const updatePassword = throttle(async () => {
     await userStore.update({ password: passwords.new })
     notify({ type: 'positive', message: t('pages.profile.notifications.passwordUpdated') })
     router.replace({ name: 'Profile' })
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)

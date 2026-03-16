@@ -1,7 +1,9 @@
 <template>
   <q-page class="sign-in-page">
     <section>
-      <h1 class="text-h3 q-mt-none">{{ t('common.signIn') }}</h1>
+      <h1 class="text-h3 q-mt-none">
+        {{ t('common.signIn') }}
+      </h1>
 
       <q-form
         class="q-mb-md"
@@ -19,7 +21,7 @@
           text-color="black"
           @click="signInWithGoogle"
         >
-          <l-icon class="q-mr-sm" icon="google-logo" />
+          <LIcon class="q-mr-sm" icon="google-logo" />
           {{ t('pages.signIn.signInWithGoogle') }}
         </q-btn>
         <span class="q-mb-sm inline-block">{{ t('common.or').toLocaleLowerCase() }}</span>
@@ -50,7 +52,7 @@
           lazy-rules
           :rules="[(v) => validation.notEmpty(v) || t('pages.signIn.validation.password')]"
         />
-        <l-captcha
+        <LCaptcha
           v-if="!IS_LOCAL_SUPABASE"
           ref="captchaRef"
           class="q-mb-md full-width"
@@ -68,26 +70,31 @@
       <section class="links">
         <div>
           {{ t('pages.signIn.noAccount') }}
-          <router-link class="link-light" :to="{ name: 'Sign up' }">{{ t('common.signUp') }}</router-link>
+          <router-link class="link-light" :to="{ name: 'Sign up' }">
+            {{ t('common.signUp') }}
+          </router-link>
         </div>
         <router-link :to="{ name: 'Reset password' }" class="link-light">
           {{ t('pages.signIn.resetPassword') }}
         </router-link>
-        <router-link :to="{ name: 'Home' }" class="link-light">{{ t('pages.signIn.backToHomePage') }}</router-link>
+        <router-link :to="{ name: 'Home' }" class="link-light">
+          {{ t('pages.signIn.backToHomePage') }}
+        </router-link>
       </section>
     </section>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/store/user'
+import type { UserSignInCredentials } from '@/types/user'
 import { throttle, useQuasar } from 'quasar'
 import { computed, defineAsyncComponent, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import type { UserSignInCredentials } from '@/types/user'
 import { IS_LOCAL_SUPABASE, REQUEST_THROTTLE_TIMEOUT } from '@/constants'
+import { useUserStore } from '@/store/user'
 import { validation } from '@/utils/validation'
+
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
 const LCaptcha = defineAsyncComponent(() => import('@/components/LCaptcha.vue'))
 
@@ -111,9 +118,11 @@ const signIn = throttle(async () => {
     await userStore.signIn(credentials)
     notify({ type: 'positive', message: t('notifications.signInSuccess') })
     router.push({ name: 'Items' })
-  } catch {
+  }
+  catch {
     captchaRef.value?.resetCaptcha()
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)
@@ -121,9 +130,11 @@ const signInWithGoogle = throttle(async () => {
   loading.show({ message: t('pages.signIn.signingIn') })
   try {
     await userStore.signInWithOAuth({ provider: 'google' })
-  } catch {
+  }
+  catch {
     captchaRef.value?.resetCaptcha()
-  } finally {
+  }
+  finally {
     loading.hide()
   }
 }, REQUEST_THROTTLE_TIMEOUT)

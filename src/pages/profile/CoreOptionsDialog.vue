@@ -2,7 +2,9 @@
   <q-dialog v-model="isActive" @hide="router.replace({ name: 'Profile' })">
     <q-card class="settings-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ t('pages.profile.coreSettings') }}</div>
+        <div class="text-h6">
+          {{ t('pages.profile.coreSettings') }}
+        </div>
         <q-space />
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>
@@ -35,11 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { userSettingsStorage } from '@/utils/localStorage'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { IS_OFFLINE_APP } from '@/constants'
+import { userSettingsStorage } from '@/utils/localStorage'
+
 const { t } = useI18n()
 const router = useRouter()
 const isActive = ref(true)

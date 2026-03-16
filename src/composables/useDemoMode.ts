@@ -1,9 +1,11 @@
-import { type WatchStopHandle, computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import type { StepOptions, StepOptionsButton } from 'shepherd.js'
+import type { WatchStopHandle } from 'vue'
+import { offset } from '@floating-ui/vue'
 import { Notify, useQuasar } from 'quasar'
 import Shepherd from 'shepherd.js'
-import { offset } from '@floating-ui/vue'
+import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { demoStorage } from '@/utils/localStorage'
 import 'shepherd.js/dist/css/shepherd.css'
 import '@/styles/demo.css'
@@ -46,7 +48,7 @@ export default function useDemoMode() {
   const { notify } = useQuasar()
   const previousPage = ref()
 
-  const buttons = computed<Record<TourButtonAction, Shepherd.Step.StepOptionsButton>>(() => {
+  const buttons = computed<Record<TourButtonAction, StepOptionsButton>>(() => {
     return {
       next: {
         text: t('demo.buttons.next'),
@@ -60,7 +62,7 @@ export default function useDemoMode() {
     }
   })
 
-  const steps = computed<Array<Shepherd.Step.StepOptions>>(() => {
+  const steps = computed<Array<StepOptions>>(() => {
     return [
       {
         id: 'Add first item',
@@ -154,7 +156,8 @@ export default function useDemoMode() {
   function changeStep(direction: 'next' | 'back') {
     if (direction === 'next') {
       tour.next()
-    } else {
+    }
+    else {
       tour.back()
     }
 

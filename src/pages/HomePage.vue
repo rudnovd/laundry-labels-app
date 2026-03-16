@@ -1,7 +1,7 @@
 <template>
   <q-page class="home-page">
     <header>
-      <l-icon icon="logo" width="clamp(50px, 3vw, 80px)" height="clamp(50px, 3vw, 80px)" />
+      <LIcon icon="logo" width="clamp(50px, 3vw, 80px)" height="clamp(50px, 3vw, 80px)" />
       <nav v-if="!IS_OFFLINE_APP">
         <q-btn :to="{ name: 'Sign in' }" :label="t('common.signIn')" flat />
         <q-btn :to="{ name: 'Sign up' }" :label="t('common.signUp')" flat />
@@ -23,23 +23,24 @@
           </li>
           <li>
             <a disabled>
-              <l-icon icon="get-on-google-play" width="100%" height="100%" />
+              <LIcon icon="get-on-google-play" width="100%" height="100%" />
             </a>
           </li>
         </ul>
       </article>
 
       <div class="demo-image">
-        <img src="pages/home/landing-phone.webp" alt="App" />
+        <img src="pages/home/landing-phone.webp" alt="App">
       </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { IS_OFFLINE_APP } from '@/constants'
 import { defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { IS_OFFLINE_APP } from '@/constants'
+
 const LIcon = defineAsyncComponent(() => import('@/components/LIcon.vue'))
 
 const { t } = useI18n()

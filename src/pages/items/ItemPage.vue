@@ -1,28 +1,30 @@
 <template>
-  <q-page :class="['item-page', { 'centered-container': isLoading || !currentItem }]">
+  <q-page class="item-page" :class="[{ 'centered-container': isLoading || !currentItem }]">
     <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
     <template v-else-if="!isLoading && currentItem">
       <div v-if="currentItem.photos.length" class="item-photo-container">
-        <item-photo v-for="photo of currentItem.photos" :key="photo" :path="photo" height="100%" />
+        <ItemPhoto v-for="photo of currentItem.photos" :key="photo" :path="photo" height="100%" />
       </div>
 
-      <section :class="['item-data', 'q-px-sm', { 'q-pt-sm': !currentItem.photos.length }]">
-        <h1 v-if="currentItem.name" class="text-h5 q-my-none">{{ currentItem.name }}</h1>
+      <section class="item-data q-px-sm" :class="[{ 'q-pt-sm': !currentItem.photos.length }]">
+        <h1 v-if="currentItem.name" class="text-h5 q-my-none">
+          {{ currentItem.name }}
+        </h1>
         <ul class="item-symbols">
           <li v-for="symbol in currentItem.symbols" :key="symbol">
-            <laundry-symbol-button :symbol="{ ...symbols[symbol], name: symbol }" />
+            <LaundrySymbolButton :symbol="{ ...symbols[symbol], name: symbol }" />
           </li>
         </ul>
 
         <ul class="item-materials">
           <li v-for="material of currentItem.materials" :key="material">
-            <item-material :material />
+            <ItemMaterial :material />
           </li>
         </ul>
 
         <ul v-if="currentItem.tags.size" class="item-tags">
           <li v-for="tag in currentItem.tags" :key="tag">
-            <item-tag>{{ tag }}</item-tag>
+            <ItemTag>{{ tag }}</ItemTag>
           </li>
         </ul>
 
@@ -71,22 +73,25 @@
     </template>
     <div v-else class="item-not-found-container">
       <div>{{ t('pages.item.itemNotFound') }}</div>
-      <q-btn :to="{ name: 'Items' }" color="primary" outline>{{ t('pages.item.backToItems') }}</q-btn>
+      <q-btn :to="{ name: 'Items' }" color="primary" outline>
+        {{ t('pages.item.backToItems') }}
+      </q-btn>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
+import type { Item, ItemBlank } from '@/types/item'
 import { useQuasar } from 'quasar'
 import { computed, defineAsyncComponent, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
 import useItems from '@/composables/useItems'
 import { db } from '@/db'
 import { useUserStore } from '@/store/user'
-import type { Item, ItemBlank } from '@/types/item'
 import { userSettingsStorage } from '@/utils/localStorage'
-import LaundrySymbolButton from '@/components/item/symbols/LaundrySymbolButton.vue'
+
 const ItemPhoto = defineAsyncComponent(() => import('@/components/item/ItemPhoto.vue'))
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 const ItemMaterial = defineAsyncComponent(() => import('@/components/item/materials/ItemMaterial.vue'))
@@ -113,7 +118,8 @@ onBeforeMount(async () => {
   isLoading.value = true
   try {
     currentItem.value = await getItemById(route.params.id.toString())
-  } finally {
+  }
+  finally {
     isLoading.value = false
   }
 })
@@ -132,9 +138,11 @@ async function showDeleteDialog(item: Item) {
       item.photos.forEach(deletePhoto)
       notify({ type: 'positive', message: t('notifications.itemDeleted') })
       router.replace({ name: 'Items' })
-    } catch {
+    }
+    catch {
       notify({ type: 'negative', message: t('notifications.itemDeleteFailed') })
-    } finally {
+    }
+    finally {
       loading.hide()
     }
   })
@@ -174,9 +182,11 @@ function showSaveInCloudDialog(item: Item) {
       userSettingsStorage.value.offlineMode = isOfflineModeEnabled
       notify({ type: 'positive', message: t('notifications.itemSaved') })
       router.replace({ name: 'Items' })
-    } catch {
+    }
+    catch {
       notify({ color: 'negative', message: t('notifications.itemCreateFailed') })
-    } finally {
+    }
+    finally {
       loading.hide()
     }
   })

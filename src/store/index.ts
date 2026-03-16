@@ -1,7 +1,7 @@
-import { IS_OFFLINE_APP } from '@/constants'
-import { supabase } from '@/supabase'
 import { createPinia } from 'pinia'
 import { Notify } from 'quasar'
+import { IS_OFFLINE_APP } from '@/constants'
+import { supabase } from '@/supabase'
 
 interface ErrorResponse {
   name: string
@@ -22,7 +22,8 @@ pinia.use(({ store }) => {
       if (import.meta.env.DEV) {
         console.warn(`Failed action "${name}" in store "${store.$id}" with args "${JSON.stringify(args)}".`)
       }
-      if (!error.name || !error.message) throw error
+      if (!error.name || !error.message)
+        throw error
 
       console.error(`${error.name}: ${error.message}`)
       Notify.create({ type: 'negative', message: error.message, timeout: 5000 })

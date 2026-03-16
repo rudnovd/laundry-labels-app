@@ -42,31 +42,31 @@
 
     <ul v-if="hasRouterQuery" class="search-tags">
       <li>
-        <item-tag class="text-white text-lowercase bg-negative" color="negative" @click="resetFilters">
+        <ItemTag class="text-white text-lowercase bg-negative" color="negative" @click="resetFilters">
           <q-icon name="delete" size="1em" />
           {{ t('common.clear') }}
-        </item-tag>
+        </ItemTag>
       </li>
       <ul v-for="(record, recordKey) in searchRecord" :key="recordKey">
         <li v-for="recordElement in record" :key="recordElement">
-          <item-tag>
+          <ItemTag>
             <q-icon name="close" size="1em" @click="deleteQuery(recordKey, recordElement)" />
             <span class="ellipsis">
               {{ searchElementTitle(recordKey) }}: {{ searchElementValue(recordKey, recordElement) }}
             </span>
-          </item-tag>
+          </ItemTag>
         </li>
       </ul>
     </ul>
 
     <ul v-if="isLoading" class="items-cards">
       <li v-for="skeleton in 4" :key="skeleton">
-        <laundry-card-skeleton />
+        <LaundryCardSkeleton />
       </li>
     </ul>
     <ul v-else-if="foundItems.length" class="items-cards">
       <li v-for="item in foundItems" :key="item.id">
-        <laundry-card :item="item" />
+        <LaundryCard :item="item" />
       </li>
     </ul>
     <div v-else-if="Object.keys(searchRecord).length" class="flex column items-center">
@@ -74,7 +74,9 @@
     </div>
     <div v-else class="flex column items-center">
       <span class="text-h6">{{ t('pages.items.noItemsAdded') }}</span>
-      <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">{{ t('pages.items.addFirstItem') }}</q-btn>
+      <q-btn class="q-mt-sm" color="primary" :to="{ name: 'Create item' }">
+        {{ t('pages.items.addFirstItem') }}
+      </q-btn>
     </div>
 
     <router-view v-slot="{ Component, route }">
@@ -84,19 +86,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
+import type { Item } from '@/types/item'
+import { computed, defineAsyncComponent, onBeforeMount, reactive, ref, watch } from 'vue'
+
 import { useI18n } from 'vue-i18n'
-import { useItemsStore } from '@/store/items'
+import { useRouter } from 'vue-router'
 import LaundryCard from '@/components/item/cards/LaundryCard.vue'
 import LaundryCardSkeleton from '@/components/item/cards/LaundryCardSkeleton.vue'
 import useDemoMode from '@/composables/useDemoMode'
 import useItems from '@/composables/useItems'
 import { ITEMS_LIMIT } from '@/constants'
-import { defineAsyncComponent } from 'vue'
-import type { Item } from '@/types/item'
-import { useRouter } from 'vue-router'
 import { ALLOWED_ITEM_FILTERS } from '@/constants/items'
+import { useItemsStore } from '@/store/items'
 import { useUserStore } from '@/store/user'
+
 const ItemTag = defineAsyncComponent(() => import('@/components/item/tags/ItemTag.vue'))
 
 const { t } = useI18n()
@@ -106,7 +109,8 @@ const router = useRouter()
 const query = computed(() => router.currentRoute.value.query)
 const hasRouterQuery = computed(() => {
   for (const key of ALLOWED_ITEM_FILTERS) {
-    if (query.value[key]) return true
+    if (query.value[key])
+      return true
   }
   return false
 })
@@ -115,6 +119,9 @@ const isLoading = ref(false)
 const isItemsLimitReached = computed(() => itemsStore.items.length >= ITEMS_LIMIT)
 
 const userStore = useUserStore()
+const search = ref('')
+const searchRecord = reactive<Record<string, Array<string>>>({})
+watch(searchRecord, newSearchRecord => router.replace({ query: newSearchRecord }))
 onBeforeMount(async () => {
   if (!userStore.isOfflineMode) {
     isLoading.value = true
@@ -122,82 +129,97 @@ onBeforeMount(async () => {
   const demo = useDemoMode()
   try {
     const items = await getItems()
-    if (!items.length && localStorage.getItem('demo')) demo.showTourNotification()
+    if (!items.length && localStorage.getItem('demo')) {
+      demo.showTourNotification()
+    }
     else if (items.length && router.currentRoute.value.query.demo) {
       router.replace({
         name: 'Items',
         query: { ...router.currentRoute.value.query, demo: undefined },
       })
     }
-  } finally {
+  }
+  finally {
     isLoading.value = false
   }
 
   if (hasRouterQuery.value) {
     for (const key of ALLOWED_ITEM_FILTERS) {
-      if (!query.value[key]) continue
+      if (!query.value[key])
+        continue
       const queryItem = query.value[key]
       const queryValues = Array.isArray(queryItem) ? queryItem : [queryItem]
       for (const value of queryValues) {
-        if (!value) continue
-        if (!searchRecord[key]) searchRecord[key] = []
+        if (!value)
+          continue
+        if (!searchRecord[key])
+          searchRecord[key] = []
         searchRecord[key].push(value)
       }
     }
   }
 })
 
-const search = ref('')
-const searchRecord = reactive<Record<string, Array<string>>>({})
-watch(searchRecord, (newSearchRecord) => router.replace({ query: newSearchRecord }))
 watch(router.currentRoute, ({ query }, { name: previousPage }) => {
-  if (previousPage !== 'Filter items') return
+  if (previousPage !== 'Filter items')
+    return
   for (const key of ALLOWED_ITEM_FILTERS) {
-    if (searchRecord[key]) delete searchRecord[key]
+    if (searchRecord[key])
+      delete searchRecord[key]
     const value = query[key]
     const queryArray = Array.isArray(value) ? value : [value]
     for (const queryItem of queryArray) {
-      if (!queryItem) continue
-      if (!searchRecord[key]) searchRecord[key] = []
+      if (!queryItem)
+        continue
+      if (!searchRecord[key])
+        searchRecord[key] = []
       searchRecord[key].push(queryItem)
     }
   }
 })
 
 const foundItems = computed<Item[]>(() => {
-  if (!hasRouterQuery.value) return items.value
+  if (!hasRouterQuery.value)
+    return items.value
   const filteredIds = items.value.reduce<Set<Item['id']>>((ids, item) => {
     if (query.value.search) {
       const querySearch = Array.isArray(query.value.search) ? query.value.search : [query.value.search]
       for (const queryItem of querySearch) {
-        if (!queryItem) continue
-        if (filterByAny(item, queryItem)) ids.add(item.id)
+        if (!queryItem)
+          continue
+        if (filterByAny(item, queryItem))
+          ids.add(item.id)
       }
     }
     if (query.value.tags) {
       const queryTags = Array.isArray(query.value.tags) ? query.value.tags : [query.value.tags]
-      const queryTagsSet = new Set<string>(queryTags.map((tag) => tag?.toString() ?? ''))
-      if (queryTagsSet.intersection(item.tags).size) ids.add(item.id)
+      const queryTagsSet = new Set<string>(queryTags.map(tag => tag?.toString() ?? ''))
+      if (queryTagsSet.intersection(item.tags).size)
+        ids.add(item.id)
     }
     if (query.value.symbols) {
       const querySymbols = Array.isArray(query.value.symbols) ? query.value.symbols : [query.value.symbols]
-      const querySymbolsSet = new Set<string>(querySymbols.map((symbol) => symbol?.toString() ?? ''))
-      if (querySymbolsSet.intersection(item.symbols).size) ids.add(item.id)
+      const querySymbolsSet = new Set<string>(querySymbols.map(symbol => symbol?.toString() ?? ''))
+      if (querySymbolsSet.intersection(item.symbols).size)
+        ids.add(item.id)
     }
     if (query.value.materials) {
       const queryMaterials = Array.isArray(query.value.materials) ? query.value.materials : [query.value.materials]
       for (const queryMaterial of queryMaterials) {
-        if (!queryMaterial) continue
-        if (item.materials.some((material) => material.includes(queryMaterial))) ids.add(item.id)
+        if (!queryMaterial)
+          continue
+        if (item.materials.some(material => material.includes(queryMaterial)))
+          ids.add(item.id)
       }
     }
     return ids
   }, new Set<Item['id']>())
-  return items.value.filter((item) => filteredIds.has(item.id))
+  return items.value.filter(item => filteredIds.has(item.id))
 })
 
 function searchAny() {
-  if (!searchRecord.search) searchRecord.search = []
+  if (!searchRecord.search)
+    searchRecord.search = []
   const searchQuery = search.value.toLowerCase()
   if (searchRecord.search.includes(searchQuery)) {
     search.value = ''
@@ -207,21 +229,26 @@ function searchAny() {
   search.value = ''
 }
 function filterByAny(item: Item, query: string): Item | null {
-  if (item.name?.toLowerCase().includes(query)) return item
+  if (item.name?.toLowerCase().includes(query))
+    return item
   for (const tag of item.tags) {
-    if (tag.includes(query)) return item
+    if (tag.includes(query))
+      return item
   }
   for (const symbol of item.symbols) {
-    if (symbols.value[symbol].description.toLowerCase().includes(query)) return item
+    if (symbols.value[symbol].description.toLowerCase().includes(query))
+      return item
   }
   for (const material of item.materials) {
-    if (material.includes(query)) return item
+    if (material.includes(query))
+      return item
   }
   return null
 }
 function deleteQuery(key: string, value: string) {
-  searchRecord[key] = searchRecord[key].filter((queryItem) => queryItem !== value)
-  if (!searchRecord[key].length) delete searchRecord[key]
+  searchRecord[key] = searchRecord[key].filter(queryItem => queryItem !== value)
+  if (!searchRecord[key].length)
+    delete searchRecord[key]
 }
 function resetFilters() {
   for (const key in searchRecord) delete searchRecord[key]
@@ -231,7 +258,8 @@ function searchElementTitle(recordKey: string) {
 }
 function searchElementValue(recordKey: string, recordElement: string) {
   let value: string = ''
-  if (recordKey === 'symbols') value = symbols.value[recordElement].short
+  if (recordKey === 'symbols')
+    value = symbols.value[recordElement].short
   else value = recordElement
   return value.toLowerCase()
 }

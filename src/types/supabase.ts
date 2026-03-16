@@ -1,11 +1,11 @@
-export type ItemSymbolGroup =
-  | 'washing'
-  | 'ironing'
-  | 'bleaching'
-  | 'tumble-drying'
-  | 'natural-drying'
-  | 'dry-cleaning'
-  | 'wet-cleaning'
+export type ItemSymbolGroup
+  = | 'washing'
+    | 'ironing'
+    | 'bleaching'
+    | 'tumble-drying'
+    | 'natural-drying'
+    | 'dry-cleaning'
+    | 'wet-cleaning'
 
 export interface Database {
   public: {
@@ -171,25 +171,25 @@ export interface Database {
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (Database['public']['Tables'] & Database['public']['Views'])
-    | { schema: keyof Database },
+  | keyof (Database['public']['Tables'] & Database['public']['Views'])
+  | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
+    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables']
+      & Database[PublicTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions['schema']]['Tables']
+    & Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
-    ? R
-    : never
+      ? R
+      : never
   : PublicTableNameOrOptions extends keyof (Database['public']['Tables'] & Database['public']['Views'])
     ? (Database['public']['Tables'] & Database['public']['Views'])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
-      ? R
-      : never
+        ? R
+        : never
     : never
 
 export type TablesInsert<
@@ -199,14 +199,14 @@ export type TablesInsert<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I
-    }
+    Insert: infer I
+  }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof Database['public']['Tables']
     ? Database['public']['Tables'][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
+      Insert: infer I
+    }
       ? I
       : never
     : never
@@ -218,14 +218,14 @@ export type TablesUpdate<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U
-    }
+    Update: infer U
+  }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof Database['public']['Tables']
     ? Database['public']['Tables'][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
+      Update: infer U
+    }
       ? U
       : never
     : never

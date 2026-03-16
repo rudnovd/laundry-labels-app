@@ -1,5 +1,6 @@
+import type { QuasarPluginOptions } from 'quasar'
+import { Dialog, Loading, Notify, Quasar } from 'quasar'
 import { createApp } from 'vue'
-import { Dialog, Loading, Notify, Quasar, type QuasarPluginOptions } from 'quasar'
 import App from '@/App.vue'
 import i18n from '@/i18n'
 import router from '@/router'

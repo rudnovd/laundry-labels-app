@@ -1,8 +1,8 @@
 import type { RouteRecordName } from 'vue-router'
-import { useLocalStorage } from '@vueuse/core'
 import type { AvailableLocale } from '@/i18n'
-import { getBrowserLocale } from '@/utils/locale'
+import { useLocalStorage } from '@vueuse/core'
 import { IS_OFFLINE_APP } from '@/constants'
+import { getBrowserLocale } from '@/utils/locale'
 
 interface UserSettingsLocalStorage {
   locale: AvailableLocale

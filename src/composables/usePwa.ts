@@ -1,14 +1,15 @@
-import { watch } from 'vue'
-import { type RouteRecordName, useRouter } from 'vue-router'
+import type { RouteRecordName } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
-import { useI18n } from 'vue-i18n'
-import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { QSpinnerGears, useQuasar } from 'quasar'
+import { useRegisterSW } from 'virtual:pwa-register/vue'
+import { watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useAppSettingsStore } from '@/store/settings'
 import { demoStorage, userSettingsStorage } from '@/utils/localStorage'
 
 interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>
+  prompt: () => Promise<void>
 }
 
 export default function usePwa() {
@@ -36,23 +37,26 @@ export default function usePwa() {
     useEventListener(window, 'update-app', updateApp)
   }
 
+  const { updateServiceWorker, needRefresh } = useRegisterSW({ immediate: true })
   function updateApp() {
     loading.show({ message: t('common.updatingApp'), spinner: QSpinnerGears, ignoreDefaults: true })
-    if (appSettingsStore.appHasUpdate) appSettingsStore.appHasUpdate = false
+    if (appSettingsStore.appHasUpdate)
+      appSettingsStore.appHasUpdate = false
     updateServiceWorker()
   }
 
-  const { updateServiceWorker, needRefresh } = useRegisterSW({ immediate: true })
   watch(
     needRefresh,
     () => {
       if (userSettingsStorage.value.autoUpdateApp) {
         const { name } = router.currentRoute.value
         const ignoreUpdateInPages: ReadonlyArray<RouteRecordName> = ['Create item', 'Edit item', 'Sign in', 'Sign up']
-        if ((name && ignoreUpdateInPages.includes(name)) || demoStorage.value.active) return
+        if ((name && ignoreUpdateInPages.includes(name)) || demoStorage.value.active)
+          return
 
         updateApp()
-      } else {
+      }
+      else {
         appSettingsStore.appHasUpdate = true
       }
     },

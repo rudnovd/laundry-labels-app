@@ -9,7 +9,8 @@ export const validation = {
     return String(value1) === String(value2)
   },
   isEmail(value: string | number) {
-    const emailRegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    // eslint-disable-next-line e18e/prefer-static-regex
+    const emailRegExp = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
     return emailRegExp.test(String(value).toLowerCase())
   },
 }

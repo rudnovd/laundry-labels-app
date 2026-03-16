@@ -1,11 +1,11 @@
-import i18n from '@/i18n'
 import type { ItemMaterialName, ItemSymbol, ItemTag } from '@/types/item'
-import { userSettingsStorage } from '@/utils/localStorage'
 import { defineStore } from 'pinia'
+import i18n from '@/i18n'
+import { userSettingsStorage } from '@/utils/localStorage'
 
 interface LaundryDataState {
-  symbols: Record<ItemSymbol['name'], { group: ItemSymbol['group']; description: string; short: string }>
-  tags: Array<{ group: ItemTag['group']; items: Set<ItemTag['name']> }>
+  symbols: Record<ItemSymbol['name'], { group: ItemSymbol['group'], description: string, short: string }>
+  tags: Array<{ group: ItemTag['group'], items: Set<ItemTag['name']> }>
   materials: Array<ItemMaterialName>
 }
 
@@ -16,7 +16,7 @@ export const useLaundryDataStore = defineStore('laundryData', {
     materials: [],
   }),
   getters: {
-    customTagGroup(): { group: ItemTag['group']; items: Set<ItemTag['name']> } {
+    customTagGroup(): { group: ItemTag['group'], items: Set<ItemTag['name']> } {
       if (!this.tags.length) {
         return { group: i18n.global.t('components.item.inputItemTags.customTagGroup'), items: new Set() }
       }
@@ -50,7 +50,7 @@ export const useLaundryDataStore = defineStore('laundryData', {
     async getStandardTags() {
       this.tags = []
       const standardTagsLocale = userSettingsStorage.value.items.standardTagsLocale
-      const tags: Array<{ group: ItemTag['group']; items: Array<ItemTag['name']> }> = (
+      const tags: Array<{ group: ItemTag['group'], items: Array<ItemTag['name']> }> = (
         await import(`../assets/data/tags/${standardTagsLocale}.ts`)
       ).default
       for (const { group, items } of tags) {
@@ -61,7 +61,7 @@ export const useLaundryDataStore = defineStore('laundryData', {
     async getStandardSymbols() {
       this.symbols = {}
       const locale = userSettingsStorage.value.locale
-      const symbols: Record<string, { group: string; description: string; short: string }> = (
+      const symbols: Record<string, { group: string, description: string, short: string }> = (
         await import(`../assets/data/laundry-symbols/${locale}.ts`)
       ).default
       this.symbols = symbols

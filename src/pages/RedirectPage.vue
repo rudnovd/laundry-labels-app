@@ -1,5 +1,7 @@
 <template>
-  <q-page class="redirect-page"> {{ text }} </q-page>
+  <q-page class="redirect-page">
+    {{ text }}
+  </q-page>
 </template>
 
 <script setup lang="ts">

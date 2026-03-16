@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 interface AppSettingsState {
   appHasUpdate: boolean
   appInstallation?: {
-    event: Event & { prompt(): Promise<void> }
+    event: Event & { prompt: () => Promise<void> }
     showInstallButton: boolean
   }
 }

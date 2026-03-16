@@ -1,5 +1,7 @@
 <template>
-  <button v-ripple class="item-material">{{ Number(percent) ?? 100 }}% {{ materialName }}</button>
+  <button v-ripple class="item-material">
+    {{ Number(percent) ?? 100 }}% {{ materialName }}
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -20,12 +22,12 @@ const [materialName, percent] = props.material.split('-')
   height: 2em;
   padding: 0.2em 0.5em;
   overflow: hidden;
-  color: rgb(0 0 0 / 87%);
   text-overflow: ellipsis;
+  color: rgb(0 0 0 / 87%);
   white-space: nowrap;
+  outline: 0;
   background: rgb(224 224 224);
   border: none;
   border-radius: 16px;
-  outline: 0;
 }
 </style>

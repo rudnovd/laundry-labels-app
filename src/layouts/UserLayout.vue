@@ -13,7 +13,7 @@
         />
         <q-toolbar-title class="flex items-center">
           <q-btn flat :to="{ name: 'Items' }" :ripple="false" padding="0">
-            <l-icon icon="logo" width="32px" height="32px" />
+            <LIcon icon="logo" width="32px" height="32px" />
             <span class="q-ml-xs q-mt-sm logo-text">Laundry Labels</span>
           </q-btn>
 
@@ -56,14 +56,14 @@
 </template>
 
 <script setup lang="ts">
-import LIcon from '@/components/LIcon.vue'
-import { useAppSettingsStore } from '@/store/settings'
-import { useUserStore } from '@/store/user'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { userSettingsStorage } from '@/utils/localStorage'
+import LIcon from '@/components/LIcon.vue'
 import { IS_OFFLINE_APP } from '@/constants'
+import { useAppSettingsStore } from '@/store/settings'
+import { useUserStore } from '@/store/user'
+import { userSettingsStorage } from '@/utils/localStorage'
 
 const keepAliveComponents = ['ItemsPage']
 
@@ -77,7 +77,8 @@ const isOfflineMode = computed(() => userStore.isOfflineMode)
 const previousPageLink = computed<string>(() => {
   if (window.history.state.back === router.currentRoute.value.path) {
     return '/items'
-  } else {
+  }
+  else {
     return window.history.state.back || '/items'
   }
 })
@@ -92,8 +93,10 @@ if (!IS_OFFLINE_APP) {
     if (!offlineMode) {
       try {
         const session = await userStore.getSession()
-        if (!session) router.replace({ name: 'Sign in' })
-      } catch (error) {
+        if (!session)
+          router.replace({ name: 'Sign in' })
+      }
+      catch {
         router.replace({ name: 'Sign in' })
       }
     }

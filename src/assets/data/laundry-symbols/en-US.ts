@@ -1,5 +1,5 @@
 export default {
-  wash: {
+  'wash': {
     group: 'washing',
     description: 'Machine wash',
     short: 'Wash',
@@ -84,7 +84,7 @@ export default {
     description: 'Very mild wash at or below 60°C',
     short: 'Very mild below 60°C',
   },
-  iron: {
+  'iron': {
     group: 'ironing',
     description: 'Iron',
     short: 'Iron',
@@ -119,7 +119,7 @@ export default {
     description: 'Do not steam',
     short: 'Do not steam',
   },
-  bleach: {
+  'bleach': {
     group: 'bleaching',
     description: 'Bleaching allowed',
     short: 'Bleach',
@@ -159,7 +159,7 @@ export default {
     description: 'Tumble dry on high heat',
     short: 'Tumble dry high°',
   },
-  dry: {
+  'dry': {
     group: 'natural-drying',
     description: 'Dry',
     short: 'Dry',

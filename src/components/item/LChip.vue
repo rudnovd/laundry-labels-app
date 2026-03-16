@@ -1,6 +1,6 @@
 <template>
-  <button v-ripple :class="['l-chip', { selected, disabled }]">
-    <slot></slot>
+  <button v-ripple class="l-chip" :class="[{ selected, disabled }]">
+    <slot />
   </button>
 </template>
 
@@ -26,14 +26,14 @@ withDefaults(
   height: 2em;
   padding: 0.5em 0.9em;
   overflow: hidden;
-  color: rgb(0 0 0 / 87%);
   text-overflow: ellipsis;
+  color: rgb(0 0 0 / 87%);
   white-space: nowrap;
   cursor: pointer;
+  outline: 0;
   background: rgb(224 224 224);
   border: none;
   border-radius: 16px;
-  outline: 0;
 
   &.selected {
     font-weight: 600;

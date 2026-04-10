@@ -69,17 +69,20 @@ export const useItemsStore = defineStore('items', {
       const userStore = useUserStore()
       if (!userStore.user)
         throw new Error('Authorization required')
+
+      const { id, ...itemData } = editedItem
+
       const { data: updatedItem, error } = await supabase!
         .from('items')
         .update({
-          ...editedItem,
-          symbols: [...editedItem.symbols],
-          tags: [...editedItem.tags],
-          photos: [...editedItem.photos],
-          materials: editedItem.materials,
+          ...itemData,
+          symbols: [...itemData.symbols],
+          tags: [...itemData.tags],
+          photos: [...itemData.photos],
+          materials: itemData.materials,
           owner: userStore.user.id,
         })
-        .eq('owner', userStore.user?.id)
+        .eq('owner', userStore.user.id)
         .eq('id', editedItem.id)
         .select('id, name, symbols, tags, photos, materials, created_at, updated_at')
         .single()

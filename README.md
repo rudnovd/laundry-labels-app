@@ -4,14 +4,9 @@ Store washing data for your clothes.
 
 ## Development
 
-1. Install [server](https://github.com/rudnovd/laundry-labels-app-api) to work with api
 1. Clone repository
-1. Install npm dependencies: `npm install`
-1. Run app: `npm start`
-
-## Backend repository
-
-Link to [backend repository](https://github.com/rudnovd/laundry-labels-app-api).
+1. Install npm dependencies: `pnpm install`
+1. Run app: `pnpm start`
 
 ## License
 

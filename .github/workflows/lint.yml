@@ -8,9 +8,16 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
         with:
-          node-version: "20"
-      - run: npm ci --no-fund
-      - run: npm run lint:all
+          version: 10
+          run_install: true
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm run lint:all

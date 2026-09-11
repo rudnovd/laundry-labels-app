@@ -1,5 +1,7 @@
 <template>
-  <q-circular-progress v-if="isLoading" indeterminate size="50px" color="brand" />
+  <div v-if="isLoading">
+    {{ $t('common.loading') }}...
+  </div>
   <img v-else :src="photoUrl ?? 'favicon-512.png'">
 </template>
 
@@ -12,7 +14,6 @@ const props = defineProps<{ path: string }>()
 const { isOfflineItem, getPhoto } = useItems()
 const photoUrl = ref<string | null>(null)
 const isLoading = ref(false)
-
 onMounted(async () => {
   isLoading.value = true
   try {
@@ -22,9 +23,9 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
-
 onUnmounted(() => {
-  if (photoUrl.value && isOfflineItem(photoUrl.value))
+  if (photoUrl.value && isOfflineItem(photoUrl.value)) {
     URL.revokeObjectURL(photoUrl.value)
+  }
 })
 </script>

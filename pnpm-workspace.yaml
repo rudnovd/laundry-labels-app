@@ -1,0 +1,15 @@
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@types/node@24.13.4'
+  - '@tauri-apps/api@2.12.0'
+  - '@tauri-apps/plugin-notification@2.5.1'
+  - '@tauri-apps/plugin-deep-link@2.6.0'
+  - '@tauri-apps/plugin-opener@2.7.0'
+shellEmulator: true
+
+trustPolicy: off
+
+onlyBuiltDependencies:
+  - supabase
+allowBuilds:
+  vue-demi: true

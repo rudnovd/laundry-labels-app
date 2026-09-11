@@ -1,17 +1,17 @@
 import type { Table } from 'dexie'
-import type { DatabaseItem } from '@/types/item'
+import type { OfflineItem } from '@/types/item'
 import Dexie from 'dexie'
 
-const DATABASE_VERSION = 1
+const DATABASE_VERSION = 2
 
 export class Database extends Dexie {
-  offlineItems!: Table<Omit<DatabaseItem, 'owner'>>
+  offlineItems!: Table<OfflineItem>
   upload!: Table<{ id: string, file: File | Blob }>
 
   constructor() {
     super('laundrylabelsapp')
     this.version(DATABASE_VERSION).stores({
-      offlineItems: '++id, name, symbols, tags, materials, created_at, updated_at',
+      offlineItems: '++id, name, symbols, tags, materials, photos, created_at, updated_at',
       upload: '++id, file',
     })
   }

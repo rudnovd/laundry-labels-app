@@ -2,10 +2,19 @@ import type { Database } from '@/types/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { IS_OFFLINE_APP } from './constants'
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
 export const supabase = (() => {
-  if (IS_OFFLINE_APP)
+  if (IS_OFFLINE_APP) {
     return null
-  const url = import.meta.env.VITE_APP_SUPABASE_URL.length ? import.meta.env.VITE_APP_SUPABASE_URL : 'http://localhost'
-  const key = import.meta.env.VITE_APP_SUPABASE_KEY.length ? import.meta.env.VITE_APP_SUPABASE_KEY : 'localhost'
-  return createClient<Database>(url, key)
+  }
+  return createClient<Database>(supabaseUrl, supabaseKey, {
+    db: {
+      timeout: 15_000,
+    },
+    auth: {
+      flowType: import.meta.env.VITE_IS_TAURI ? 'pkce' : 'implicit',
+      storageKey: 'auth',
+    },
+  })
 })()

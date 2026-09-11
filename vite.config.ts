@@ -1,20 +1,20 @@
 import type { VitePWAOptions } from 'vite-plugin-pwa'
-import { dirname, resolve } from 'node:path'
+import { execFileSync } from 'node:child_process'
 import process from 'node:process'
 import { fileURLToPath, URL } from 'node:url'
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
-import { defineConfig, loadEnv } from 'vite'
+import Icons from 'unplugin-icons/vite'
+import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import svgLoader from 'vite-svg-loader'
+import VueRouter from 'vue-router/vite'
+import packageJson from './package.json' with { type: 'json' }
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  strategies: 'injectManifest',
-  srcDir: 'src',
-  filename: 'sw.ts',
+  disable: !!process.env.VITE_IS_TAURI,
+  registerType: 'autoUpdate',
   manifest: {
-    name: 'Laundry Labels App',
+    name: 'Laundry Labels',
     short_name: 'Laundry Labels',
     description: 'Save data on how to take care of your clothes',
     orientation: 'portrait-primary',
@@ -38,37 +38,39 @@ const pwaOptions: Partial<VitePWAOptions> = {
   includeAssets: ['robots.txt', 'sitemap.txt'],
 }
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = { ...process.env, ...loadEnv(mode, process.cwd()) }
+const commitSha = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim()
+const host = process.env.TAURI_DEV_HOST
 
-  return {
-    define: {
-      'import.meta.env.__APP_VERSION__': JSON.stringify(env.npm_package_version),
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    VueRouter({ dts: 'src/types/typed-router.d.ts' }),
+    vue(),
+    VitePWA(pwaOptions),
+    svgLoader({ defaultImport: 'component' }),
+    Icons(),
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('src', import.meta.url)),
     },
-    resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-      },
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `
-            @import "@/styles/quasar-variables";
-          `,
-        },
-      },
-    },
-    plugins: [
-      vue({ template: { transformAssetUrls } }),
-      quasar({ sassVariables: fileURLToPath(new URL('./src/styles/quasar-variables.scss', import.meta.url)) }),
-      VitePWA(pwaOptions),
-      svgLoader({ svgo: false, defaultImport: 'component' }),
-      VueI18nPlugin({ include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**') }),
-    ],
-    server: {
-      port: 5801,
-    },
-  }
+  },
+  define: {
+    'import.meta.env.VITE_GIT_COMMIT_SHA': JSON.stringify(commitSha),
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(packageJson.version),
+  },
+  server: {
+    port: 8140,
+    strictPort: true,
+    host: host || false,
+    // ws: host
+    //   ? {
+    //       protocol: 'ws',
+    //       host,
+    //       port: 1421,
+    //     }
+    //   : false,
+    watch: { ignored: ['**/src-tauri/**'] },
+  },
+  clearScreen: false, // prevent Vite from obscuring rust errors
 })

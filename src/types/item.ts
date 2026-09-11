@@ -1,24 +1,16 @@
-import type { RowType } from './supabase'
+import type { Tables } from './supabase'
 
-export type DatabaseItem = RowType<'items'>
+export type ItemSymbolGroup
+  = | 'washing'
+    | 'ironing'
+    | 'bleaching'
+    | 'tumble-drying'
+    | 'natural-drying'
+    | 'dry-cleaning'
+    | 'wet-cleaning'
 
-export interface Item {
-  readonly id: string
-  readonly name: string | null
-  readonly symbols: Set<string>
-  readonly photos: Array<string>
-  readonly materials: Array<ItemMaterial>
-  readonly tags: Set<string>
-  readonly created_at: string
-  readonly updated_at: string | null
-}
-export interface ItemBlank {
-  name: string | null
-  symbols: Set<string>
-  photos: Array<string>
-  materials: Array<ItemMaterial>
-  tags: Set<string>
-}
+export type Item = Omit<Tables<'items'>, 'owner'>
+export type ItemBlank = Omit<Tables<'items'>, 'id' | 'owner' | 'created_at' | 'updated_at'>
 
 export interface ItemSymbol {
   readonly description: string
@@ -28,4 +20,4 @@ export interface ItemSymbol {
 export type ItemMaterialName = string
 export type ItemMaterialPercent = string
 export type ItemMaterial = `${ItemMaterialName}-${ItemMaterialPercent}`
-export type ItemTag = RowType<'items_tags'>
+export type ItemTag = Tables<'items_tags'>

@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/android-schema.json",
+  "identifier": "mobile-capability",
+  "description": "enables the default permissions",
+  "windows": ["main"],
+  "platforms": ["android"],
+  "permissions": [
+    "core:default",
+    "os:default",
+    "notification:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [{ "url": "https://*" }, { "url": "laundrylabelsapp://auth/callback" }]
+    },
+    "deep-link:default"
+  ]
+}

@@ -19,18 +19,23 @@
     "continue": "Продолжить",
     "or": "Или",
     "stay": "Остаться",
-    "authenticating": "Аутентификация",
     "saveInCloud": "Сохранить на сервере",
     "saveLocal": "Сохранить локально",
-    "updatingApp": "Обновление приложения",
     "tags": "Тэги",
     "materials": "Материалы",
     "symbols": "Символы",
+    "loading": "Загрузка",
+    "fetchError": "Ошибка при обработке запроса",
     "pluralization": {
       "filters": "фильтр | {n} фильтра | {n} фильтров"
     }
   },
   "components": {
+    "navigationHeader": {
+      "offlineMode": "Оффлайн режим",
+      "offlineModeIsActive": "Оффлайн режим активен",
+      "offlineTooltip": "Новые предметы сохраняются только на данном устройстве"
+    },
     "item": {
       "inputItemTags": {
         "tagsInput": "Введите или выберите теги (до 30)",
@@ -54,6 +59,10 @@
         "emailEmpty": "Email не заполнен",
         "emailPattern": "Строка должна быть действительным адресом электронной почты",
         "password": "Пароль не заполнен"
+      },
+      "notifications": {
+        "successfullySignedIn": "Вы успешно вошли в систему",
+        "failedToSignedIn": "Не удалось войти в систему"
       }
     },
     "signUp": {
@@ -65,20 +74,27 @@
       "validation": {
         "emailEmpty": "Email не заполнен",
         "emailPattern": "Строка должна быть действительным адресом электронной почты",
-        "password": "Пожалуйста, используйте пароль от 6 символов"
+        "passwordMinLength": "Пожалуйста, используйте пароль от 6 символов",
+        "passwordMaxLength": "Пожалуйста, используйте пароль не более 72 символов"
       }
     },
     "resetPassword": {
       "backToSignIn": "Вернуться на страницу входа",
       "requestSended": "Запрос отправлен. Пожалуйста, проверьте электронную почту",
-      "backToHomePage": "Назад на домашнюю страницу"
+      "backToHomePage": "Назад на домашнюю страницу",
+      "validation": {
+        "emailEmpty": "Email не заполнен",
+        "emailPattern": "Строка должна быть действительным адресом электронной почты"
+      }
     },
     "home": {
       "share": "Поделиться",
       "subtitle": "Сохраняйте данные о том, как ухаживать за одеждой",
-      "tryInBrowser": "Попробовать в браузере"
+      "tryInBrowser": "Попробовать в браузере",
+      "downloadAPK": "Скачать APK"
     },
     "profile": {
+      "title": "Профиль",
       "installApp": "Установить приложение",
       "updateApp": "Обновить приложение",
       "appVersion": "Версия приложения",
@@ -96,7 +112,14 @@
       "importItems": "Импортировать предметы",
       "emailNotVerified": "Почта не подтверждена",
       "verifyEmail": "Подтвердить почту",
-      "dialogs": {
+      "dialogues": {
+        "importItems": {
+          "uploadFile": "Загрузить файл",
+          "saveAllInCloud": "Сохранить все предметы в облаке",
+          "saveLocal": "Сохранить локально",
+          "saveAllLocal": "Сохранить все предметы локально",
+          "itemSaved": "Предмет сохранён"
+        },
         "updatePassword": {
           "updatePassword": "Обновить пароль",
           "newPassword": "Новый пароль",
@@ -104,6 +127,8 @@
           "validation": {
             "passwordEmpty": "Поле пароля не заполнено",
             "minLength": "Пожалуйста, используйте минимум 6 символов",
+            "passwordMinLength": "Пожалуйста, используйте пароль от 6 символов",
+            "passwordMaxLength": "Пожалуйста, используйте пароль не более 72 символов",
             "passwordsNotMatch": "Пароли не совпадают"
           }
         }
@@ -122,23 +147,30 @@
       "cannotSaveInCloudTooltipText": "Для сохранения предмета в облаке нужно быть в сети"
     },
     "items": {
+      "title": "Предметы",
       "search": "Поиск по имени, тегам, материалам или символам",
       "noItemsAdded": "Пока не добавлено ни одного предмета",
       "addFirstItem": "Добавить первый предмет",
+      "addFirstLocalItem": "Добавить первый локальный предмет",
+      "addLocalItem": "Добавить локально",
       "noItemsWithSelectedTags": "Нет предметов с указанными тегами",
-      "itemsLimitReached": "Достигнут лимит предметов"
+      "itemsLimitReached": "Достигнут лимит предметов",
+      "itemNotFound": "Предмет не найден",
+      "signInToSaveItems": "Войдите чтобы сохранить предметы в облаке"
     },
     "modifyItem": {
+      "title": "Редактировать предмет",
       "createLocalItem": "Создать локальный предмет",
       "saveLocalItem": "Сохранить локальный предмет",
+      "itemAdded": "Предмет добавлен успешно",
+      "itemUpdated": "Предмет обновлен успешно",
+      "noChangesToSave": "Нет изменений для сохранения",
       "validation": {
         "symbolsRequired": "Необходимо выбрать хотя бы один символ по уходу"
-      },
-      "itemAdded": "Предмет добавлен успешно",
-      "itemUpdated": "Предмет обновлен успешно"
+      }
     },
-    "filterItemsDialog": {
-      "filteringItems": "Фильтрация предметов",
+    "itemsFilter": {
+      "title": "Фильтрация предметов",
       "combinedFilters": "Объединенные фильтры",
       "filters": {
         "colored": "Цветные",
@@ -180,33 +212,20 @@
     "wrongFileType": "Неверный тип файла",
     "confirmationEmailSent": "Письмо для подтверждения отправлено"
   },
-  "demo": {
+  "onboarding": {
     "buttons": {
+      "start": "Начать",
       "next": "Далее",
-      "finish": "Завершить экскурсию"
+      "prev": "Назад",
+      "finish": "Закончить"
     },
-    "notification": {
-      "startTour": "Хотите начать экскурсию?",
-      "continueTour": "Продолжить экскурсию?",
-      "tourCompleted": "Экскурсия завершена",
-      "buttons": {
-        "start": "Начать",
-        "skip": "Пропустить",
-        "continue": "Продолжить"
-      }
-    },
-    "tours": {
-      "modifyItem": {
-        "steps": {
-          "addFirstItem": "Добавим первый предмет",
-          "enterItemName": "Введите название предмета",
-          "selectTags": "Выберите теги из предоставленного списка",
-          "enterCustomTags": "Вы также можете ввести собственные теги",
-          "selectLaundrySymbols": "Выберите символы с этикетки по уходу",
-          "confirmItemCreation": "Подтвердите создание предмета"
-        }
-      }
-    }
+    "steps": [
+      { "description": "Добавим первый предмет" },
+      { "description": "Введите название предмета" },
+      { "description": "Выберите теги из предоставленного списка" },
+      { "description": "Выберите символы с этикетки по уходу" },
+      { "description": "Подтвердите создание предмета" }
+    ]
   },
   "hints": {
     "washing": [
@@ -249,12 +268,5 @@
   },
   "alerts": {
     "unsavedChanges": "Все несохраненные изменения будут потеряны. Вы уверены, что хотите выйти?"
-  },
-  "loading": {
-    "sendingRequest": "Отправка запроса",
-    "fetchingItem": "Загрузка предмета",
-    "creatingItem": "Создание предмета",
-    "updatingItem": "Обновление предмета",
-    "deletingItem": "Удаление предмета"
   }
 }

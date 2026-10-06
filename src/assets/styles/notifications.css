@@ -1,0 +1,12 @@
+@import url('vue-sonner/style.css');
+.notification {
+  background-color: var(--color-surface-background);
+  &[data-type='success'] {
+    color: oklch(100% 0 0deg);
+    background-color: var(--color-success);
+  }
+  &[data-type='error'] {
+    color: oklch(100% 0 0deg);
+    background-color: var(--color-error);
+  }
+}

@@ -1,4 +1,4 @@
-# Laundry Labels App
+# Laundry Labels
 
 Store washing data for your clothes.
 

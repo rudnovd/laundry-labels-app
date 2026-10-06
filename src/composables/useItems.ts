@@ -2,10 +2,10 @@ import type { Item, ItemTag } from '@/types/item'
 import Compressor from 'compressorjs'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import { useItemsStore } from '@/store/items'
-import { useLaundryDataStore } from '@/store/laundryData'
-import { useOfflineItemsStore } from '@/store/offlineItems'
-import { useUserStore } from '@/store/user'
+import { useItemsStore } from '@/stores/items'
+import { useLaundryDataStore } from '@/stores/laundryData'
+import { useOfflineItemsStore } from '@/stores/offlineItems'
+import { useUserStore } from '@/stores/user'
 import { collectItemCustomTags, sortItemsByCreatedDate } from '@/utils/items'
 
 export default function useItems() {
@@ -26,7 +26,7 @@ export default function useItems() {
   const materials = computed(() => laundryDataStore.materials)
   const symbolsByGroups = computed(() => laundryDataStore.symbolsByGroups)
 
-  const isOfflineMode = computed(() => userStore.isOfflineMode)
+  const isOfflineMode = computed(() => userStore.settings.offlineMode)
 
   function compressPhoto(file: File | Blob) {
     return new Promise<File | Blob>((resolve, reject) => {
@@ -44,8 +44,9 @@ export default function useItems() {
 
   function isCustomTag(tag: ItemTag['name']) {
     for (const { items } of tags.value) {
-      if (items.has(tag))
+      if (items.has(tag)) {
         return false
+      }
     }
     return true
   }
@@ -56,8 +57,9 @@ export default function useItems() {
 
   async function getItems() {
     const requests = [offlineItemsStore.getItems()]
-    if (!isOfflineMode.value)
+    if (userStore.isAuthenticated && !isOfflineMode.value) {
       requests.push(itemsStore.getItems())
+    }
     const items = await Promise.all(requests)
     const isSortRequired = !!items.at(0)?.length && !!items.at(1)?.length
     const flattenItems = items.flat()
@@ -76,7 +78,8 @@ export default function useItems() {
   }
 
   function createItem(itemBlank: Parameters<typeof itemsStore.createItem>[0]) {
-    return isOfflineMode.value ? offlineItemsStore.createItem(itemBlank) : itemsStore.createItem(itemBlank)
+    const isOfflineItem = isOfflineMode.value || !userStore.isAuthenticated
+    return isOfflineItem ? offlineItemsStore.createItem(itemBlank) : itemsStore.createItem(itemBlank)
   }
 
   async function editItem(editedItem: Parameters<typeof itemsStore.editItem>[0]) {

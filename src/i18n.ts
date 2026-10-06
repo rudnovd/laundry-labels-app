@@ -1,17 +1,35 @@
+import type { Locale } from 'vue-i18n'
 import { createI18n } from 'vue-i18n'
 
-export type AvailableLocale = 'en-US' | 'ru'
-export const availableLocales: ReadonlyArray<AvailableLocale> = ['en-US', 'ru']
-
-const i18n = createI18n({
+export const DEFAULT_LOCALE: Locale = 'en'
+const AVAILABLE_LOCALES: ReadonlyArray<Locale> = ['en', 'ru']
+export function getAppLocale(): Locale {
+  const userSettings = localStorage.getItem('settings')
+  if (userSettings) {
+    const userLocale: Locale = JSON.parse(userSettings).locale
+    return AVAILABLE_LOCALES.includes(userLocale) ? userLocale : DEFAULT_LOCALE
+  }
+  const { language } = new Intl.Locale(navigator.language)
+  return AVAILABLE_LOCALES.includes(language) ? language : DEFAULT_LOCALE
+}
+export const i18n = createI18n({
   legacy: false,
-  locale: 'en-US',
-  availableLocales,
+  locale: getAppLocale(),
+  fallbackLocale: DEFAULT_LOCALE,
+  availableLocales: AVAILABLE_LOCALES,
   pluralRules: {
     ru: pluralizationRu,
   },
 })
-
+export async function loadLocaleMessages(locale: Locale): Promise<Record<string, any>> {
+  return await import(`./locales/${locale}.json`, { with: { type: 'json' } })
+}
+export async function setLocale(locale: Locale) {
+  const messages = await loadLocaleMessages(locale)
+  i18n.global.setLocaleMessage(locale, messages.default)
+  i18n.global.locale.value = locale
+  document.documentElement.setAttribute('lang', locale)
+}
 function pluralizationRu(count: number) {
   if (count % 10 === 1 && count % 100 !== 11)
     return 0
@@ -19,5 +37,3 @@ function pluralizationRu(count: number) {
     return 1
   return 2
 }
-
-export default i18n

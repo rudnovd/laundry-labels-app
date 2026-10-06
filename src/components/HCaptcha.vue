@@ -1,0 +1,37 @@
+<template>
+  <VueHcaptcha
+    ref="captchaForm"
+    :sitekey="VITE_CAPTCHA_KEY"
+    @verify="verifyCaptcha"
+    @expired="resetCaptcha"
+    @error="resetCaptcha"
+    @challenge-expired="resetCaptcha"
+  />
+</template>
+
+<script setup lang="ts">
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import { ref } from 'vue'
+
+const emit = defineEmits<{
+  verify: [token: string]
+  reset: []
+}>()
+
+const { VITE_CAPTCHA_KEY } = import.meta.env
+const captchaForm = ref<VueHcaptcha | null>(null)
+const captchaToken = ref<string>('')
+
+function verifyCaptcha(token: string) {
+  captchaToken.value = token
+  emit('verify', token)
+}
+
+function resetCaptcha() {
+  captchaToken.value = ''
+  captchaForm.value?.reset()
+  emit('reset')
+}
+
+defineExpose({ resetCaptcha })
+</script>

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0 (2026-10-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove Quasar, add android build via Tauri, refactor project
+
 ## [0.0.0-beta.2](https://github.com/rudnovd/laundry-labels-app/compare/v0.0.0-beta.1...v0.0.0-beta.2) (2024-08-26)
 
 

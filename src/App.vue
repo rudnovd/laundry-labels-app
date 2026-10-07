@@ -1,12 +1,12 @@
 <template>
   <NavigationHeader v-if="routerIsReady && isNavigationDisplayed" ref="navigationHeaderElement" />
-  <RouterView v-slot="{ Component }">
-    <main>
+  <main>
+    <RouterView v-slot="{ Component }">
       <KeepAlive include="index">
         <component :is="Component" />
       </KeepAlive>
-    </main>
-  </RouterView>
+    </RouterView>
+  </main>
   <Toaster theme="system" position="bottom-center" :toast-options="{ class: 'notification' }" />
 </template>
 

@@ -68,10 +68,10 @@
   --header-height: calc(var(--navigation-header-padding-top) + var(--navigation-header-height));
   --content-padding-inline: 0.5rem;
   --content-padding-block: 0.5rem;
-  --bottom-padding: env(safe-area-inset-bottom);
+  --bottom-safe-area: env(safe-area-inset-bottom);
 }
 html {
-  height: 100dvh;
+  height: calc(100dvh - var(--bottom-safe-area));
   color: var(--color-text);
   accent-color: var(--color-primary);
   background-color: var(--color-background);
@@ -95,18 +95,13 @@ main {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  height: calc(100% - var(--bottom-padding));
-  overflow: hidden;
+  height: 100%;
   > section {
     flex: 1;
-    overflow: auto;
   }
 }
 #app {
   height: 100%;
-  &:has(.navigation-header) main {
-    height: calc(100% - var(--header-height) - var(--bottom-padding));
-  }
 }
 ul {
   padding: 0;

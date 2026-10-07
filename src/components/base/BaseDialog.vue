@@ -88,7 +88,7 @@ watch(model, async (open) => {
   grid-template-rows: auto 1fr auto;
   width: 100%;
   min-width: 300px;
-  max-height: calc(100% - 2rem - var(--navigation-header-padding-top) - var(--bottom-padding));
+  max-height: calc(100% - 2rem - var(--navigation-header-padding-top) - var(--bottom-safe-area));
   padding: 0;
   overflow: hidden;
   outline: none;
@@ -106,7 +106,7 @@ watch(model, async (open) => {
   }
   &.fullscreen {
     max-width: 100%;
-    max-height: calc(100% - var(--navigation-header-padding-top) - var(--bottom-padding));
+    max-height: calc(100% - var(--navigation-header-padding-top) - var(--bottom-safe-area));
     margin: 0;
   }
   &::backdrop {

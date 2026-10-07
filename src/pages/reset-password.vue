@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserResetPasswordCredentials } from '@/types/user'
+import type { GoTrueClient, SignInWithPasswordCredentials } from '@supabase/supabase-js'
 import { useRegle } from '@regle/core'
 import { email, required, requiredIf, withMessage } from '@regle/rules'
 import { useThrottleFn } from '@vueuse/core'
@@ -74,6 +74,10 @@ definePage({
 
 const HCaptcha = defineAsyncComponent(() => import('@/components/HCaptcha.vue'))
 
+interface UserResetPasswordCredentials {
+  email: string
+  captchaToken: string
+}
 const { t } = useI18n()
 const userStore = useUserStore()
 const isRequestSent = ref(false)

@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserSignUpCredentials } from '@/types/user'
+import type { SignUpWithPasswordCredentials } from '@supabase/supabase-js'
 import { useRegle } from '@regle/core'
 import { email, maxLength, minLength, required, requiredIf, withMessage } from '@regle/rules'
 import { useThrottleFn } from '@vueuse/core'
@@ -96,7 +96,7 @@ definePage({
 const HCaptcha = defineAsyncComponent(() => import('@/components/HCaptcha.vue'))
 
 const { t } = useI18n()
-const credentials = reactive<UserSignUpCredentials>({
+const credentials = reactive<SignUpWithPasswordCredentials>({
   email: '',
   password: '',
   options: {

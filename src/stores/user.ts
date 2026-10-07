@@ -1,10 +1,10 @@
-import type { SignInWithOAuthCredentials, User, UserAttributes } from '@supabase/supabase-js'
+import type { SignInWithOAuthCredentials, SignInWithPasswordCredentials, SignUpWithPasswordCredentials, User, UserAttributes } from '@supabase/supabase-js'
 import type { Ref } from 'vue'
-import type { UserSignInCredentials, UserSignUpCredentials } from '@/types/user'
+import type { Locale } from 'vue-i18n'
 import { openUrl } from '@tauri-apps/plugin-opener'
 import { useLocalStorage, useOnline } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { IS_OFFLINE_APP } from '@/constants'
+import { IS_OFFLINE_APP, IS_TAURI } from '@/constants'
 import { getAppLocale, setLocale } from '@/i18n'
 import { supabase } from '@/supabase'
 import { useLaundryDataStore } from './laundryData'
@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', {
     isAuthenticated: state => !!state.user?.id,
   },
   actions: {
-    async signIn(payload: UserSignInCredentials) {
+    async signIn(payload: SignInWithPasswordCredentials) {
       if (!supabase) {
         throw new Error('Supabase not initialized')
       }
@@ -52,9 +52,9 @@ export const useUserStore = defineStore('user', {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          skipBrowserRedirect: !!import.meta.env.VITE_IS_TAURI,
+          skipBrowserRedirect: IS_TAURI,
           scopes: provider === 'google' ? 'profile email' : '',
-          redirectTo: import.meta.env.VITE_IS_TAURI ? 'laundrylabelsapp://auth/callback' : window.location.origin,
+          redirectTo: IS_TAURI ? 'laundrylabelsapp://auth/callback' : window.location.origin,
         },
       })
       if (error) {
@@ -80,7 +80,7 @@ export const useUserStore = defineStore('user', {
       }
       return session
     },
-    async signUp(credentials: UserSignUpCredentials) {
+    async signUp(credentials: SignUpWithPasswordCredentials) {
       if (!supabase) {
         throw new Error('Supabase not initialized')
       }
@@ -163,11 +163,11 @@ export const useUserStore = defineStore('user', {
       this.user = user
       return this.user
     },
-    async changeLocale(locale: string) {
+    async changeLocale(locale: Locale) {
       this.settings.locale = locale
       setLocale(locale)
     },
-    async changeTagsLocale(locale: string) {
+    async changeTagsLocale(locale: Locale) {
       this.settings.standardTagsLocale = locale
       const laundryDataStore = useLaundryDataStore()
       laundryDataStore.getStandardTags()

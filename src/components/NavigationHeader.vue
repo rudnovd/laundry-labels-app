@@ -1,13 +1,13 @@
 <template>
   <header class="navigation-header">
     <nav class="navigation-header__navigation">
-      <router-link
+      <button
         :class="{ hidden: route.path === '/items' }"
-        class="button-link navigation-header__navigation-button-back"
-        :to="previousPageLink"
+        class="button-link icon-button navigation-header__navigation-button-back"
+        @click="router.back"
       >
         <IconArrowLeft />
-      </router-link>
+      </button>
       <div class="navigation-links">
         <router-link to="/items" class="navigation-links__home">
           <AppLogo width="2em" height="2em" />
@@ -39,28 +39,20 @@
 
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-import { computed, defineAsyncComponent } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import IconAccount from '~icons/mdi/account'
-import IconArrowLeft from '~icons/mdi/arrow-left'
-import IconCloudOff from '~icons/mdi/cloud-off'
+import AppLogo from '@/assets/icons/logo.svg'
 import { useUserStore } from '@/stores/user'
-import BaseTooltip from './base/BaseTooltip.vue'
 
-const AppLogo = defineAsyncComponent(() => import('../assets/icons/logo.svg'))
+const BaseTooltip = defineAsyncComponent(() => import('./base/BaseTooltip.vue'))
+const IconArrowLeft = defineAsyncComponent(() => import('~icons/mdi/arrow-left'))
+const IconCloudOff = defineAsyncComponent(() => import('~icons/mdi/cloud-off'))
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const { width } = useWindowSize()
-const previousPageLink = computed<string>(() => {
-  if (window.history.state.back === router.currentRoute.value.path) {
-    return '/items'
-  }
-  else {
-    return window.history.state.back || '/items'
-  }
-})
 </script>
 
 <style>

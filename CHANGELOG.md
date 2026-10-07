@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0](https://github.com/rudnovd/laundry-labels/compare/v0.1.0...v0.2.0) (2026-10-07)
+
+
+### Features
+
+* **index.html:** add new meta tags ([d1afed2](https://github.com/rudnovd/laundry-labels/commit/d1afed2ed9c1ef967c4ef613fa3e8c1ffc7b081f))
+* **NavigationHeader:** set header sticky ([f02aed5](https://github.com/rudnovd/laundry-labels/commit/f02aed5f96bb76154a0d181ceca40c3820d7e805))
+* **ProfileActions:** add onboarding button ([eedff93](https://github.com/rudnovd/laundry-labels/commit/eedff9342f5d83c599af445497996a4e6b388bb9))
+
+
+### Bug Fixes
+
+* **NavigationHeader:** change previous page link to router.back() button ([314f00d](https://github.com/rudnovd/laundry-labels/commit/314f00df653234893000300ec6ef3a89eefd8d51))
+* **styles:** do not limit the height of #app ([e77f6be](https://github.com/rudnovd/laundry-labels/commit/e77f6bebf2abac38fd09fd288abea3cc3c53a942))
+
 ## 0.1.0 (2026-10-06)
 
 

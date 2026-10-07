@@ -27,7 +27,7 @@
           <router-link v-if="isOnboardingFinished" class="button-link button-success" :to="{ path: '/items' }">
             {{ $t('common.continue') }}
           </router-link>
-          <router-link v-else class="button-link button-success" :to="{ path: '/items', query: { demo: 'true' } }">
+          <router-link v-else class="button-link button-success" :to="{ path: '/items', query: { onboarding: 'true' } }">
             {{ $t('pages.home.tryInBrowser') }}
           </router-link>
         </li>

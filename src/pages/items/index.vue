@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import type { Item } from '@/types/item'
 import { intersection } from 'es-toolkit'
-import { computed, defineAsyncComponent, onBeforeMount, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onActivated, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import useItems from '@/composables/useItems'
 import { useOnboarding } from '@/composables/useOnboarding'
@@ -57,6 +57,11 @@ const userStore = useUserStore()
 const searchRecord = ref<Record<string, Array<string>>>({})
 watch(searchRecord, newSearchRecord => router.replace({ query: newSearchRecord }), { deep: true })
 onBeforeMount(async () => {
+  if (router.currentRoute.value.query.onboarding === 'true') {
+    useOnboarding().start()
+    router.replace({ query: { ...router.currentRoute.value.query, onboarding: undefined } })
+    return
+  }
   if (userStore.isAuthenticated) {
     isLoading.value = true
   }
@@ -73,6 +78,12 @@ onBeforeMount(async () => {
   if (!isOnboardingFinished) {
     const onboarding = useOnboarding()
     onboarding.start()
+  }
+})
+onActivated(async () => {
+  if (router.currentRoute.value.query.onboarding === 'true') {
+    useOnboarding().start()
+    router.replace({ query: { ...router.currentRoute.value.query, onboarding: undefined } })
     return
   }
   if (hasRouterQuery.value) {

@@ -112,6 +112,7 @@
       "importItems": "Импортировать предметы",
       "emailNotVerified": "Почта не подтверждена",
       "verifyEmail": "Подтвердить почту",
+      "onboarding": "Ознакомительный тур",
       "dialogues": {
         "importItems": {
           "uploadFile": "Загрузить файл",

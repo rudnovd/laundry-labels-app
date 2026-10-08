@@ -19,7 +19,7 @@
           <button
             class="button-primary"
             :disabled="isSavingAll"
-            @click="saveAll({ saveLocal: false })"
+            @click="saveAll({ saveLocal: true })"
           >
             <IconCellphoneSystemUpdate />
             {{ $t('pages.profile.dialogues.importItems.saveAllLocal') }}

@@ -13,6 +13,8 @@ open class BuildTask : DefaultTask() {
     var target: String? = null
     @Input
     var release: Boolean? = null
+    @Input
+    var projectDir: String? = null
 
     @TaskAction
     fun assemble() {

@@ -3,7 +3,7 @@
   "productName": "Laundry Labels",
   "version": "../package.json",
   "identifier": "com.laundrylabels.laundrylabelsapp",
-  "mainBinaryName": "laundry-labels",
+  "mainBinaryName": "laundrylabels",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:8140",

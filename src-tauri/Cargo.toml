@@ -1,5 +1,5 @@
 [package]
-name = "laundry-labels"
+name = "laundrylabels"
 version = "0.1.0"
 description = "Laundry Labels App"
 authors = ["github.com/rudnovd"]
@@ -7,33 +7,30 @@ license = "MIT"
 repository = "github.com/rudnovd/laundry-labels"
 homepage = "https://dailyroute.netlify.app"
 edition = "2021"
-rust-version = "1.77.2"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "app_lib"
+name = "laundrylabels_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.5.3", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.9.5", features = [] }
+tauri = { version = "2", features = [] }
 tauri-plugin-log = "2"
-tauri-plugin-geolocation = "2"
 tauri-plugin-os = "2"
 tauri-plugin-notification = "2"
-tauri-utils = "2.9.3"
+tauri-utils = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-deep-link = "2"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
 
+# https://tauri.app/concept/size/#cargo-configuration
 [profile.release]
 codegen-units = 1 # Allows LLVM to perform better optimization.
 lto = true # Enables link-time-optimizations.

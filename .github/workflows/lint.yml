@@ -37,5 +37,8 @@ jobs:
       - name: run stylelint
         run: pnpm run lint:css
 
+      - name: check types
+        run: pnpm run typecheck
+
       - name: run build
         run: pnpm run build

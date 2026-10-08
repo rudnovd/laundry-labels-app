@@ -57,11 +57,11 @@ const { width } = useWindowSize()
 
 <style>
 .navigation-header {
-  position: sticky;
-  top: 0;
+  position: fixed;
   z-index: 10;
   display: flex;
   align-items: center;
+  width: 100%;
   height: var(--header-height);
   padding-top: var(--navigation-header-padding-top);
   color: oklch(24.3% 0.024 249deg);

@@ -57,7 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import type { SignInWithPasswordCredentials } from '@supabase/supabase-js'
 import { useRegle } from '@regle/core'
 import { email, required, requiredIf, withMessage } from '@regle/rules'
 import { useThrottleFn } from '@vueuse/core'
@@ -67,7 +66,12 @@ import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import IconGoogle from '~icons/mdi/google'
 import BaseInput from '@/components/base/BaseInput.vue'
-import { IS_LOCAL_SUPABASE, IS_OFFLINE_APP, REQUEST_THROTTLE_TIMEOUT, VALIDATION_DEBOUNCE } from '@/constants'
+import {
+  IS_LOCAL_SUPABASE,
+  IS_OFFLINE_APP,
+  REQUEST_THROTTLE_TIMEOUT,
+  VALIDATION_DEBOUNCE,
+} from '@/constants'
 import { useUserStore } from '@/stores/user'
 
 definePage({
@@ -94,6 +98,13 @@ definePage({
 const HCaptcha = defineAsyncComponent(() => import('@/components/HCaptcha.vue'))
 
 const { t } = useI18n()
+interface SignInWithPasswordCredentials {
+  email: string
+  password: string
+  options: {
+    captchaToken?: string
+  }
+}
 const credentials = reactive<SignInWithPasswordCredentials>({
   email: '',
   password: '',

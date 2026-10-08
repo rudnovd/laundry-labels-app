@@ -40,7 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import type { GoTrueClient, SignInWithPasswordCredentials } from '@supabase/supabase-js'
 import { useRegle } from '@regle/core'
 import { email, required, requiredIf, withMessage } from '@regle/rules'
 import { useThrottleFn } from '@vueuse/core'

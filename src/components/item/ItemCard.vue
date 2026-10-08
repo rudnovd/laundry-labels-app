@@ -126,7 +126,8 @@ const { symbols } = useItems()
     overflow: hidden;
     overflow-wrap: break-word;
     object-fit: cover;
-    border-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
 }
 .item-card:has(> img) {

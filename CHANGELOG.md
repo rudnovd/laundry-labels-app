@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1](https://github.com/rudnovd/laundry-labels/compare/v0.2.0...v0.2.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* **ItemCard:** set border-radius only for right side ([a87193f](https://github.com/rudnovd/laundry-labels/commit/a87193f6133be033fbd5af87f4964a7c38516224))
+* **NavigationHeader:** set position `fixed` ([92f03e9](https://github.com/rudnovd/laundry-labels/commit/92f03e936aaa5c6534d05c9ff53cce5971271629))
+* **profile-import-items-page:** fix local saving ([79c1c61](https://github.com/rudnovd/laundry-labels/commit/79c1c616cc24f006a2924401d1b44211439f001e))
+* **signin-page, signup-page:** fix types ([baba59a](https://github.com/rudnovd/laundry-labels/commit/baba59ad30873fd51a4158909c5e85c2fb903715))
+
 ## [0.2.0](https://github.com/rudnovd/laundry-labels/compare/v0.1.0...v0.2.0) (2026-10-07)
 
 
